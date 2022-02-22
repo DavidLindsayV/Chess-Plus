@@ -285,7 +285,7 @@ public class boardScript : MonoBehaviour
         {                                   //If no move you can do prevents check, then you're in checkmate
             GameObject killedPiece = doMoveArray(move);
             if (move.movedPiece.name.Contains("King")) { kingPos = move.to; }
-            if (inCheck(team, kingPos))
+            if (!inCheck(team, kingPos))
             {
                 checkAvoidingMoves.Add(move); //If a move gets you out of check, add it to checkAvoidingMoves and set checkMate to false
                 if (checkMate) { checkMate = false; }
@@ -346,20 +346,65 @@ public class boardScript : MonoBehaviour
             List<Move> AIMoves = allMoves(false);
             //Removes all the moves that put the king into check
             removeCheckingMoves(AIMoves, false);
+            List<Move> maxPriMoves = getMaxPriMoves(AIMoves, false);
 
-            int index = Random.Range(0, AIMoves.Count);
-            doMove(AIMoves[index]); //Does a random move out of all the possible moves (if you're not in check)
+            int index = Random.Range(0, maxPriMoves.Count);
+            doMove(maxPriMoves[index]); 
         }
         else
         {
-            int index = Random.Range(0, checkAvoidingMoves.Count); //If you're in check, it does a random allowed move from checkAvoidingMoves
-            doMove(checkAvoidingMoves[index]);
+            List<Move> maxPriMoves = getMaxPriMoves(checkAvoidingMoves, false);
+            int index = Random.Range(0, maxPriMoves.Count); 
+            doMove(maxPriMoves[index]);
         }
 
         checkForMate(true); //Checks for checkmate for the white team
         updateGamestate(false);
 
         playerTurn = !playerTurn;
+    }
+
+    private List<Move> getMaxPriMoves(List<Move> AIMoves, bool team)
+    {
+        int maxPriority = 0;
+        List<Move> maxPriMoves = new List<Move>();
+        foreach (Move move in AIMoves)
+        {
+            int movePri = movePriority(move, team);
+            if (movePri == maxPriority) { maxPriMoves.Add(move); }
+            if (movePri > maxPriority)
+            {
+                maxPriority = movePri;
+                maxPriMoves.Clear();
+                maxPriMoves.Add(move);
+            }
+        }
+        return maxPriMoves;
+    }
+
+    //Generates a "priority" for the move: how good it is. BASIC right now
+    private int movePriority(Move move, bool team)
+    {
+        GameObject enemyKing = getKing(!team);
+        Vector2 kingPos = getPos(enemyKing);
+        GameObject killedPiece = doMoveArray(move);
+        bool checking = false;
+        if(inCheck(!team, kingPos))
+        {
+            checking = true;
+        }
+        undoMoveArray(move, killedPiece);
+
+        if (checking) { return 10; }
+        if (killedPiece != null)
+        {
+            if (killedPiece.name.Contains("King")) { Debug.Log("This shouldn't be possible. The game should end with checkmate before this happens"); }
+            if (killedPiece.name.Contains("Queen")) { return 9; }
+            if (killedPiece.name.Contains("Rook") || killedPiece.name.Contains("Bishop")) { return 8; }
+            if (killedPiece.name.Contains("Knight")) { return 7; }
+            if (killedPiece.name.Contains("Pawn")) { return 6; }
+        }
+        return 0; //If killedPiece == null and its not checking
     }
 
     //Returns a list of all of the moves of a certain team
