@@ -37,8 +37,9 @@ public class boardScript : MonoBehaviour
     private GameObject whiteKing; //stores the black and white kings for easier access
     private GameObject blackKing;
     public bool check; //stores the check and checkMate (as assignned by checkForMate) for whichever team the function was just run for
-    public bool checkMate; 
+    public bool checkMate;
     private List<Move> checkAvoidingMoves; //The list of moves that, if you're in check, get you out of check (you legally have to do one of these moves).
+    private bool[,] safeSquares;
 
     //Notes to know about the code:
     //The cols and rows go from 1 to 8.
@@ -46,6 +47,9 @@ public class boardScript : MonoBehaviour
     //Currently white is the player and black is the AI.
 
     //TODO:
+    //Almost done with Castling. Just need to:
+    // -Implement 2 functions to simulate and desimulate a move, and make sure castling works with that (and maybe make doMove and these functions call each other?)
+    //replace boardArray with a array of the names, not the gameObjects. Should be less computation to call. Still use an array of gameObjects, though? IDK...
 
     //To consider:
     //Maybe implement getPiece used more instead of referring to boardArray directly?
@@ -63,6 +67,7 @@ public class boardScript : MonoBehaviour
         checkAvoidingMoves = new List<Move>();
         boardArray = new GameObject[boardSize, boardSize];
         pieceHasMoved = new bool[boardSize, boardSize];
+        safeSquares = new bool[boardSize, boardSize];
         //Initialise the chess pieces
         setUpBoard();
         checkForMate(true); //sets up the values of check and checkMate for the first turn, for the user
@@ -81,9 +86,9 @@ public class boardScript : MonoBehaviour
         makePiece(rook, 1, 1, true);
         makePiece(knight, 2, 1, true);
         makePiece(bishop, 3, 1, true);
-        makePiece(king, 4, 1, true);
-        whiteKing = boardArray[3, 0]; //store white king
-        makePiece(queen, 5, 1, true);
+        makePiece(queen, 4, 1, true);
+        makePiece(king, 5, 1, true);
+        whiteKing = boardArray[4, 0]; //store white king
         makePiece(bishop, 6, 1, true);
         makePiece(knight, 7, 1, true);
         makePiece(rook, 8, 1, true);
@@ -96,9 +101,9 @@ public class boardScript : MonoBehaviour
         makePiece(rook, 1, 8, false);
         makePiece(knight, 2, 8, false);
         makePiece(bishop, 3, 8, false);
-        makePiece(king, 4, 8, false);
-        blackKing = boardArray[3, 7]; //store black king
-        makePiece(queen, 5, 8, false);
+        makePiece(queen, 4, 8, false);
+        makePiece(king, 5, 8, false);
+        blackKing = boardArray[4, 7]; //store black king
         makePiece(bishop, 6, 8, false);
         makePiece(knight, 7, 8, false);
         makePiece(rook, 8, 8, false);
@@ -173,7 +178,7 @@ public class boardScript : MonoBehaviour
                     selected.GetComponent<Renderer>().material = highLight;
                     showValidMoves(selected);
                 }
-                else if (hit.collider.gameObject.name.Contains("moveTile") || hit.collider.gameObject.name.Contains("black")) 
+                else if (hit.collider.gameObject.name.Contains("moveTile") || hit.collider.gameObject.name.Contains("black"))
                 { //If you click on a black piece or a move tile
                     //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
                     if (hit.collider.gameObject.name.Contains("black"))
@@ -182,9 +187,10 @@ public class boardScript : MonoBehaviour
                         Vector2 blackPos = getPos(blackPiece);
                         LayerMask mask = LayerMask.GetMask("Move tiles");
                         Physics.Raycast(new Vector3(colToX(blackPos.x), 0.2F, colToX(blackPos.y)), Vector3.down, out hit, 1000, mask);
-                        if (hit.collider == null) { 
+                        if (hit.collider == null)
+                        {
                             deselect();
-                            return; 
+                            return;
                         }
                     }
                     //Do the move associated with that moveTile
@@ -246,7 +252,7 @@ public class boardScript : MonoBehaviour
     {
         List<Move> moves = allMoves(team);
         removeCheckingMoves(moves, team);
-        if(moves.Count == 0) { staleMate = true; } //If there are no valid moves that don't put you in check, then its a stalemate
+        if (moves.Count == 0) { staleMate = true; } //If there are no valid moves that don't put you in check, then its a stalemate
     }
 
     //Sees if a certain team is in check, checkmate, or stalemate
@@ -260,7 +266,9 @@ public class boardScript : MonoBehaviour
         checkForStaleMate(team); //sets the value of staleMate
 
         //See if you're in check. If not, stop there.
-        if (!inCheck(team, kingPos)) {
+        updateSafeSquares(team); //updates safe squares once. Uses this to see if the king's in check
+        if (safeSquares[(int)kingPos.x - 1, (int)kingPos.y - 1])
+        {
             check = false;
             checkMate = false;
             return;
@@ -275,39 +283,59 @@ public class boardScript : MonoBehaviour
         List<Move> allTeamMoves = allMoves(team);
         foreach (Move move in allTeamMoves) //This goes through all the moves of your team and simulates them, then sees if you're still in check. 
         {                                   //If no move you can do prevents check, then you're in checkmate
-            Vector2 from = getPos(move.movedPiece);
-            boardArray[(int)from.x - 1, (int)from.y - 1] = null;
-
-            GameObject killedPiece = null;
-            if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null)
-            {
-                killedPiece = boardArray[(int)move.to.x - 1, (int)move.to.y - 1]; //Stores the piece that could be killed when the theoretical move is done
-                                                                                  //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
-            }
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
+            GameObject killedPiece = doMoveArray(move);
             if (move.movedPiece.name.Contains("King")) { kingPos = move.to; }
-
-            if(!inCheck(team, kingPos))
+            if (inCheck(team, kingPos))
             {
                 checkAvoidingMoves.Add(move); //If a move gets you out of check, add it to checkAvoidingMoves and set checkMate to false
                 if (checkMate) { checkMate = false; }
             }
 
             if (move.movedPiece.name.Contains("King")) { kingPos = getPos(kingPiece); }
-            boardArray[(int)from.x - 1, (int)from.y - 1] = move.movedPiece;
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
+            undoMoveArray(move, killedPiece);
 
         }
+    }
+
+    //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
+    private GameObject doMoveArray(Move move)
+    {
+        boardArray[(int)move.from.x - 1, (int)move.from.y - 1] = null;
+
+        GameObject killedPiece = null;
+        if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null)
+        {
+            killedPiece = boardArray[(int)move.to.x - 1, (int)move.to.y - 1]; //Stores the piece that could be killed when the theoretical move is done
+                                                                              //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
+        }
+        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
+        if (move.castling) { doMoveArray(move.castlingMove);  } 
+        return killedPiece;
+    }
+
+    //Undoes the changes to boardArray done by this move. Used when testing moves, to undo them
+    private void undoMoveArray(Move move, GameObject killedPiece)
+    {
+        Vector2 from = getPos(move.movedPiece); //UPDATE THIS TO FROM IN THE MOVE WHEN YOU DO THAT
+        boardArray[(int)from.x - 1, (int)from.y - 1] = move.movedPiece;
+        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
+        if (move.castling) { undoMoveArray(move.castlingMove, null); }
     }
 
     //Executes a move 
     private void doMove(Move move)
     {
-        boardArray[xToCol(move.movedPiece.transform.position.x) - 1, xToCol(move.movedPiece.transform.position.z) - 1] = null;
+        GameObject killedPiece = doMoveArray(move); //Updates the boardArray. It is done separately to allow this function to be reused when testing/checking moves
+        doRestOfMove(move, killedPiece); //Does the rest of the move
+    }
+
+    //Does all of the move that isn't updating boardArray. Takes in a move and any chess pieces that have been killed.
+    private void doRestOfMove(Move move, GameObject killedPiece)
+    {
+        if (killedPiece != null) { Destroy(killedPiece); }
         pieceHasMoved[xToCol(move.movedPiece.transform.position.x) - 1, xToCol(move.movedPiece.transform.position.y) - 1] = true;
-        if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null) { Destroy(boardArray[(int)move.to.x - 1, (int)move.to.y - 1]); }
-        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
         move.movedPiece.transform.position = new Vector3(colToX(move.to.x), move.movedPiece.transform.position.y, colToX(move.to.y));
+        if (move.castling) { doRestOfMove(move.castlingMove, null); }
     }
 
     //The AI/Enemy's turn
@@ -414,9 +442,27 @@ public class boardScript : MonoBehaviour
             {
                 if ((a != 0 || b != 0) && inBounds(col + a, row + b) && spotNotAlly(piece, col + a, row + b))
                 {
-                    moves.Add(new Move(piece, new Vector2(col + a, row + b)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + a, row + b)));
                 }
             }
+        //Check for castling
+        bool team = piece.name.Contains("white");
+        if (!pieceHasMoved[col - 1, row - 1] && !pieceHasMoved[0, row - 1] && !check &&
+            boardArray[1, row - 1] == null && boardArray[2, row - 1] == null && boardArray[3, row - 1] == null
+            && safeSquares[1, row - 1] && safeSquares[2, row - 1])
+        {
+            Move move = new Move(piece, new Vector2(col, row), new Vector2(col - 2, row));
+            move.setCastling(new Move(boardArray[0, row - 1], new Vector2(1, row), new Vector2(col - 1, row)));
+            moves.Add(move);
+        }
+        if (!pieceHasMoved[col - 1, row - 1] && !pieceHasMoved[0, row - 1] && !check
+            && boardArray[6, row - 1] == null && boardArray[5, row - 1] == null
+            && safeSquares[4, row - 1] && safeSquares[5, row - 1]) //NOTE: I manually entered the numbers for all the squares between king and rook.
+        {                                                         //Generalise this?
+            Move move = new Move(piece, new Vector2(col, row), new Vector2(col + 2, row));
+            move.setCastling(new Move(boardArray[7, row - 1], new Vector2(8, row), new Vector2(col + 1, row)));
+            moves.Add(move);
+        }
         return moves;
     }
 
@@ -433,16 +479,16 @@ public class boardScript : MonoBehaviour
     private List<Move> knightMoves(GameObject piece, int col, int row)
     {
         List<Move> moves = new List<Move>();
-        for(int a = -2; a <= 2; a = a + 4)
-        for(int b = -1; b <= 1; b = b + 2)
+        for (int a = -2; a <= 2; a = a + 4)
+            for (int b = -1; b <= 1; b = b + 2)
             {
-                if(inBounds(col + a, row + b) && spotNotAlly(piece, col + a, row + b))
+                if (inBounds(col + a, row + b) && spotNotAlly(piece, col + a, row + b))
                 {
-                    moves.Add(new Move(piece, new Vector2(col + a, row + b)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + a, row + b)));
                 }
                 if (inBounds(col + b, row + a) && spotNotAlly(piece, col + b, row + a))
                 {
-                    moves.Add(new Move(piece, new Vector2(col + b, row + a)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + b, row + a)));
                 }
             }
         return moves;
@@ -458,7 +504,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col + i, row + i))
                 {
-                    moves.Add(new Move(piece, new Vector2(col + i, row + i)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + i, row + i)));
                 }
                 if (boardArray[col + i - 1, row + i - 1] != null) { break; }
             }
@@ -469,7 +515,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col - i, row - i))
                 {
-                    moves.Add(new Move(piece, new Vector2(col - i, row - i)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col - i, row - i)));
                 }
                 if (boardArray[col - i - 1, row - i - 1] != null) { break; }
             }
@@ -480,7 +526,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col - i, row + i))
                 {
-                    moves.Add(new Move(piece, new Vector2(col - i, row + i)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col - i, row + i)));
                 }
                 if (boardArray[col - i - 1, row + i - 1] != null) { break; }
             }
@@ -491,7 +537,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col + i, row - i))
                 {
-                    moves.Add(new Move(piece, new Vector2(col + i, row - i)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + i, row - i)));
                 }
                 if (boardArray[col + i - 1, row - i - 1] != null) { break; }
             }
@@ -509,7 +555,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col + i, row))
                 {
-                    moves.Add(new Move(piece, new Vector2(col + i, row)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + i, row)));
                 }
                 if (boardArray[col + i - 1, row - 1] != null) { break; }
             }
@@ -520,7 +566,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col - i, row))
                 {
-                    moves.Add(new Move(piece, new Vector2(col - i, row)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col - i, row)));
                 }
                 if (boardArray[col - i - 1, row - 1] != null) { break; }
             }
@@ -531,7 +577,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col, row + i))
                 {
-                    moves.Add(new Move(piece, new Vector2(col, row + i)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + i)));
                 }
                 if (boardArray[col - 1, row + i - 1] != null) { break; }
             }
@@ -542,7 +588,7 @@ public class boardScript : MonoBehaviour
             {
                 if (spotNotAlly(piece, col, row - i))
                 {
-                    moves.Add(new Move(piece, new Vector2(col, row - i)));
+                    moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row - i)));
                 }
                 if (boardArray[col - 1, row - i - 1] != null) { break; }
             }
@@ -565,19 +611,19 @@ public class boardScript : MonoBehaviour
         }
         if (inBounds(col, row + direction) && boardArray[col - 1, row + direction - 1] == null)
         {
-            moves.Add(new Move(piece, new Vector2(col, row + direction)));
+            moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + direction)));
             if (!pieceHasMoved[col - 1, row - 1] && inBounds(col, row + 2 * direction) && boardArray[col - 1, row + 2 * direction - 1] == null)
             {
-                moves.Add(new Move(piece, new Vector2(col, row + 2 * direction)));
+                moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + 2 * direction)));
             }
         }
         if (inBounds(col - 1, row + direction) && spotIsEnemy(piece, col - 1, row + direction))
         {
-            moves.Add(new Move(piece, new Vector2(col - 1, row + direction)));
+            moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col - 1, row + direction)));
         }
         if (inBounds(col + 1, row + direction) && spotIsEnemy(piece, col + 1, row + direction))
         {
-            moves.Add(new Move(piece, new Vector2(col + 1, row + direction)));
+            moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + 1, row + direction)));
         }
         return moves;
     }
@@ -597,17 +643,34 @@ public class boardScript : MonoBehaviour
     }
 
     //Used to see if a move puts the king in check. If it does, it is not a valid move.
+    //This is more efficient than using updateSafeSquares for checking for a particular spot
     private bool inCheck(bool team, Vector2 kingPos)
     {
         List<Move> allEnemyMoves = allMoves(!team);
         foreach (Move move in allEnemyMoves)
         {
-            if (move.to == kingPos) 
+            if (move.to == kingPos)
             {
                 return true;
             }
         }
         return false;
+    }
+
+    //Updates safeSquares, which holds which squares are under attack and which aren't
+    //This is less efficient than inCheck for checking for a particular spot, but provides useful information about other squares THAT CAN BE STORED FOR A LATER DATE
+    private void updateSafeSquares(bool team)
+    {
+        for (int col = 1; col <= boardSize; col++)
+            for (int row = 1; row <= boardSize; row++)
+            {
+                safeSquares[col - 1, row - 1] = true;
+            }
+        List<Move> allEnemyMoves = allMoves(!team);
+        foreach (Move move in allEnemyMoves)
+        {
+            safeSquares[(int)move.to.x - 1, (int)move.to.y - 1] = false;
+        }
     }
 
     //Takes a list of moves and removes all the Moves that put the king in check
@@ -618,15 +681,8 @@ public class boardScript : MonoBehaviour
         for (int i = 0; i < moves.Count; i++)
         {
             Move move = moves[i];
-            Vector2 from = getPos(move.movedPiece);
             //Simulate doing the move
-            boardArray[(int)from.x - 1, (int)from.y - 1] = null;
-            GameObject killedPiece = null;
-            if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null)
-            {
-                killedPiece = boardArray[(int)move.to.x - 1, (int)move.to.y - 1];
-            }
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
+            GameObject killedPiece = doMoveArray(move);
             if (move.movedPiece.name.Contains("King")) { kingPos = move.to; }
             if (inCheck(team, kingPos))
             {
@@ -634,8 +690,7 @@ public class boardScript : MonoBehaviour
                 i--;
             }
             if (move.movedPiece.name.Contains("King")) { kingPos = getPos(getKing(team)); }
-            boardArray[(int)from.x - 1, (int)from.y - 1] = move.movedPiece;
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
+            undoMoveArray(move, killedPiece);
         }
     }
 

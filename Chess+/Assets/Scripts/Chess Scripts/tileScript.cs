@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 //The tileScript is a script attached to each moveTile. It basically stores which Move is associated with which tile.
