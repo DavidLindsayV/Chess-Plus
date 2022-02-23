@@ -127,7 +127,10 @@ public class boardScript : MonoBehaviour
         {
             y = 0.5F;
         }
-        boardArray[col - 1, row - 1] = Instantiate(type, new Vector3(colToX(col), y, colToX(row)), Quaternion.Euler(-90, 0, 0));
+        Quaternion rotation;
+        //The black knights need to be rotated 180 degrees
+        if(string.Equals(type.name, "Knight") && !team) { rotation = Quaternion.Euler(-90, 180, 0); } else { rotation = Quaternion.Euler(-90, 0, 0); }
+        boardArray[col - 1, row - 1] = Instantiate(type, new Vector3(colToX(col), y, colToX(row)), rotation);
         boardArray[col - 1, row - 1].transform.localScale = new Vector3(35, 35, 35);
         if (team)
         {
