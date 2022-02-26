@@ -33,13 +33,20 @@ public class boardScript : MonoBehaviour
     private bool gameWon; //Stores, when the game ends, if the player won. True = victory, false = defeat.
     public bool staleMate = false; //When the game ends, if this is true, the game ended in a stalemate/draw.
     private GameObject selected; //The current gameObject (white chess piece) selected by the player
-    private bool[,] pieceHasMoved; //Stores which chess pieces have and haven't moved. Is used for Special moves (eg pawns can move 2 squares on their first move)
+    public bool[,] pieceHasMoved; //Stores which chess pieces have and haven't moved. Is used for Special moves (eg pawns can move 2 squares on their first move)
     private GameObject whiteKing; //stores the black and white kings for easier access
     private GameObject blackKing;
     public bool check; //stores the check and checkMate (as assignned by checkForMate) for whichever team the function was just run for
     public bool checkMate;
     private List<Move> checkAvoidingMoves; //The list of moves that, if you're in check, get you out of check (you legally have to do one of these moves).
     private bool[,] safeSquares;
+
+    private PromotionMenu promotionMenuReference; //Variables used for Promotion
+    private GameObject spareQueen;
+
+    public bool easyMode = true; //Stores whether the enemy AI chooses a random move or not
+
+    private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
     //Notes to know about the code:
     //The cols and rows go from 1 to 8.
@@ -65,6 +72,13 @@ public class boardScript : MonoBehaviour
         playerTurn = true;
         tileList = new List<GameObject>();
         checkAvoidingMoves = new List<Move>();
+
+        GameObject Canvas = GameObject.Find("Canvas");
+        promotionMenuReference = Canvas.GetComponent<PromotionMenu>(); //Get the promotion menu script
+
+        spareQueen = Instantiate(queen, new Vector3(-100, -100, -100), Quaternion.identity); //DELETE THIS ONCE YOU MAKE UPDATES
+        //THIS IS JUST TO STORE A SPARE QUEEN FOR CHECKING PROMOTION MOVES.
+
         boardArray = new GameObject[boardSize, boardSize];
         pieceHasMoved = new bool[boardSize, boardSize];
         safeSquares = new bool[boardSize, boardSize];
@@ -115,7 +129,7 @@ public class boardScript : MonoBehaviour
 
     //Creates a piece, given its type (one of the prefabs), col, row and team
     //Fills in boardArray, sets the material, the name, and instantiates it
-    private void makePiece(GameObject type, int col, int row, bool team)
+    public GameObject makePiece(GameObject type, int col, int row, bool team)
     {
         pieceHasMoved[col - 1, row - 1] = false;
         float y = 0;
@@ -129,7 +143,7 @@ public class boardScript : MonoBehaviour
         }
         Quaternion rotation;
         //The black knights need to be rotated 180 degrees
-        if(string.Equals(type.name, "Knight") && !team) { rotation = Quaternion.Euler(-90, 180, 0); } else { rotation = Quaternion.Euler(-90, 0, 0); }
+        if (string.Equals(type.name, "Knight") && !team) { rotation = Quaternion.Euler(-90, 180, 0); } else { rotation = Quaternion.Euler(-90, 0, 0); }
         boardArray[col - 1, row - 1] = Instantiate(type, new Vector3(colToX(col), y, colToX(row)), rotation);
         boardArray[col - 1, row - 1].transform.localScale = new Vector3(35, 35, 35);
         if (team)
@@ -142,6 +156,7 @@ public class boardScript : MonoBehaviour
             boardArray[col - 1, row - 1].GetComponent<Renderer>().material = black;
             boardArray[col - 1, row - 1].name = "black" + getPiece(col, row).name;
         }
+        return boardArray[col - 1, row - 1];
     }
 
     // Update is called once per frame
@@ -149,7 +164,11 @@ public class boardScript : MonoBehaviour
     {
         if (!gameOver)
         {
-            if (playerTurn) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
+            if (turnOver)
+            {
+                endTurn(); //This is done separately from userTurn and enemyTurn, because this gives other scripts time to do stuffs between updates.
+            }
+            else if (playerTurn) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
             {
                 userTurn();
             }
@@ -192,16 +211,15 @@ public class boardScript : MonoBehaviour
                         Physics.Raycast(new Vector3(colToX(blackPos.x), 0.2F, colToX(blackPos.y)), Vector3.down, out hit, 1000, mask);
                         if (hit.collider == null)
                         {
-                            deselect();
+                            deselect(); //If you clicked on a piece and there was no tile beneath it
                             return;
                         }
                     }
                     //Do the move associated with that moveTile
-                    doMove(hit.collider.gameObject.GetComponent<tileScript>().getMove());
+                    Move move = hit.collider.gameObject.GetComponent<tileScript>().getMove();
                     deselect();
-                    checkForMate(false);
-                    updateGamestate(true);
-                    playerTurn = !playerTurn;
+                    doMove(move);
+                    turnOver = true;
                 }
             }
             else
@@ -209,6 +227,15 @@ public class boardScript : MonoBehaviour
                 deselect();
             }
         }
+    }
+
+    //Ends a players turn
+    private void endTurn()
+    {
+        checkForMate(!playerTurn);
+        updateGamestate(playerTurn);
+        turnOver = false;
+        playerTurn = !playerTurn;
     }
 
     //Deselects the selected chess piece, (changes material and removes the move tiles)
@@ -312,8 +339,42 @@ public class boardScript : MonoBehaviour
                                                                               //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
         }
         boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
-        if (move.castling) { doMoveArray(move.castlingMove);  } 
+        if (move.castling) { doMoveArray(move.castlingMove); }
+        if (move.promotion) { 
+            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = spareQueen;
+            spareQueen.name = teamName(move.movedPiece.name.Contains("white")) + "Queen(clone)";
+        } //It assumes the promotion will become a Queen. 
+
         return killedPiece;
+    }
+
+    private GameObject nameToPiece(string name)
+    {
+        if (name.Equals("king"))
+        {
+            return king;
+        }
+        if (name.Equals("queen"))
+        {
+            return queen;
+        }
+        if (name.Equals("bishop"))
+        {
+            return bishop;
+        }
+        if (name.Equals("rook"))
+        {
+            return rook;
+        }
+        if (name.Equals("knight"))
+        {
+            return knight;
+        }
+        if (name.Equals("pawn"))
+        {
+            return pawn;
+        }
+        return null;
     }
 
     //Undoes the changes to boardArray done by this move. Used when testing moves, to undo them
@@ -323,6 +384,7 @@ public class boardScript : MonoBehaviour
         boardArray[(int)from.x - 1, (int)from.y - 1] = move.movedPiece;
         boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
         if (move.castling) { undoMoveArray(move.castlingMove, null); }
+        //Undoing Promotions is automatically done. You don't need to do anything special to undo a Promotion.
     }
 
     //Executes a move 
@@ -336,9 +398,19 @@ public class boardScript : MonoBehaviour
     private void doRestOfMove(Move move, GameObject killedPiece)
     {
         if (killedPiece != null) { Destroy(killedPiece); }
-        pieceHasMoved[xToCol(move.movedPiece.transform.position.x) - 1, xToCol(move.movedPiece.transform.position.y) - 1] = true;
+        pieceHasMoved[(int)move.from.x - 1, (int)move.from.y - 1] = true;
+        pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
         move.movedPiece.transform.position = new Vector3(colToX(move.to.x), move.movedPiece.transform.position.y, colToX(move.to.y));
         if (move.castling) { doRestOfMove(move.castlingMove, null); }
+        if (move.promotion && playerTurn) {
+            promotionMenuReference.Run(move); //If its the user's turn, let them choose what to promote to
+        }
+        if(move.promotion && !playerTurn)
+        { //If the AI gets a promotion, make a queen
+            makePiece(queen, (int)move.to.x, (int)move.to.y, false); 
+            pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
+            Destroy(move.movedPiece);
+        }
     }
 
     //The AI/Enemy's turn
@@ -349,22 +421,34 @@ public class boardScript : MonoBehaviour
             List<Move> AIMoves = allMoves(false);
             //Removes all the moves that put the king into check
             removeCheckingMoves(AIMoves, false);
-            List<Move> maxPriMoves = getMaxPriMoves(AIMoves, false);
-
-            int index = Random.Range(0, maxPriMoves.Count);
-            doMove(maxPriMoves[index]); 
+            if (easyMode)
+            {
+                int index = Random.Range(0, AIMoves.Count);
+                doMove(AIMoves[index]);
+            }
+            else
+            {
+                List<Move> maxPriMoves = getMaxPriMoves(AIMoves, false);
+                int index = Random.Range(0, maxPriMoves.Count);
+                doMove(maxPriMoves[index]);
+            }
         }
         else
         {
-            List<Move> maxPriMoves = getMaxPriMoves(checkAvoidingMoves, false);
-            int index = Random.Range(0, maxPriMoves.Count); 
-            doMove(maxPriMoves[index]);
+            if (easyMode)
+            {
+                int index = Random.Range(0, checkAvoidingMoves.Count);
+                doMove(checkAvoidingMoves[index]);
+            }
+            else
+            {
+                List<Move> maxPriMoves = getMaxPriMoves(checkAvoidingMoves, false);
+                int index = Random.Range(0, maxPriMoves.Count);
+                doMove(maxPriMoves[index]);
+            }
         }
 
-        checkForMate(true); //Checks for checkmate for the white team
-        updateGamestate(false);
-
-        playerTurn = !playerTurn;
+        turnOver = true;
     }
 
     private List<Move> getMaxPriMoves(List<Move> AIMoves, bool team)
@@ -392,7 +476,7 @@ public class boardScript : MonoBehaviour
         Vector2 kingPos = getPos(enemyKing);
         GameObject killedPiece = doMoveArray(move);
         bool checking = false;
-        if(inCheck(!team, kingPos))
+        if (inCheck(!team, kingPos))
         {
             checking = true;
         }
@@ -657,9 +741,13 @@ public class boardScript : MonoBehaviour
         {
             direction = -1;
         }
+        bool promotion = false;
+        if ((direction == 1 && row + direction == 8) || (direction == -1 && row + direction == 1)) { promotion = true; }
         if (inBounds(col, row + direction) && boardArray[col - 1, row + direction - 1] == null)
         {
-            moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + direction)));
+            Move m1 = new Move(piece, new Vector2(col, row), new Vector2(col, row + direction));
+            if (promotion) { m1.setPromotion(); }
+            moves.Add(m1);
             if (!pieceHasMoved[col - 1, row - 1] && inBounds(col, row + 2 * direction) && boardArray[col - 1, row + 2 * direction - 1] == null)
             {
                 moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + 2 * direction)));
@@ -667,11 +755,15 @@ public class boardScript : MonoBehaviour
         }
         if (inBounds(col - 1, row + direction) && spotIsEnemy(piece, col - 1, row + direction))
         {
-            moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col - 1, row + direction)));
+            Move m2 = new Move(piece, new Vector2(col, row), new Vector2(col - 1, row + direction));
+            if (promotion) { m2.setPromotion(); }
+            moves.Add(m2);
         }
         if (inBounds(col + 1, row + direction) && spotIsEnemy(piece, col + 1, row + direction))
         {
-            moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + 1, row + direction)));
+            Move m3 = new Move(piece, new Vector2(col, row), new Vector2(col + 1, row + direction));
+            if (promotion) { m3.setPromotion(); }
+            moves.Add(m3);
         }
         return moves;
     }
@@ -820,4 +912,5 @@ public class boardScript : MonoBehaviour
     {
         if (team) { return "white"; } else { return "black"; }
     }
+
 }

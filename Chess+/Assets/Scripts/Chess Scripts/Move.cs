@@ -13,6 +13,8 @@ public class Move
     public bool castling = false; //Variables for Castling
     public Move castlingMove;
 
+    public bool promotion = false;
+
     //Constructor function
     public Move(GameObject movedPiece, Vector2 from, Vector2 to)
     {
@@ -26,6 +28,11 @@ public class Move
     {
         this.castling = true;
         this.castlingMove = castlingMove;
+    }
+
+    public void setPromotion()
+    {
+        promotion = true;
     }
 
 }

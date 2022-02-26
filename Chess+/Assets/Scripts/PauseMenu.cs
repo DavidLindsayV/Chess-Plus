@@ -6,6 +6,8 @@ public class PauseMenu : MonoBehaviour //This is for the pause menu
 {
     public static bool GamePaused = false;
     public GameObject PauseMenuPanel;
+    public GameObject PromotionMenuPanel; 
+    private bool wasPromotion;
     public GameObject board;
     private boardScript boardScriptReference; //Used to stop boardScript from running whilst paused
 
@@ -37,6 +39,7 @@ public class PauseMenu : MonoBehaviour //This is for the pause menu
         GamePaused = false;
         Time.timeScale = 1f;
         PauseMenuPanel.SetActive(false);
+        if (wasPromotion) { PromotionMenuPanel.SetActive(true); }
         boardScriptReference.enabled = true;
     }
 
@@ -46,6 +49,10 @@ public class PauseMenu : MonoBehaviour //This is for the pause menu
         GamePaused = true;
         Time.timeScale = 0f;
         PauseMenuPanel.SetActive(true);
+        if (PromotionMenuPanel.activeInHierarchy) {
+            wasPromotion = true;
+            PromotionMenuPanel.SetActive(false);
+        }
         boardScriptReference.enabled = false;
     }
 }
