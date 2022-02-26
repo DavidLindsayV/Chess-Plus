@@ -206,8 +206,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1529355250}
-        m_TargetAssemblyTypeName: boardScript, Assembly-CSharp
+      - m_Target: {fileID: 1828029807}
+        m_TargetAssemblyTypeName: PromotionMenu, Assembly-CSharp
         m_MethodName: promoteRook
         m_Mode: 1
         m_Arguments:
@@ -473,7 +473,7 @@ GameObject:
   - component: {fileID: 328801311}
   - component: {fileID: 328801310}
   m_Layer: 5
-  m_Name: PromotionPieceSelectionPanel
+  m_Name: PromotionPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -623,8 +623,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1529355250}
-        m_TargetAssemblyTypeName: boardScript, Assembly-CSharp
+      - m_Target: {fileID: 1828029807}
+        m_TargetAssemblyTypeName: PromotionMenu, Assembly-CSharp
         m_MethodName: promoteKnight
         m_Mode: 1
         m_Arguments:
@@ -930,8 +930,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1529355250}
-        m_TargetAssemblyTypeName: boardScript, Assembly-CSharp
+      - m_Target: {fileID: 1828029807}
+        m_TargetAssemblyTypeName: PromotionMenu, Assembly-CSharp
         m_MethodName: promoteBishop
         m_Mode: 1
         m_Arguments:
@@ -1139,7 +1139,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730442052}
-  m_LocalRotation: {x: 0.24858819, y: -0.20930584, z: 0.055110686, w: 0.9441175}
+  m_LocalRotation: {x: 0.24858817, y: -0.20930584, z: 0.05511068, w: 0.9441175}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1230,8 +1230,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1529355250}
-        m_TargetAssemblyTypeName: boardScript, Assembly-CSharp
+      - m_Target: {fileID: 1828029807}
+        m_TargetAssemblyTypeName: PromotionMenu, Assembly-CSharp
         m_MethodName: promoteQueen
         m_Mode: 1
         m_Arguments:
@@ -1821,7 +1821,6 @@ MonoBehaviour:
   staleMate: 0
   check: 0
   checkMate: 0
-  PromotionMenuPanel: {fileID: 328801308}
   easyMode: 1
 --- !u!1 &1537686997
 GameObject:
@@ -2104,6 +2103,7 @@ GameObject:
   - component: {fileID: 1828029803}
   - component: {fileID: 1828029802}
   - component: {fileID: 1828029806}
+  - component: {fileID: 1828029807}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2208,6 +2208,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PauseMenuPanel: {fileID: 1741437087}
   PromotionMenuPanel: {fileID: 0}
+  board: {fileID: 1529355245}
+--- !u!114 &1828029807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828029801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a398958fc648a643b039fe3088eece9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PromotionPanel: {fileID: 328801308}
   board: {fileID: 1529355245}
 --- !u!1 &1887644475
 GameObject:
