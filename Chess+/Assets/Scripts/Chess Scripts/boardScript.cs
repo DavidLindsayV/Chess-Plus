@@ -41,8 +41,17 @@ public class boardScript : MonoBehaviour
     private List<Move> checkAvoidingMoves; //The list of moves that, if you're in check, get you out of check (you legally have to do one of these moves).
     private bool[,] safeSquares;
 
+    //Promotion variables
     private PromotionMenu promotionMenuReference; //Variables used for Promotion
     private GameObject spareQueen;
+    private GameObject spareBishop;
+    private GameObject spareKnight;
+    private GameObject spareRook;
+
+    //En passant variabes
+    public bool[,] enPassant;
+    Vector2 jumpedPawnWhite; //stores the positions of all the pawns that just jumped
+    Vector2 jumpedPawnBlack;
 
     public bool easyMode = true; //Stores whether the enemy AI chooses a random move or not
 
@@ -77,11 +86,16 @@ public class boardScript : MonoBehaviour
         promotionMenuReference = Canvas.GetComponent<PromotionMenu>(); //Get the promotion menu script
 
         spareQueen = Instantiate(queen, new Vector3(-100, -100, -100), Quaternion.identity); //DELETE THIS ONCE YOU MAKE UPDATES
+        spareRook = Instantiate(rook, new Vector3(-100, -100, -100), Quaternion.identity);
+        spareKnight = Instantiate(knight, new Vector3(-100, -100, -100), Quaternion.identity);
+        spareBishop = Instantiate(bishop, new Vector3(-100, -100, -100), Quaternion.identity);
         //THIS IS JUST TO STORE A SPARE QUEEN FOR CHECKING PROMOTION MOVES.
 
         boardArray = new GameObject[boardSize, boardSize];
         pieceHasMoved = new bool[boardSize, boardSize];
         safeSquares = new bool[boardSize, boardSize];
+        enPassant = new bool[boardSize, boardSize];
+        for (int row = 1; row < boardSize; row++) for (int col = 1; col < boardSize; col++) { enPassant[col, row] = false; }
         //Initialise the chess pieces
         setUpBoard();
         checkForMate(true); //sets up the values of check and checkMate for the first turn, for the user
@@ -232,6 +246,7 @@ public class boardScript : MonoBehaviour
     //Ends a players turn
     private void endTurn()
     {
+        if (playerTurn) { jumpedPawnBlack = Vector2.zero; } else { jumpedPawnWhite = Vector2.zero; }
         checkForMate(!playerTurn);
         updateGamestate(playerTurn);
         turnOver = false;
@@ -330,6 +345,7 @@ public class boardScript : MonoBehaviour
     //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
     private GameObject doMoveArray(Move move)
     {
+        bool team = move.movedPiece.name.Contains("white");
         boardArray[(int)move.from.x - 1, (int)move.from.y - 1] = null;
 
         GameObject killedPiece = null;
@@ -339,11 +355,44 @@ public class boardScript : MonoBehaviour
                                                                               //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
         }
         boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
+        if (move.pawnJump)
+        {
+            if (team) { jumpedPawnWhite = move.to; } else { jumpedPawnBlack = move.to; }
+        }
         if (move.castling) { doMoveArray(move.castlingMove); }
-        if (move.promotion) { 
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = spareQueen;
-            spareQueen.name = teamName(move.movedPiece.name.Contains("white")) + "Queen(clone)";
-        } //It assumes the promotion will become a Queen. 
+        if (move.promotion)
+        {
+            GameObject promoted = spareQueen;
+            if (move.promotedTo.Equals("queen"))
+            {
+                promoted = spareQueen;
+            }
+            else if (move.promotedTo.Equals("rook"))
+            {
+                promoted = spareRook;
+            }
+            else if (move.promotedTo.Equals("bishop"))
+            {
+                promoted = spareBishop;
+            }
+            else if (move.promotedTo.Equals("knight"))
+            {
+                promoted = spareKnight;
+            }
+            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = promoted;
+            promoted.name = teamName(move.movedPiece.name.Contains("white")) + move.promotedTo.Substring(0, 1).ToUpper() + move.promotedTo.Substring(1) + "(clone)";
+        }
+        if (move.enPassant)
+        {
+            Vector2 enemyPawn;
+            if (team) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
+            Debug.Log("EnemyPawn: " + enemyPawn.x + ", " + enemyPawn.y);
+            Debug.Log("Where I think enemyPawn is: " + (int)move.to.x + ", " + (int)move.from.y);
+            killedPiece = boardArray[(int)move.to.x - 1, (int)move.from.y - 1];
+            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = null;
+            Debug.Log(killedPiece.name);
+            Debug.Log(getPos(killedPiece));
+        }
 
         return killedPiece;
     }
@@ -380,10 +429,19 @@ public class boardScript : MonoBehaviour
     //Undoes the changes to boardArray done by this move. Used when testing moves, to undo them
     private void undoMoveArray(Move move, GameObject killedPiece)
     {
-        Vector2 from = getPos(move.movedPiece); //UPDATE THIS TO FROM IN THE MOVE WHEN YOU DO THAT
+        bool team = move.movedPiece.name.Contains("white");
+        Vector2 from = move.from;
         boardArray[(int)from.x - 1, (int)from.y - 1] = move.movedPiece;
         boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
+        if (move.pawnJump)
+        {
+            if (team) { jumpedPawnWhite = Vector2.zero; } else { jumpedPawnBlack = Vector2.zero; }
+        }
         if (move.castling) { undoMoveArray(move.castlingMove, null); }
+        if (move.enPassant)
+        {
+            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = killedPiece;
+        }
         //Undoing Promotions is automatically done. You don't need to do anything special to undo a Promotion.
     }
 
@@ -394,7 +452,8 @@ public class boardScript : MonoBehaviour
         doRestOfMove(move, killedPiece); //Does the rest of the move
     }
 
-    //Does all of the move that isn't updating boardArray. Takes in a move and any chess pieces that have been killed.
+    //Does all of the move that isn't updating boardArray.  Takes in a move and any chess pieces that have been killed.
+    //THIS SHOULD ONLY DO THE STUFF THE USER CAN SEE, AND NOT INFLUENCE THE MOVE CALCULATIONS (MOVE THE PIECEHASMOVED STUFF)
     private void doRestOfMove(Move move, GameObject killedPiece)
     {
         if (killedPiece != null) { Destroy(killedPiece); }
@@ -402,12 +461,13 @@ public class boardScript : MonoBehaviour
         pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
         move.movedPiece.transform.position = new Vector3(colToX(move.to.x), move.movedPiece.transform.position.y, colToX(move.to.y));
         if (move.castling) { doRestOfMove(move.castlingMove, null); }
-        if (move.promotion && playerTurn) {
+        if (move.promotion && playerTurn)
+        {
             promotionMenuReference.Run(move); //If its the user's turn, let them choose what to promote to
         }
-        if(move.promotion && !playerTurn)
-        { //If the AI gets a promotion, make a queen
-            makePiece(queen, (int)move.to.x, (int)move.to.y, false); 
+        if (move.promotion && !playerTurn)
+        {
+            makePiece(nameToPiece(move.promotedTo), (int)move.to.x, (int)move.to.y, false);
             pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
             Destroy(move.movedPiece);
         }
@@ -733,38 +793,81 @@ public class boardScript : MonoBehaviour
     {
         List<Move> moves = new List<Move>();
         int direction;
+        Vector2 enemyPawn;
         if (piece.name.Contains("white"))
         {
             direction = 1;
+            enemyPawn = jumpedPawnBlack;
         }
         else
         {
             direction = -1;
+            enemyPawn = jumpedPawnWhite;
         }
+
         bool promotion = false;
         if ((direction == 1 && row + direction == 8) || (direction == -1 && row + direction == 1)) { promotion = true; }
+
         if (inBounds(col, row + direction) && boardArray[col - 1, row + direction - 1] == null)
         {
-            Move m1 = new Move(piece, new Vector2(col, row), new Vector2(col, row + direction));
-            if (promotion) { m1.setPromotion(); }
-            moves.Add(m1);
-            if (!pieceHasMoved[col - 1, row - 1] && inBounds(col, row + 2 * direction) && boardArray[col - 1, row + 2 * direction - 1] == null)
+            if (!promotion)
             {
-                moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + 2 * direction)));
+                moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col, row + direction)));
+            }
+            else
+            {
+                moves.AddRange(promotionMoves(piece, new Vector2(col, row), new Vector2(col, row + direction)));
+            }
+            if (!pieceHasMoved[col - 1, row - 1] && inBounds(col, row + 2 * direction) && boardArray[col - 1, row + 2 * direction - 1] == null)
+            { //This is for moving 2 spaces forwards. Don't check for promotion here.
+                moves.Add((new Move(piece, new Vector2(col, row), new Vector2(col, row + 2 * direction))).setPawnJump());
             }
         }
+        //The killing moves
         if (inBounds(col - 1, row + direction) && spotIsEnemy(piece, col - 1, row + direction))
         {
-            Move m2 = new Move(piece, new Vector2(col, row), new Vector2(col - 1, row + direction));
-            if (promotion) { m2.setPromotion(); }
-            moves.Add(m2);
+            if (!promotion)
+            {
+                moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col - 1, row + direction)));
+            }
+            else
+            {
+                moves.AddRange(promotionMoves(piece, new Vector2(col, row), new Vector2(col - 1, row + direction)));
+            }
         }
         if (inBounds(col + 1, row + direction) && spotIsEnemy(piece, col + 1, row + direction))
         {
-            Move m3 = new Move(piece, new Vector2(col, row), new Vector2(col + 1, row + direction));
-            if (promotion) { m3.setPromotion(); }
-            moves.Add(m3);
+            if (!promotion)
+            {
+                moves.Add(new Move(piece, new Vector2(col, row), new Vector2(col + 1, row + direction)));
+            }
+            else
+            {
+                moves.AddRange(promotionMoves(piece, new Vector2(col, row), new Vector2(col + 1, row + direction)));
+            }
         }
+        if (enemyPawn.y == row && Mathf.Abs(enemyPawn.x - col) == 1)
+        {
+            moves.Add((new Move(piece, new Vector2(col, row), new Vector2(enemyPawn.x, row + direction))).setEnPassant());
+        }
+        return moves;
+    }
+
+    private List<Move> promotionMoves(GameObject piece, Vector2 from, Vector2 to)
+    {
+        Move m1 = new Move(piece, from, to);
+        Move m2 = new Move(piece, from, to);
+        Move m3 = new Move(piece, from, to);
+        Move m4 = new Move(piece, from, to);
+        m1.setPromotion("queen");
+        m2.setPromotion("rook");
+        m3.setPromotion("bishop");
+        m4.setPromotion("knight");
+        List<Move> moves = new List<Move>();
+        moves.Add(m1);
+        moves.Add(m2);
+        moves.Add(m3);
+        moves.Add(m4);
         return moves;
     }
 

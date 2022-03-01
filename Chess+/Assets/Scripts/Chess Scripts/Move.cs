@@ -10,10 +10,15 @@ public class Move
     public GameObject movedPiece; //The gameObject chess piece that is being moved
     public Vector2 to; //The colrow of the spot its being moved to
 
+    public bool pawnJump = false;
+
     public bool castling = false; //Variables for Castling
     public Move castlingMove;
 
     public bool promotion = false;
+    public string promotedTo;
+
+    public bool enPassant = false;
 
     //Constructor function
     public Move(GameObject movedPiece, Vector2 from, Vector2 to)
@@ -23,6 +28,12 @@ public class Move
         this.to = to;
     }
 
+    public Move setPawnJump()
+    {
+        pawnJump = true;
+        return this;
+    }
+
     //If a move is Castling, you need to store how the king moves AND how the rook moves. This stores how the rook moves
     public void setCastling(Move castlingMove)
     {
@@ -30,9 +41,16 @@ public class Move
         this.castlingMove = castlingMove;
     }
 
-    public void setPromotion()
+    public void setPromotion(string promotedTo)
     {
         promotion = true;
+        this.promotedTo = promotedTo;
+    }
+
+    public Move setEnPassant()
+    {
+        enPassant = true;
+        return this;
     }
 
 }
