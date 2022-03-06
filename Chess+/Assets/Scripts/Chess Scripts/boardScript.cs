@@ -49,9 +49,8 @@ public class boardScript : MonoBehaviour
     private GameObject spareRook;
 
     //En passant variabes
-    public bool[,] enPassant;
     Vector2 jumpedPawnWhite; //stores the positions of all the pawns that just jumped
-    Vector2 jumpedPawnBlack;
+    Vector2 jumpedPawnBlack; //Can theoretically do this with just one, but it makes the code clunkier so its easier to have 2 separate ones
 
     public bool easyMode = true; //Stores whether the enemy AI chooses a random move or not
 
@@ -94,56 +93,15 @@ public class boardScript : MonoBehaviour
         boardArray = new GameObject[boardSize, boardSize];
         pieceHasMoved = new bool[boardSize, boardSize];
         safeSquares = new bool[boardSize, boardSize];
-        enPassant = new bool[boardSize, boardSize];
-        for (int row = 1; row < boardSize; row++) for (int col = 1; col < boardSize; col++) { enPassant[col, row] = false; }
-        //Initialise the chess pieces
-        setUpBoard();
+
+        //Initialise the chess pieces, set up the board with this FEN string
+        loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         checkForMate(true); //sets up the values of check and checkMate for the first turn, for the user
-    }
-
-    //makes the gameObjects of the pieces and fills in boardAray.
-    private void setUpBoard()
-    {
-        //Sets all of pieceHasMoved to false
-        for (int col = 1; col <= 8; col++)
-            for (int row = 1; row <= 8; row++)
-            {
-                pieceHasMoved[col - 1, row - 1] = true;
-            }
-        //make white pieces
-        makePiece(rook, 1, 1, true);
-        makePiece(knight, 2, 1, true);
-        makePiece(bishop, 3, 1, true);
-        makePiece(queen, 4, 1, true);
-        makePiece(king, 5, 1, true);
-        whiteKing = boardArray[4, 0]; //store white king
-        makePiece(bishop, 6, 1, true);
-        makePiece(knight, 7, 1, true);
-        makePiece(rook, 8, 1, true);
-        for (int col = 1; col <= 8; col++)
-        {
-            makePiece(pawn, col, 2, true);
-        }
-
-        //make black pieces
-        makePiece(rook, 1, 8, false);
-        makePiece(knight, 2, 8, false);
-        makePiece(bishop, 3, 8, false);
-        makePiece(queen, 4, 8, false);
-        makePiece(king, 5, 8, false);
-        blackKing = boardArray[4, 7]; //store black king
-        makePiece(bishop, 6, 8, false);
-        makePiece(knight, 7, 8, false);
-        makePiece(rook, 8, 8, false);
-        for (int col = 1; col <= 8; col++)
-        {
-            makePiece(pawn, col, 7, false);
-        }
     }
 
     //Creates a piece, given its type (one of the prefabs), col, row and team
     //Fills in boardArray, sets the material, the name, and instantiates it
-    public GameObject makePiece(GameObject type, int col, int row, bool team)
+    public GameObject makePiece(GameObject type, int col, int row, bool team, bool hasMoved)
     {
         pieceHasMoved[col - 1, row - 1] = false;
         float y = 0;
@@ -171,6 +129,90 @@ public class boardScript : MonoBehaviour
             boardArray[col - 1, row - 1].name = "black" + getPiece(col, row).name;
         }
         return boardArray[col - 1, row - 1];
+    }
+
+    //Loads a FEN string to set up the board
+    public void loadFEN(string FENstring)
+    {
+        string[] FENwords = FENstring.Split(' ');
+        //Setting the board
+        int col = 1;
+        int row = 8;
+        for (int i = 0; i < FENwords[0].Length; i++)
+        {
+            char c = FENwords[0][i];
+            if (c.Equals('/'))
+            {
+                row--;
+                col = 1;
+            }else if (char.IsDigit(c))
+            {
+                col = col + c;
+            }
+            else
+            if (c.Equals(' ')) {
+                break; 
+            } else
+            {
+                //This will be if it's a character for a piece
+                bool team = char.IsUpper(c);
+                GameObject prefab;
+                c = char.ToUpper(c);
+                switch (c)
+                {
+                    case 'K': prefab = king;
+                        break;
+                    case 'Q': prefab = queen;
+                        break;
+                    case 'N':   prefab = knight;
+                        break;
+                    case 'B': prefab = bishop;
+                        break;
+                    case 'R': prefab = rook;
+                        break;
+                    case 'P': prefab = pawn;
+                        break;
+                    default: prefab = pawn; Debug.Log("This should never trigger"); //The default is the pawn. But this should never trigger
+                        break;
+                }
+                makePiece(prefab, col, row, team, false);
+                if (c.Equals('K')) //Stores the white and black kings
+                {
+                    if (team) { 
+                        whiteKing = boardArray[col - 1, row - 1];
+                    } else { 
+                        blackKing = boardArray[col - 1, row - 1];
+                    }
+                }
+                col++;
+            }
+        }
+
+        //The player turn
+        playerTurn = FENwords[1].Equals("w");
+
+        //Castling
+        //Note, I set castling/not castling by changing whether the rooks have or haven't moved. This is not strictly what has happened
+        //One potential is that the king has moved instead.
+        //And my method stores more information than strictly necessary.
+        if (!FENwords[2].Contains("K")) { pieceHasMoved[7, 0] = true; }
+        if (!FENwords[2].Contains("Q")) { pieceHasMoved[0, 0] = true; }
+        if (!FENwords[2].Contains("k")) { pieceHasMoved[7, 7] = true; }
+        if (!FENwords[2].Contains("q")) { pieceHasMoved[0, 7] = true; }
+
+        //En Passant square
+        if (!FENwords[3].Contains("-"))
+        {
+            char Col = FENwords[3][0];
+            char Row = FENwords[3][1];
+            if (Col.Equals('a')){ col = 1; }else if (Col.Equals('b')) { col = 2; }else if (Col.Equals('c')) { col = 3; }else if (Col.Equals('d')) { col = 4;  }else if (Col.Equals('e')) { col = 5; }else if (Col.Equals('f')){ col = 6; }else if (Col.Equals('g')) { col = 7; }else if (Col.Equals('h')) { col = 8; }
+            row = Row - '0'; //Converts char to int
+            if (playerTurn) { jumpedPawnBlack = new Vector2(col, row); } else { jumpedPawnWhite = new Vector2(col, row); }
+        }
+
+        //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
+
+        //Implement fullmoves??? Stores how many turns have elapsed
     }
 
     // Update is called once per frame
@@ -465,9 +507,9 @@ public class boardScript : MonoBehaviour
         {
             promotionMenuReference.Run(move); //If its the user's turn, let them choose what to promote to
         }
-        if (move.promotion && !playerTurn)
+        if (move.promotion && !playerTurn) //Promotion for enemy AI
         {
-            makePiece(nameToPiece(move.promotedTo), (int)move.to.x, (int)move.to.y, false);
+            makePiece(nameToPiece(move.promotedTo), (int)move.to.x, (int)move.to.y, false, true); //The enemy has moved
             pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
             Destroy(move.movedPiece);
         }
