@@ -22,31 +22,34 @@ public class boardScript : MonoBehaviour
     //The text for displaying the result of the game on the UI
     public Text gameResultText;
 
+    //The size of the board. For setUpBoard, this must be 8x8 board.
+    private readonly int boardSize = 8;
+
     private GameObject[,] boardArray; //Stores the GameObject chess pieces. Goes from 0-7 for col and row. 
     //Note, it is stored [col, row].
-    //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0.
+    //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
 
-    private readonly int boardSize = 8; //The size of the board. For setUpBoard, this must be 8x8 board.
     private bool playerTurn; //stores the current turn. True = player, false = AI
     private List<GameObject> tileList; //stores the moveTiles the player can click on to do a move
     private bool gameOver; //When this is true, the game ends
     private bool gameWon; //Stores, when the game ends, if the player won. True = victory, false = defeat.
     public bool staleMate = false; //When the game ends, if this is true, the game ended in a stalemate/draw.
     private GameObject selected; //The current gameObject (white chess piece) selected by the player
-    public bool[,] pieceHasMoved; //Stores which chess pieces have and haven't moved. Is used for Special moves (eg pawns can move 2 squares on their first move)
     private GameObject whiteKing; //stores the black and white kings for easier access
     private GameObject blackKing;
     public bool check; //stores the check and checkMate (as assignned by checkForMate) for whichever team the function was just run for
     public bool checkMate;
     private List<Move> checkAvoidingMoves; //The list of moves that, if you're in check, get you out of check (you legally have to do one of these moves).
-    private bool[,] safeSquares;
+    private bool[,] safeSquares; //Stores whether every square in under attack by an enemy piece (false), or not (true)
+
+    //Castling variables
+    private bool bLCastle = true; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
+    private bool bRCastle = true; //It's black left, black right, white left and white right
+    private bool wLCastle = true;
+    private bool wRCastle = true;
 
     //Promotion variables
     private PromotionMenu promotionMenuReference; //Variables used for Promotion
-    private GameObject spareQueen;
-    private GameObject spareBishop;
-    private GameObject spareKnight;
-    private GameObject spareRook;
 
     //En passant variabes
     Vector2 jumpedPawnWhite; //stores the positions of all the pawns that just jumped
@@ -62,9 +65,11 @@ public class boardScript : MonoBehaviour
     //Currently white is the player and black is the AI.
 
     //TODO:
-    //Almost done with Castling. Just need to:
-    // -Implement 2 functions to simulate and desimulate a move, and make sure castling works with that (and maybe make doMove and these functions call each other?)
     //replace boardArray with a array of the names, not the gameObjects. Should be less computation to call. Still use an array of gameObjects, though? IDK...
+    //Can you make the prefabs finals?
+    //ERROR WITH CURRENT CODE
+    //If a rook moves or is killed it doesn't update the castling variables. IT SHOULD
+    //Fix this when you implement boardState() objects
 
     //To consider:
     //Maybe implement getPiece used more instead of referring to boardArray directly?
@@ -84,26 +89,19 @@ public class boardScript : MonoBehaviour
         GameObject Canvas = GameObject.Find("Canvas");
         promotionMenuReference = Canvas.GetComponent<PromotionMenu>(); //Get the promotion menu script
 
-        spareQueen = Instantiate(queen, new Vector3(-100, -100, -100), Quaternion.identity); //DELETE THIS ONCE YOU MAKE UPDATES
-        spareRook = Instantiate(rook, new Vector3(-100, -100, -100), Quaternion.identity);
-        spareKnight = Instantiate(knight, new Vector3(-100, -100, -100), Quaternion.identity);
-        spareBishop = Instantiate(bishop, new Vector3(-100, -100, -100), Quaternion.identity);
-        //THIS IS JUST TO STORE A SPARE QUEEN FOR CHECKING PROMOTION MOVES.
-
         boardArray = new GameObject[boardSize, boardSize];
-        pieceHasMoved = new bool[boardSize, boardSize];
         safeSquares = new bool[boardSize, boardSize];
 
         //Initialise the chess pieces, set up the board with this FEN string
         loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        Debug.Log(getFEN());
         checkForMate(true); //sets up the values of check and checkMate for the first turn, for the user
     }
 
     //Creates a piece, given its type (one of the prefabs), col, row and team
     //Fills in boardArray, sets the material, the name, and instantiates it
-    public GameObject makePiece(GameObject type, int col, int row, bool team, bool hasMoved)
+    public GameObject makePiece(GameObject type, int col, int row, bool team) //bool hasMoved
     {
-        pieceHasMoved[col - 1, row - 1] = false;
         float y = 0;
         if (string.Equals(type.name, "Bishop") || string.Equals(type.name, "Pawn") || string.Equals(type.name, "King"))
         {
@@ -145,14 +143,17 @@ public class boardScript : MonoBehaviour
             {
                 row--;
                 col = 1;
-            }else if (char.IsDigit(c))
+            }
+            else if (char.IsDigit(c))
             {
                 col = col + c;
             }
             else
-            if (c.Equals(' ')) {
-                break; 
-            } else
+           if (c.Equals(' '))
+            {
+                break;
+            }
+            else
             {
                 //This will be if it's a character for a piece
                 bool team = char.IsUpper(c);
@@ -160,27 +161,37 @@ public class boardScript : MonoBehaviour
                 c = char.ToUpper(c);
                 switch (c)
                 {
-                    case 'K': prefab = king;
+                    case 'K':
+                        prefab = king;
                         break;
-                    case 'Q': prefab = queen;
+                    case 'Q':
+                        prefab = queen;
                         break;
-                    case 'N':   prefab = knight;
+                    case 'N':
+                        prefab = knight;
                         break;
-                    case 'B': prefab = bishop;
+                    case 'B':
+                        prefab = bishop;
                         break;
-                    case 'R': prefab = rook;
+                    case 'R':
+                        prefab = rook;
                         break;
-                    case 'P': prefab = pawn;
+                    case 'P':
+                        prefab = pawn;
                         break;
-                    default: prefab = pawn; Debug.Log("This should never trigger"); //The default is the pawn. But this should never trigger
+                    default:
+                        prefab = pawn; Debug.Log("This should never trigger"); //The default is the pawn. But this should never trigger
                         break;
                 }
-                makePiece(prefab, col, row, team, false);
+                makePiece(prefab, col, row, team);
                 if (c.Equals('K')) //Stores the white and black kings
                 {
-                    if (team) { 
+                    if (team)
+                    {
                         whiteKing = boardArray[col - 1, row - 1];
-                    } else { 
+                    }
+                    else
+                    {
                         blackKing = boardArray[col - 1, row - 1];
                     }
                 }
@@ -192,20 +203,17 @@ public class boardScript : MonoBehaviour
         playerTurn = FENwords[1].Equals("w");
 
         //Castling
-        //Note, I set castling/not castling by changing whether the rooks have or haven't moved. This is not strictly what has happened
-        //One potential is that the king has moved instead.
-        //And my method stores more information than strictly necessary.
-        if (!FENwords[2].Contains("K")) { pieceHasMoved[7, 0] = true; }
-        if (!FENwords[2].Contains("Q")) { pieceHasMoved[0, 0] = true; }
-        if (!FENwords[2].Contains("k")) { pieceHasMoved[7, 7] = true; }
-        if (!FENwords[2].Contains("q")) { pieceHasMoved[0, 7] = true; }
+        if (!FENwords[2].Contains("K")) { wRCastle = true; }
+        if (!FENwords[2].Contains("Q")) { wLCastle = true; }
+        if (!FENwords[2].Contains("k")) { bLCastle = true; }
+        if (!FENwords[2].Contains("q")) { bRCastle = true; }
 
         //En Passant square
         if (!FENwords[3].Contains("-"))
         {
             char Col = FENwords[3][0];
             char Row = FENwords[3][1];
-            if (Col.Equals('a')){ col = 1; }else if (Col.Equals('b')) { col = 2; }else if (Col.Equals('c')) { col = 3; }else if (Col.Equals('d')) { col = 4;  }else if (Col.Equals('e')) { col = 5; }else if (Col.Equals('f')){ col = 6; }else if (Col.Equals('g')) { col = 7; }else if (Col.Equals('h')) { col = 8; }
+            if (Col.Equals('a')) { col = 1; } else if (Col.Equals('b')) { col = 2; } else if (Col.Equals('c')) { col = 3; } else if (Col.Equals('d')) { col = 4; } else if (Col.Equals('e')) { col = 5; } else if (Col.Equals('f')) { col = 6; } else if (Col.Equals('g')) { col = 7; } else if (Col.Equals('h')) { col = 8; }
             row = Row - '0'; //Converts char to int
             if (playerTurn) { jumpedPawnBlack = new Vector2(col, row); } else { jumpedPawnWhite = new Vector2(col, row); }
         }
@@ -213,6 +221,116 @@ public class boardScript : MonoBehaviour
         //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
 
         //Implement fullmoves??? Stores how many turns have elapsed
+    }
+
+    //Returns the FEN string for the current state of the board
+    public string getFEN()
+    {
+        string fenString = "";
+        //Storing board setup
+        for (int row = 8; row >= 1; row--)
+        {
+            int emptySpaces = 0;
+            for (int col = 1; col <= 8; col++)
+            {
+                if (boardArray[col - 1, row - 1] != null)
+                {
+                    string name = boardArray[col - 1, row - 1].name;
+                    bool team = name.Contains("white");
+                    if (team) { name = name.Remove(name.IndexOf("white"), 5); }
+                    if (!team) { name = name.Remove(name.IndexOf("black"), 5); }
+                    if (name.IndexOf("(Clone)") >= 0) { name = name.Remove(name.IndexOf("(Clone)"), 7); }
+                    char fenChar;
+                    switch (name)
+                    {
+                        case "King":
+                            fenChar = 'k';
+                            break;
+                        case "Queen":
+                            fenChar = 'q';
+                            break;
+                        case "Bishop":
+                            fenChar = 'b';
+                            break;
+                        case "Knight":
+                            fenChar = 'n';
+                            break;
+                        case "Rook":
+                            fenChar = 'r';
+                            break;
+                        case "Pawn":
+                            fenChar = 'p';
+                            break;
+                        default:
+                            Debug.Log("should be impossible here"); fenChar = 'x';
+                            break;
+                    }
+                    if (team) { fenChar = char.ToUpper(fenChar); }
+                    if (emptySpaces != 0) { fenString += emptySpaces; }
+                    fenString += char.ToString(fenChar);
+                    emptySpaces = 0;
+                }
+                else
+                {
+                    emptySpaces++;
+                }
+            }
+            if (emptySpaces != 0) { fenString += emptySpaces; }
+            if (row != 1) { fenString += char.ToString('/'); }
+        }
+
+        //The player turn
+        if (playerTurn) { fenString += " w "; } else { fenString += " b "; }
+
+        //Castling
+        if (wRCastle) { fenString += "K"; }
+        if (wLCastle) { fenString += "Q"; }
+        if (bLCastle) { fenString += "k"; }
+        if (bRCastle) { fenString += "q"; }
+        fenString += ' ';
+
+        //En Passant square
+        Vector2 enemyPawn;
+        if (playerTurn) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
+        if (enemyPawn == Vector2.zero) { fenString += "- "; }
+        else
+        {
+            int col = (int)enemyPawn.x;
+            switch (col)
+            {
+                case 1:
+                    fenString += 'a';
+                    break;
+                case 2:
+                    fenString += 'b';
+                    break;
+                case 3:
+                    fenString += 'c';
+                    break;
+                case 4:
+                    fenString += 'd';
+                    break;
+                case 5:
+                    fenString += 'e';
+                    break;
+                case 6:
+                    fenString += 'f';
+                    break;
+                case 7:
+                    fenString += 'g';
+                    break;
+                case 8:
+                    fenString += 'h';
+                    break;
+            }
+            fenString += enemyPawn.y + " ";
+        }
+
+        //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
+
+        //Implement fullmoves??? Stores how many turns have elapsed
+
+        return fenString;
     }
 
     // Update is called once per frame
@@ -293,6 +411,7 @@ public class boardScript : MonoBehaviour
         updateGamestate(playerTurn);
         turnOver = false;
         playerTurn = !playerTurn;
+        Debug.Log(getFEN());
     }
 
     //Deselects the selected chess piece, (changes material and removes the move tiles)
@@ -370,7 +489,7 @@ public class boardScript : MonoBehaviour
         List<Move> allTeamMoves = allMoves(team);
         foreach (Move move in allTeamMoves) //This goes through all the moves of your team and simulates them, then sees if you're still in check. 
         {                                   //If no move you can do prevents check, then you're in checkmate
-            GameObject killedPiece = doMoveArray(move);
+            GameObject killedPiece = doMoveState(move);
             if (move.movedPiece.name.Contains("King")) { kingPos = move.to; }
             if (!inCheck(team, kingPos))
             {
@@ -379,64 +498,9 @@ public class boardScript : MonoBehaviour
             }
 
             if (move.movedPiece.name.Contains("King")) { kingPos = getPos(kingPiece); }
-            undoMoveArray(move, killedPiece);
+            undoMoveState(move, killedPiece);
 
         }
-    }
-
-    //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
-    private GameObject doMoveArray(Move move)
-    {
-        bool team = move.movedPiece.name.Contains("white");
-        boardArray[(int)move.from.x - 1, (int)move.from.y - 1] = null;
-
-        GameObject killedPiece = null;
-        if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null)
-        {
-            killedPiece = boardArray[(int)move.to.x - 1, (int)move.to.y - 1]; //Stores the piece that could be killed when the theoretical move is done
-                                                                              //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
-        }
-        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
-        if (move.pawnJump)
-        {
-            if (team) { jumpedPawnWhite = move.to; } else { jumpedPawnBlack = move.to; }
-        }
-        if (move.castling) { doMoveArray(move.castlingMove); }
-        if (move.promotion)
-        {
-            GameObject promoted = spareQueen;
-            if (move.promotedTo.Equals("queen"))
-            {
-                promoted = spareQueen;
-            }
-            else if (move.promotedTo.Equals("rook"))
-            {
-                promoted = spareRook;
-            }
-            else if (move.promotedTo.Equals("bishop"))
-            {
-                promoted = spareBishop;
-            }
-            else if (move.promotedTo.Equals("knight"))
-            {
-                promoted = spareKnight;
-            }
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = promoted;
-            promoted.name = teamName(move.movedPiece.name.Contains("white")) + move.promotedTo.Substring(0, 1).ToUpper() + move.promotedTo.Substring(1) + "(clone)";
-        }
-        if (move.enPassant)
-        {
-            Vector2 enemyPawn;
-            if (team) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
-            Debug.Log("EnemyPawn: " + enemyPawn.x + ", " + enemyPawn.y);
-            Debug.Log("Where I think enemyPawn is: " + (int)move.to.x + ", " + (int)move.from.y);
-            killedPiece = boardArray[(int)move.to.x - 1, (int)move.from.y - 1];
-            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = null;
-            Debug.Log(killedPiece.name);
-            Debug.Log(getPos(killedPiece));
-        }
-
-        return killedPiece;
     }
 
     private GameObject nameToPiece(string name)
@@ -468,8 +532,83 @@ public class boardScript : MonoBehaviour
         return null;
     }
 
+    //Executes a move 
+    private void doMove(Move move)
+    {
+        GameObject killedPiece = doMoveState(move); //Updates the boardArray. It is done separately to allow this function to be reused when testing/checking moves
+        showMove(move, killedPiece); //Does the rest of the move
+    }
+
+    //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
+    private GameObject doMoveState(Move move)
+    {
+        bool team = move.movedPiece.name.Contains("white");
+        boardArray[(int)move.from.x - 1, (int)move.from.y - 1] = null;
+        GameObject killedPiece = null;
+        if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null)
+        {
+            killedPiece = boardArray[(int)move.to.x - 1, (int)move.to.y - 1]; //Stores the piece that could be killed when the theoretical move is done
+                                                                              //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
+        }
+        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
+        if (move.pawnJump)
+        {
+            if (team) { jumpedPawnWhite = move.to; } else { jumpedPawnBlack = move.to; }
+        }
+        if (move.castling)
+        {
+            if (team)
+            {
+                wLCastle = false;
+                wRCastle = false;
+            }
+            else
+            {
+                bLCastle = false;
+                bRCastle = false;
+            }
+            doMoveState(move.castlingMove);
+        }
+        if (move.promotion)
+        {
+            GameObject promoted; //For checking moves 1 ahead, use the prefabs as the temporary stored objects
+            if (move.promotedTo.Equals("queen"))
+            {
+                promoted = queen;
+            }
+            else if (move.promotedTo.Equals("rook"))
+            {
+                promoted = rook;
+            }
+            else if (move.promotedTo.Equals("bishop"))
+            {
+                promoted = bishop;
+            }
+            else if (move.promotedTo.Equals("knight"))
+            {
+                promoted = knight;
+            }
+            else
+            {
+                Debug.Log("Should be impossible");
+                promoted = queen;
+            }
+            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = promoted;
+            promoted.name = teamName(move.movedPiece.name.Contains("white")) + move.promotedTo.Substring(0, 1).ToUpper() + move.promotedTo.Substring(1) + "(clone)";
+        }
+        if (move.enPassant)
+        {
+            Vector2 enemyPawn;
+            if (team) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
+            killedPiece = boardArray[(int)move.to.x - 1, (int)move.from.y - 1];
+            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = null;
+        }
+
+        return killedPiece;
+    }
+
     //Undoes the changes to boardArray done by this move. Used when testing moves, to undo them
-    private void undoMoveArray(Move move, GameObject killedPiece)
+    private void undoMoveState(Move move, GameObject killedPiece)
     {
         bool team = move.movedPiece.name.Contains("white");
         Vector2 from = move.from;
@@ -479,38 +618,43 @@ public class boardScript : MonoBehaviour
         {
             if (team) { jumpedPawnWhite = Vector2.zero; } else { jumpedPawnBlack = Vector2.zero; }
         }
-        if (move.castling) { undoMoveArray(move.castlingMove, null); }
-        if (move.enPassant)
-        {
-            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = killedPiece;
+        if (move.castling) {
+            if (team)
+            {
+                wLCastle = true;
+                wRCastle = true;
+            }
+            else
+            {
+                bLCastle = true;
+                bRCastle = true;
+            }
+            undoMoveState(move.castlingMove, null);
         }
         //Undoing Promotions is automatically done. You don't need to do anything special to undo a Promotion.
+        if (move.enPassant)
+        {
+            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = null;
+            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = killedPiece;
+        }
     }
 
-    //Executes a move 
-    private void doMove(Move move)
-    {
-        GameObject killedPiece = doMoveArray(move); //Updates the boardArray. It is done separately to allow this function to be reused when testing/checking moves
-        doRestOfMove(move, killedPiece); //Does the rest of the move
-    }
-
-    //Does all of the move that isn't updating boardArray.  Takes in a move and any chess pieces that have been killed.
-    //THIS SHOULD ONLY DO THE STUFF THE USER CAN SEE, AND NOT INFLUENCE THE MOVE CALCULATIONS (MOVE THE PIECEHASMOVED STUFF)
-    private void doRestOfMove(Move move, GameObject killedPiece)
+    //Updates the gameobjects (creates, destroys, moves) so the user can see the changes to the chess game
+    private void showMove(Move move, GameObject killedPiece)
     {
         if (killedPiece != null) { Destroy(killedPiece); }
-        pieceHasMoved[(int)move.from.x - 1, (int)move.from.y - 1] = true;
-        pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
         move.movedPiece.transform.position = new Vector3(colToX(move.to.x), move.movedPiece.transform.position.y, colToX(move.to.y));
-        if (move.castling) { doRestOfMove(move.castlingMove, null); }
+        if (move.castling)
+        {
+            showMove(move.castlingMove, null);
+        }
         if (move.promotion && playerTurn)
         {
             promotionMenuReference.Run(move); //If its the user's turn, let them choose what to promote to
         }
         if (move.promotion && !playerTurn) //Promotion for enemy AI
         {
-            makePiece(nameToPiece(move.promotedTo), (int)move.to.x, (int)move.to.y, false, true); //The enemy has moved
-            pieceHasMoved[(int)move.to.x - 1, (int)move.to.y - 1] = true;
+            makePiece(nameToPiece(move.promotedTo), (int)move.to.x, (int)move.to.y, false); //The enemy has moved
             Destroy(move.movedPiece);
         }
     }
@@ -576,13 +720,13 @@ public class boardScript : MonoBehaviour
     {
         GameObject enemyKing = getKing(!team);
         Vector2 kingPos = getPos(enemyKing);
-        GameObject killedPiece = doMoveArray(move);
+        GameObject killedPiece = doMoveState(move);
         bool checking = false;
         if (inCheck(!team, kingPos))
         {
             checking = true;
         }
-        undoMoveArray(move, killedPiece);
+        undoMoveState(move, killedPiece);
 
         if (checking) { return 10; }
         if (killedPiece != null)
@@ -681,7 +825,19 @@ public class boardScript : MonoBehaviour
             }
         //Check for castling
         bool team = piece.name.Contains("white");
-        if (!pieceHasMoved[col - 1, row - 1] && !pieceHasMoved[0, row - 1] && !check &&
+        bool leftCastle;
+        bool rightCastle;
+        if (team)
+        {
+            leftCastle = wLCastle;
+            rightCastle = wRCastle;
+        }
+        else
+        {
+            leftCastle = bLCastle;
+            rightCastle = bRCastle;
+        }
+        if (leftCastle && !check &&
             boardArray[1, row - 1] == null && boardArray[2, row - 1] == null && boardArray[3, row - 1] == null
             && safeSquares[1, row - 1] && safeSquares[2, row - 1])
         {
@@ -689,7 +845,7 @@ public class boardScript : MonoBehaviour
             move.setCastling(new Move(boardArray[0, row - 1], new Vector2(1, row), new Vector2(col - 1, row)));
             moves.Add(move);
         }
-        if (!pieceHasMoved[col - 1, row - 1] && !pieceHasMoved[0, row - 1] && !check
+        if (rightCastle && !check
             && boardArray[6, row - 1] == null && boardArray[5, row - 1] == null
             && safeSquares[4, row - 1] && safeSquares[5, row - 1]) //NOTE: I manually entered the numbers for all the squares between king and rook.
         {                                                         //Generalise this?
@@ -860,7 +1016,8 @@ public class boardScript : MonoBehaviour
             {
                 moves.AddRange(promotionMoves(piece, new Vector2(col, row), new Vector2(col, row + direction)));
             }
-            if (!pieceHasMoved[col - 1, row - 1] && inBounds(col, row + 2 * direction) && boardArray[col - 1, row + 2 * direction - 1] == null)
+            //The "row == 4.5 + 2.5*direction" ensures that the pawn is in its original starting row, hence hasn't moved
+            if (row == 4.5 + 2.5 * -direction && inBounds(col, row + 2 * direction) && boardArray[col - 1, row + 2 * direction - 1] == null)
             { //This is for moving 2 spaces forwards. Don't check for promotion here.
                 moves.Add((new Move(piece, new Vector2(col, row), new Vector2(col, row + 2 * direction))).setPawnJump());
             }
@@ -967,7 +1124,7 @@ public class boardScript : MonoBehaviour
         {
             Move move = moves[i];
             //Simulate doing the move
-            GameObject killedPiece = doMoveArray(move);
+            GameObject killedPiece = doMoveState(move);
             if (move.movedPiece.name.Contains("King")) { kingPos = move.to; }
             if (inCheck(team, kingPos))
             {
@@ -975,7 +1132,7 @@ public class boardScript : MonoBehaviour
                 i--;
             }
             if (move.movedPiece.name.Contains("King")) { kingPos = getPos(getKing(team)); }
-            undoMoveArray(move, killedPiece);
+            undoMoveState(move, killedPiece);
         }
     }
 

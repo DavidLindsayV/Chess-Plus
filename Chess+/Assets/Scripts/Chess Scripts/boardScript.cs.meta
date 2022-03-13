@@ -3,7 +3,18 @@ guid: 78c2256064d676e4b9f07c86e1afadce
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - pawn: {fileID: 4235577784679706776, guid: 8bf8209c0e82e4b4292d5b264b2580cc, type: 3}
+  - rook: {fileID: 248531145738623065, guid: 6fc385ca09ee8fa47845c098c8f54c5d, type: 3}
+  - bishop: {fileID: 8665158574203623187, guid: 1dd4df894dbe2aa43af72ec33e62a9c2, type: 3}
+  - knight: {fileID: 8271204388251674691, guid: 6be907e0e7ffaea479acbb6738d6c7ce, type: 3}
+  - queen: {fileID: 90828564361192491, guid: 95e29338e9f487b4180d41b84d9b9e28, type: 3}
+  - king: {fileID: 614001120761919105, guid: 406b6f26a71019240890faaa9ba9b038, type: 3}
+  - tile: {fileID: 6211899321823841510, guid: 6e0db0c540ce0e348a19a78edbf241e2, type: 3}
+  - white: {fileID: 2100000, guid: 3cb70f197241b3f4289ceb898241df8c, type: 2}
+  - black: {fileID: 2100000, guid: 58fd325991f8ed646aaa1c05d4c5f5f4, type: 2}
+  - highLight: {fileID: 2100000, guid: 724b6fb16525a6d4b880e8f55f2cf51d, type: 2}
+  - gameResultText: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

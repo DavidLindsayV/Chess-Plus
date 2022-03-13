@@ -33,29 +33,25 @@ public class PromotionMenu : MonoBehaviour
 
     public void promoteQueen()
     {
-        boardScriptReference.makePiece(boardScriptReference.queen, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"), true);
-        boardScriptReference.pieceHasMoved[(int)promotionMove.to.x - 1, (int)promotionMove.to.y - 1] = true;
+        boardScriptReference.makePiece(boardScriptReference.queen, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"));
         Destroy(promotionMove.movedPiece);
         Resume();
     }
     public void promoteBishop()
     {
-        boardScriptReference.makePiece(boardScriptReference.bishop, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"), true);
-        boardScriptReference.pieceHasMoved[(int)promotionMove.to.x - 1, (int)promotionMove.to.y - 1] = true;
+        boardScriptReference.makePiece(boardScriptReference.bishop, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"));
         Destroy(promotionMove.movedPiece);
         Resume();
     }
     public void promoteRook()
     {
-        boardScriptReference.makePiece(boardScriptReference.rook, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"), true);
-        boardScriptReference.pieceHasMoved[(int)promotionMove.to.x - 1, (int)promotionMove.to.y - 1] = true;
+        boardScriptReference.makePiece(boardScriptReference.rook, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"));
         Destroy(promotionMove.movedPiece);
         Resume();
     }
     public void promoteKnight()
     {
-        boardScriptReference.makePiece(boardScriptReference.knight, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"), true);
-        boardScriptReference.pieceHasMoved[(int)promotionMove.to.x - 1, (int)promotionMove.to.y - 1] = true;
+        boardScriptReference.makePiece(boardScriptReference.knight, (int)promotionMove.to.x, (int)promotionMove.to.y, promotionMove.movedPiece.name.Contains("white"));
         Destroy(promotionMove.movedPiece);
         Resume();
     }
