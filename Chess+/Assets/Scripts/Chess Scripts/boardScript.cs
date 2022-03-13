@@ -68,7 +68,7 @@ public class boardScript : MonoBehaviour
     //replace boardArray with a array of the names, not the gameObjects. Should be less computation to call. Still use an array of gameObjects, though? IDK...
     //Can you make the prefabs finals?
     //ERROR WITH CURRENT CODE
-    //If a rook moves or is killed it doesn't update the castling variables. IT SHOULD
+    //If a rook moves or is killed, and when a king moves, it doesn't update the castling variables. IT SHOULD!!!
     //Fix this when you implement boardState() objects
 
     //To consider:
