@@ -6,18 +6,18 @@ using UnityEngine.UI;
 public class boardScript : MonoBehaviour
 {
     //The public piece prefabs
-    public GameObject pawn;
-    public GameObject rook;
-    public GameObject bishop;
-    public GameObject knight;
-    public GameObject queen;
-    public GameObject king;
-    public GameObject tile;
+    public static GameObject pawnPrefab;
+    public static GameObject rookPrefab;
+    public static GameObject bishopPrefab;
+    public static GameObject knightPrefab;
+    public static GameObject queenPrefab;
+    public static GameObject kingPrefab;
+    public static GameObject tilePrefab;
 
     //The public materials for each team
-    public Material white;
-    public Material black;
-    public Material highLight;
+    public static Material white;
+    public static Material black;
+    public static Material highLight;
 
     //The text for displaying the result of the game on the UI
     public Text gameResultText;
@@ -25,18 +25,23 @@ public class boardScript : MonoBehaviour
     //The size of the board. For setUpBoard, this must be 8x8 board.
     private readonly int boardSize = 8;
 
-    private GameObject[,] boardArray; //Stores the GameObject chess pieces. Goes from 0-7 for col and row. 
+    private GameObject[,] gameObjArray; //Stores the GameObject chess pieces. Goes from 0-7 for col and row. 
     //Note, it is stored [col, row].
     //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
+    
+    private Piece[,] pieceArray; //Stores the Piece objects
 
-    private bool playerTurn; //stores the current turn. True = player, false = AI
+    private Team currentPlayer; //stores the current turn. White = player, Black = AI
     private List<GameObject> tileList; //stores the moveTiles the player can click on to do a move
-    private bool gameOver; //When this is true, the game ends
-    private bool gameWon; //Stores, when the game ends, if the player won. True = victory, false = defeat.
-    public bool staleMate = false; //When the game ends, if this is true, the game ended in a stalemate/draw.
-    private GameObject selected; //The current gameObject (white chess piece) selected by the player
-    private GameObject whiteKing; //stores the black and white kings for easier access
-    private GameObject blackKing;
+
+    enum GameResult { Ongoing, GameWon, GameLost, Stalemate}
+    private GameResult gameResult = GameResult.Ongoing;
+
+    private Piece selected; //The current Piece (white chess piece) selected by the player
+
+    private Piece whiteKing; //stores the black and white kings for easier access
+    private Piece blackKing;
+
     public bool check; //stores the check and checkMate (as assignned by checkForMate) for whichever team the function was just run for
     public bool checkMate;
     private List<Move> checkAvoidingMoves; //The list of moves that, if you're in check, get you out of check (you legally have to do one of these moves).
@@ -49,13 +54,13 @@ public class boardScript : MonoBehaviour
     private bool wRCastle = true;
 
     //Promotion variables
-    private PromotionMenu promotionMenuReference; //Variables used for Promotion
+    private PromoteMenu promotionMenuReference; //Variables used for Promotion
 
     //En passant variabes
-    Vector2 jumpedPawnWhite; //stores the positions of all the pawns that just jumped
-    Vector2 jumpedPawnBlack; //Can theoretically do this with just one, but it makes the code clunkier so its easier to have 2 separate ones
+    Coordinate enPassantPosition;
 
-    public bool easyMode = true; //Stores whether the enemy AI chooses a random move or not
+    public enum AIMode { easy, medium };
+    public AIMode AIdifficulty = AIMode.easy;
 
     private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
@@ -81,8 +86,7 @@ public class boardScript : MonoBehaviour
     void Start()
     {
         //Set up some variables
-        gameOver = false;
-        playerTurn = true;
+        currentPlayer = Team.White;
         tileList = new List<GameObject>();
         checkAvoidingMoves = new List<Move>();
 
@@ -292,7 +296,7 @@ public class boardScript : MonoBehaviour
         //En Passant square
         Vector2 enemyPawn;
         if (playerTurn) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
-        if (enemyPawn == Vector2.zero) { fenString += "- "; }
+        if (enemyPawn == null) { fenString += "- "; }
         else
         {
             int col = (int)enemyPawn.x;
@@ -336,7 +340,7 @@ public class boardScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!gameOver)
+        if (gameResult == GameResult.Ongoing)
         {
             if (turnOver)
             {
@@ -406,7 +410,7 @@ public class boardScript : MonoBehaviour
     //Ends a players turn
     private void endTurn()
     {
-        if (playerTurn) { jumpedPawnBlack = Vector2.zero; } else { jumpedPawnWhite = Vector2.zero; }
+        if (playerTurn) { jumpedPawnBlack = null; } else { jumpedPawnWhite = null; }
         checkForMate(!playerTurn);
         updateGamestate(playerTurn);
         turnOver = false;
@@ -616,7 +620,7 @@ public class boardScript : MonoBehaviour
         boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
         if (move.pawnJump)
         {
-            if (team) { jumpedPawnWhite = Vector2.zero; } else { jumpedPawnBlack = Vector2.zero; }
+            if (team) { jumpedPawnWhite = null; } else { jumpedPawnBlack = null; }
         }
         if (move.castling) {
             if (team)

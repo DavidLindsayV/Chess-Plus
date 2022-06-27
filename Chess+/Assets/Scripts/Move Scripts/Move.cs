@@ -1,0 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+/**Move stores within it one move a chess piece can do. */
+public class Move
+{
+    private Piece movedPiece; //The gameObject chess piece that is being moved
+    private Coordinate to; //The colrow of the spot its being moved to
+
+    /**Constructor function */
+    public Move(Piece movedPiece, Coordinate to)
+    {
+        this.movedPiece = movedPiece;
+        this.to = to;
+    }
+
+    /**gets end coordinate */
+    Coordinate getTo() { return this.to;  }
+
+    /** Gets moved piece */
+    Piece getPiece() { return this.movedPiece; }
+
+    /**Checks if a move is valid */
+    public virtual bool isValidMove(boardState state)
+    {
+        //TODO: do checks that don't depend on the piece checking if the move is valid
+        //check state isn't null, row and col are valid numbers, etc
+        return movedPiece.isValidMove(state, this);
+    }
+
+}
