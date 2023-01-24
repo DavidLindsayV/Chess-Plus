@@ -100,4 +100,33 @@ public class Coordinate : MonoBehaviour
         }
         return toReturn + this.row;
     }
+
+        //Returns whether a col and row are in bounds
+    private static bool inBounds(int col, int row)
+    {
+        return (col >= 1 && col <= 8 && row >= 1 && row <= 8);
+    }
+
+    //TODO see if the below functions for getting X and Z values works when you change board sizes
+        //Converts a x to Col, or a Z to Row.
+    private static int xToCol(float x)
+    {
+        x = Mathf.Round(x + 0.5F) - 0.5F;
+        return (int)(x + 4.5);
+    }
+
+    //Converts a col to X, or row to Z
+    //Note: col should really be an int. But taking in a float prevents typecasting.
+    private static float colToX(float col)
+    {
+        return (col - 4.5F);
+    }
+
+    public float getX(){
+        return colToX(this.col);
+    }
+
+    public float getZ(){
+        return colToX(this.row);
+    }
 }

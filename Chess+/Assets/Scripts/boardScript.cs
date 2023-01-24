@@ -70,7 +70,7 @@ public class boardScript : MonoBehaviour
         //Initialise the chess pieces, set up the board with this FEN string
         state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-        checkForMate(true); //sets up the values of check and checkMate for the first turn, for the user
+        checkForMate(Team.White); //sets up the values of check and checkMate for the first turn, for the user
     }
 
 
@@ -84,7 +84,7 @@ public class boardScript : MonoBehaviour
             {
                 endTurn(); //Either player or enemy has finished their turn. 
             }
-            else if (boardState.currentPlayer == playerTeam) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
+            else if (state.currentPlayer == playerTeam) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
             {
                 userTurn();
             }
@@ -109,8 +109,8 @@ public class boardScript : MonoBehaviour
                 if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
                 {
                     deselect();
-                    selected = hit.transform.gameObject;
-                    selected.GetComponent<Renderer>().material = highLight;
+                    selected = hit.transform.gameObject.GetComponent<Piece>();
+                    selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
                     showValidMoves(selected);
                 }
                 else if (hit.collider.gameObject.name.Contains("moveTile") || hit.collider.gameObject.name.Contains("black"))
@@ -118,10 +118,10 @@ public class boardScript : MonoBehaviour
                     //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
                     if (hit.collider.gameObject.name.Contains("black"))
                     {
-                        GameObject blackPiece = hit.collider.gameObject;
-                        Vector2 blackPos = getPos(blackPiece);
+                        Piece blackPiece = hit.collider.gameObject.GetComponent<Piece>();
+                        Coordinate blackPos = blackPiece.getPos();
                         LayerMask mask = LayerMask.GetMask("Move tiles");
-                        Physics.Raycast(new Vector3(colToX(blackPos.x), 0.2F, colToX(blackPos.y)), Vector3.down, out hit, 1000, mask);
+                        Physics.Raycast(new Vector3(blackPos.getX(), 0.2F, blackPos.getZ()), Vector3.down, out hit, 1000, mask);
                         if (hit.collider == null)
                         {
                             deselect(); //If you clicked on a piece and there was no tile beneath it
@@ -134,18 +134,16 @@ public class boardScript : MonoBehaviour
                     doMove(move);
                     turnOver = true;
                 }
-            }
     }
 
-    //Ends a players turn
+    //Ends a player or AI turn
     private void endTurn()
     {
-        if (playerTurn) { jumpedPawnBlack = null; } else { jumpedPawnWhite = null; }
-        checkForMate(!playerTurn);
-        updateGamestate(playerTurn);
+        checkForMate(state.currentPlayer.nextTeam());
+        updateGamestate(state.currentPlayer);
         turnOver = false;
-        playerTurn = !playerTurn;
-        Debug.Log(state.getFEN());
+        state.currentPlayer = state.currentPlayer.nextTeam();
+        Messages.Log(MessageType.BoardState, state.toFEN());
     }
 
     //Deselects the selected chess piece, (changes material and removes the move tiles)
@@ -155,11 +153,11 @@ public class boardScript : MonoBehaviour
         {
             if (selected.name.Contains(Team.White.ToString()))
             {
-                selected.GetComponent<Renderer>().material = white;
+                selected.GetComponent<Renderer>().material = Prefabs.white;
             }
             else
             {
-                selected.GetComponent<Renderer>().material = black;
+                selected.GetComponent<Renderer>().material = Prefabs.black;
             }
             selected = null;
         }
@@ -169,37 +167,43 @@ public class boardScript : MonoBehaviour
         }
     }
 
-    //Updates the variables of gameOver and such using the results of checkForMate
-    private void updateGamestate(bool team)
+    //Updates the state of gameResult using the results of checkForMate
+    //TODO see if you can remove this, it seems unnecessary?
+    private void updateGamestate(Team team)
     {
         if (check)
         {
-            Debug.Log(teamName(!team) + " is in check!");
-            if (checkMate)
-            {
-                gameWon = team;
-                gameOver = true;
+            Messages.Log(MessageType.BoardState, team.nextTeam() + " is in check!");
+        }
+        if (checkMate)
+        {
+            if( team == playerTeam){
+                gameResult = GameResult.GameWon;
+            }else{
+                gameResult = GameResult.GameLost;
             }
         }
-        if (staleMate)
-        {
-            gameOver = true;
+        if(checkMate && !check){
+            Messages.Log(MessageType.Error, "Checkmate without check");
+            throw new System.Exception("Checkmate without check");
         }
+        //GameResult.Stalemate is set elsewhere
     }
 
     //Checks if the game is in a stale mate (if the game is not in check but there are no valid moves (that don't put you in check)
-    private void checkForStaleMate(bool team)
+    //TODO check stalemates don't cause softlocking and stopping the game with infinite loops
+    private void checkForStaleMate(Team team)
     {
         List<Move> moves = allMoves(team);
         removeCheckingMoves(moves, team);
-        if (moves.Count == 0) { staleMate = true; } //If there are no valid moves that don't put you in check, then its a stalemate
+        if (moves.Count == 0) { gameResult = GameResult.Stalemate; } //If there are no valid moves that don't put you in check, then its a stalemate
     }
 
     //Sees if a certain team is in check, checkmate, or stalemate
-    private void checkForMate(bool team)
+    private void checkForMate(Team team)
     {
-        GameObject kingPiece = getKing(team);
-        Vector2 kingPos = getPos(kingPiece);
+        King kingPiece = state.getKing(team);
+        Coordinate kingPos = kingPiece.getPos();
 
         checkAvoidingMoves.Clear();
 
@@ -207,7 +211,7 @@ public class boardScript : MonoBehaviour
 
         //See if you're in check. If not, stop there.
         updateSafeSquares(team); //updates safe squares once. Uses this to see if the king's in check
-        if (safeSquares[(int)kingPos.x - 1, (int)kingPos.y - 1])
+        if (safeSquares[(int)kingPos.getCol() - 1, (int)kingPos.getRow() - 1])
         {
             check = false;
             checkMate = false;
@@ -223,173 +227,130 @@ public class boardScript : MonoBehaviour
         List<Move> allTeamMoves = allMoves(team);
         foreach (Move move in allTeamMoves) //This goes through all the moves of your team and simulates them, then sees if you're still in check. 
         {                                   //If no move you can do prevents check, then you're in checkmate
-            GameObject killedPiece = doMoveState(move);
-            if (move.movedPiece.name.Contains("King")) { kingPos = move.to; }
+            Piece killedPiece = doMoveState(move);
+            if (move.getPiece() is King) { kingPos = move.getTo(); }
             if (!inCheck(team, kingPos))
             {
                 checkAvoidingMoves.Add(move); //If a move gets you out of check, add it to checkAvoidingMoves and set checkMate to false
                 if (checkMate) { checkMate = false; }
             }
 
-            if (move.movedPiece.name.Contains("King")) { kingPos = getPos(kingPiece); }
+            if (move.getPiece() is King) { kingPos = kingPiece.getPos(); }
             undoMoveState(move, killedPiece);
 
         }
     }
 
-    private GameObject nameToPiece(string name)
-    {
-        if (name.Equals("king"))
-        {
-            return king;
-        }
-        if (name.Equals("queen"))
-        {
-            return queen;
-        }
-        if (name.Equals("bishop"))
-        {
-            return bishop;
-        }
-        if (name.Equals("rook"))
-        {
-            return rook;
-        }
-        if (name.Equals("knight"))
-        {
-            return knight;
-        }
-        if (name.Equals("pawn"))
-        {
-            return pawn;
-        }
-        return null;
-    }
-
     //Executes a move 
     private void doMove(Move move)
     {
-        GameObject killedPiece = doMoveState(move); //Updates the boardArray. It is done separately to allow this function to be reused when testing/checking moves
-        showMove(move, killedPiece); //Does the rest of the move
+        Piece killedPiece = doMoveState(move); //Updates the boardArray. 
+        //It is done separately to allow this function to be reused when testing/checking moves
+        showMove(move, killedPiece); //Does the rest of the move, updating the GameObject placements
     }
 
     //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
-    private GameObject doMoveState(Move move)
+    //Returns any killed piece
+    private Piece doMoveState(Move move)
     {
-        bool team = move.movedPiece.name.Contains("white");
-        boardArray[(int)move.from.x - 1, (int)move.from.y - 1] = null;
-        GameObject killedPiece = null;
-        if (boardArray[(int)move.to.x - 1, (int)move.to.y - 1] != null)
+        Team team = move.getPiece().getTeam();
+        state.setPiece(move.from, null);
+        Piece killedPiece = null;
+        if (state.getPiece(move.to) != null)
         {
-            killedPiece = boardArray[(int)move.to.x - 1, (int)move.to.y - 1]; //Stores the piece that could be killed when the theoretical move is done
-                                                                              //Don't need to set the piece to unactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
+            killedPiece = state.getPiece(move.to); //Stores the piece that could be killed when the theoretical move is done 
+            //Don't need to set the piece to inactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
         }
-        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = move.movedPiece;
-        if (move.pawnJump)
+        state.setPiece(move.to, move.movedPiece);
+        if (move is PawnDoubleJump)
         {
-            if (team) { jumpedPawnWhite = move.to; } else { jumpedPawnBlack = move.to; }
+            int x = 0;
+            if (team == Team.White) { x = -1; } else { x = +1; }
+            state.enPassant = new Coordinate(move.to.getCol(), move.to.getRow() + x);
+        }else{
+            state.enPassant = null;
         }
-        if (move.castling)
+        if (move is CastlingMove)
         {
-            if (team)
+            if (team == Team.White)
             {
-                wLCastle = false;
-                wRCastle = false;
+                state.wLCastle = false;
+                state.wRCastle = false;
             }
             else
             {
-                bLCastle = false;
-                bRCastle = false;
+                state.bLCastle = false;
+                state.bRCastle = false;
             }
-            doMoveState(move.castlingMove);
+            //Does the rook-moving part of Castling. No pieces will be killed by this, so the return value
+            //can be ignored
+            doMoveState(move.rookMove);
         }
-        if (move.promotion)
+        if (move is PromoteMove)
         {
-            GameObject promoted; //For checking moves 1 ahead, use the prefabs as the temporary stored objects
-            if (move.promotedTo.Equals("queen"))
-            {
-                promoted = queen;
-            }
-            else if (move.promotedTo.Equals("rook"))
-            {
-                promoted = rook;
-            }
-            else if (move.promotedTo.Equals("bishop"))
-            {
-                promoted = bishop;
-            }
-            else if (move.promotedTo.Equals("knight"))
-            {
-                promoted = knight;
-            }
-            else
-            {
-                Debug.Log("Should be impossible");
-                promoted = queen;
-            }
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = promoted;
-            promoted.name = teamName(move.movedPiece.name.Contains("white")) + move.promotedTo.Substring(0, 1).ToUpper() + move.promotedTo.Substring(1) + "(clone)";
+            state.setPiece(move.to, move.promotedTo);
         }
-        if (move.enPassant)
+        if (move is EnPassantMove)
         {
-            Vector2 enemyPawn;
-            if (team) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
-            killedPiece = boardArray[(int)move.to.x - 1, (int)move.from.y - 1];
-            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = null;
+            killedPiece = state.getPiece(new Coordinate(move.to.getCol(), move.from.getRow()));
+            state.setPiece(new Coordinate(move.to.getCol(), move.from.getRow()), null);
         }
-
         return killedPiece;
     }
 
-    //Undoes the changes to boardArray done by this move. Used when testing moves, to undo them
-    private void undoMoveState(Move move, GameObject killedPiece)
-    {
-        bool team = move.movedPiece.name.Contains("white");
-        Vector2 from = move.from;
-        boardArray[(int)from.x - 1, (int)from.y - 1] = move.movedPiece;
-        boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = killedPiece;
-        if (move.pawnJump)
-        {
-            if (team) { jumpedPawnWhite = null; } else { jumpedPawnBlack = null; }
-        }
-        if (move.castling) {
-            if (team)
-            {
-                wLCastle = true;
-                wRCastle = true;
-            }
-            else
-            {
-                bLCastle = true;
-                bRCastle = true;
-            }
-            undoMoveState(move.castlingMove, null);
-        }
-        //Undoing Promotions is automatically done. You don't need to do anything special to undo a Promotion.
-        if (move.enPassant)
-        {
-            boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = null;
-            boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = killedPiece;
-        }
-    }
+    //TODO delete this commented code
+    //It doesn't work anyway, and you can do better than this by just storing the future planned moves in
+    //boardState objects
+    // //Undoes the changes to boardArray done by this move. Used when testing moves, to undo them
+    // private void undoMoveState(Move move, Piece killedPiece)
+    // {
+    //     Team team = move.getTeam();
+    //     Coordinate from = move.from;
+    //     state.setPiece(move.from, move.movedPiece);
+    //     state.setPiece(move.to, killedPiece);
+    //     if (move is PawnDoubleJump)
+    //     {
+    //         if (team) { jumpedPawnWhite = null; } else { jumpedPawnBlack = null; }
+    //     }
+    //     if (move.castling) {
+    //         if (team)
+    //         {
+    //             wLCastle = true;
+    //             wRCastle = true;
+    //         }
+    //         else
+    //         {
+    //             bLCastle = true;
+    //             bRCastle = true;
+    //         }
+    //         undoMoveState(move.castlingMove, null);
+    //     }
+    //     //Undoing Promotions is automatically done. You don't need to do anything special to undo a Promotion.
+    //     if (move.enPassant)
+    //     {
+    //         boardArray[(int)move.to.x - 1, (int)move.to.y - 1] = null;
+    //         boardArray[(int)move.to.x - 1, (int)move.from.y - 1] = killedPiece;
+    //     }
+    // }
 
     //Updates the gameobjects (creates, destroys, moves) so the user can see the changes to the chess game
-    private void showMove(Move move, GameObject killedPiece)
+    private void showMove(Move move, Piece killedPiece)
     {
         if (killedPiece != null) { Destroy(killedPiece); }
-        move.movedPiece.transform.position = new Vector3(colToX(move.to.x), move.movedPiece.transform.position.y, colToX(move.to.y));
-        if (move.castling)
-        {
-            showMove(move.castlingMove, null);
+        move.movedPiece.transform.position = new Vector3(move.to.getX(), move.movedPiece.transform.position.y, move.to.getZ());
+        if (move is CastlingMove)
+        {   
+            showMove(move.rookMove, null);
         }
-        if (move.promotion && playerTurn)
+        if (move is PromoteMove){
+            if(state.currentPlayer == playerTurn)
         {
             promotionMenuReference.Run(move); //If its the user's turn, let them choose what to promote to
-        }
-        if (move.promotion && !playerTurn) //Promotion for enemy AI
+        }else if (!playerTurn) //Promotion for enemy AI
         {
-            makePiece(nameToPiece(move.promotedTo), (int)move.to.x, (int)move.to.y, false); //The enemy has moved
             Destroy(move.movedPiece);
+            move.makePromotedPiece(); //Allow the new piece replacing the pawn to appear
+        }
         }
     }
 
@@ -465,7 +426,7 @@ public class boardScript : MonoBehaviour
         if (checking) { return 10; }
         if (killedPiece != null)
         {
-            if (killedPiece.name.Contains("King")) { Debug.Log("This shouldn't be possible. The game should end with checkmate before this happens"); }
+            if (killedPiece.name.Contains("King")) { Messages.Log(MessageType.Error, "This shouldn't be possible. The game should end with checkmate before this happens"); }
             if (killedPiece.name.Contains("Queen")) { return 9; }
             if (killedPiece.name.Contains("Rook") || killedPiece.name.Contains("Bishop")) { return 8; }
             if (killedPiece.name.Contains("Knight")) { return 7; }
@@ -779,6 +740,7 @@ public class boardScript : MonoBehaviour
                 moves.AddRange(promotionMoves(piece, new Vector2(col, row), new Vector2(col + 1, row + direction)));
             }
         }
+        //En Passant
         if (enemyPawn.y == row && Mathf.Abs(enemyPawn.x - col) == 1)
         {
             moves.Add((new Move(piece, new Vector2(col, row), new Vector2(enemyPawn.x, row + direction))).setEnPassant());
@@ -820,7 +782,7 @@ public class boardScript : MonoBehaviour
 
     //Used to see if a move puts the king in check. If it does, it is not a valid move.
     //This is more efficient than using updateSafeSquares for checking for a particular spot
-    private bool inCheck(bool team, Vector2 kingPos)
+    private bool inCheck(Team team, Coordinate kingPos)
     {
         List<Move> allEnemyMoves = allMoves(!team);
         foreach (Move move in allEnemyMoves)
@@ -871,12 +833,12 @@ public class boardScript : MonoBehaviour
     }
 
     //Makes move tiles for all the valid moves of a certain piece
-    private void showValidMoves(GameObject piece)
+    private void showValidMoves(Piece piece)
     {    //Note: this has the Assumption that Check is the Check for the team Piece belongs to. You cannot showValidMoves for the other team (as Check will be the wrong value)
         if (!check)
         {
             //If you aren't in check, you can do any move (barring the ones that put you in check)
-            bool team = piece.name.Contains("white");
+            bool team = piece.getTeam();
             List<Move> moves = validMoves(piece);
             removeCheckingMoves(moves, team);
 
@@ -903,24 +865,6 @@ public class boardScript : MonoBehaviour
                 }
             }
         }
-    }
-
-    //Returns a King for a certain team
-    private GameObject getKing(bool team)
-    {
-        if (team) { return whiteKing; } else { return blackKing; }
-    }
-
-    //returns the Vector2 (col,row) for a chess piece
-    private Coordinate getCoord(GameObject piece)
-    {
-        return new Coordinate(Utility.xToCol(piece.transform.position.x), Utility.xToCol(piece.transform.position.z));
-    }
-
-    //Returns white/black depending on the team
-    private string teamName(bool team)
-    {
-        if (team) { return "white"; } else { return "black"; }
     }
 
 }

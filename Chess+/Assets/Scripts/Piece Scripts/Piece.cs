@@ -99,7 +99,7 @@ public abstract class Piece : MonoBehaviour
     {
         float y = 0.5F;
         Quaternion rotation = Quaternion.Euler(-90, 0, 0);
-        this.gameObj = Instantiate(Prefabs.getPrefab(this.type), new Vector3(Utility.colToX(this.position.getCol()), y, Utility.colToX(this.position.getRow())), rotation);
+        this.gameObj = Instantiate(Prefabs.getPrefab(this.type), new Vector3(this.position.getX(), y, this.position.getZ()), rotation);
         this.gameObj.transform.localScale = new Vector3(35, 35, 35);
         if(this.team == Team.White)
         {
@@ -116,6 +116,10 @@ public abstract class Piece : MonoBehaviour
     {
         Destroy(this.gameObj);
     }
+
+    public GameObject getObject(){ return this.gameObj; }
+
+    public Coordinate getPos(){ return this.position; }
 
     public abstract bool isValidMove(boardState state, Move move);
     public abstract List<Move> getValidMoves(boardState state);

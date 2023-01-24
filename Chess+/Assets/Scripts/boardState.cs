@@ -11,7 +11,7 @@ public class boardState : MonoBehaviour
     //Stores the Piece chess pieces. Goes from 0-7 for col and row. 
     //Note, it is stored [col, row].
     //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
-    private Team currentPlayer;
+    public Team currentPlayer;
     private bool bLCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
     private bool bRCastle; //It's black left, black right, white left and white right
     private bool wLCastle;
@@ -105,7 +105,7 @@ public class boardState : MonoBehaviour
     }
 
     /** Returns the board state as a FEN string */
-    public string toFen()
+    public string toFEN()
     {
         string fenString = "";
         //Storing board setup
@@ -160,10 +160,24 @@ public class boardState : MonoBehaviour
         return boardArray[col - 1, row - 1];
     }
 
+    //Returns the chess piece for a certain Coordinate
+    private Piece getPiece(Coordinate coor)
+    {
+        return boardArray[coor.getCol() - 1, coor.getRow() - 1];
+    }
+
     public void setPiece(Coordinate pos, Piece newPiece)
     {
         Piece oldPiece = boardArray[pos.getCol() - 1, pos.getRow() - 1];
         if(oldPiece != null) { oldPiece.destroy(); }
         boardArray[pos.getCol() - 1, pos.getRow() - 1] = newPiece;
+    }
+
+    //Returns a King for a certain team
+    public King getKing(Team team)
+    {
+        if (team == Team.White) { return whiteKing; } else if(team == Team.Black){ return blackKing; }
+        Messages.Log(MessageType.Error, "wasn't black or white team");
+        throw new System.Exception("getKing had error");
     }
 }

@@ -5,8 +5,8 @@ using UnityEngine;
 /**Move stores within it one move a chess piece can do. */
 public class Move
 {
-    private Piece movedPiece; //The gameObject chess piece that is being moved
-    private Coordinate to; //The colrow of the spot its being moved to
+    protected Piece movedPiece; //The Piece chess piece that is being moved
+    protected Coordinate to; //The Coordinate of the spot its being moved to
 
     /**Constructor function */
     public Move(Piece movedPiece, Coordinate to)
@@ -33,7 +33,7 @@ public class Move
     {
         if (this.isValidMove(state))
         {
-
+            //TODO
         }
     }
 }

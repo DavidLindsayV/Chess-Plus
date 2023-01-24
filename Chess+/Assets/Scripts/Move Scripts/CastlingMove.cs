@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CastlingMove : Move
 {
-    private Move rookMove;
+    public Move rookMove;
     public CastlingMove(Piece kingPiece, Piece rookPiece, Coordinate kingTo, Coordinate rookTo): base(kingPiece, kingTo) { 
         rookMove = new Move(rookPiece, rookTo);
      }
