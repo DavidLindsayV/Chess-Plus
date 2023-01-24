@@ -18,9 +18,18 @@ public class Knight : Piece
         return false;
     }
 
-    public override Move[] getValidMoves(boardState state)
+    public override List<Move> getValidMoves(boardState state)
     {
         //TODO
         return null;
+    }
+
+    protected override void makePiece()
+    {
+        base.makePiece();
+        if(this.getTeam() == Team.Black)
+        {
+            this.gameObj.transform.rotation = Quaternion.Euler(-90, 180, 0);
+        }
     }
 }

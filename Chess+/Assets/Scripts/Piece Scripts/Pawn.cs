@@ -7,7 +7,6 @@ public class Pawn : Piece
 
     public Pawn(Team team, Coordinate pos, pieceType type): base(team, pos, type)
     {
-
     }
 
     public Pawn(char FENchar, Coordinate pos): base(FENchar, pos)
@@ -20,9 +19,17 @@ public class Pawn : Piece
         return false;
     }
 
-    public override Move[] getValidMoves(boardState state)
+    public override List<Move> getValidMoves(boardState state)
     {
         //TODO
         return null;
+    }
+
+    protected override void makePiece()
+    {
+        base.makePiece();
+        Vector3 vec = this.gameObj.transform.position;
+        vec.y = 0.5F;
+        this.gameObj.transform.position = vec;
     }
 }

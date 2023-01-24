@@ -18,9 +18,17 @@ public class King : Piece
         return false;
     }
 
-    public override Move[] getValidMoves(boardState state)
+    public override List<Move> getValidMoves(boardState state)
     {
         //TODO
         return null;
+    }
+
+    protected override void makePiece()
+    {
+        base.makePiece();
+        Vector3 vec = this.gameObj.transform.position;
+        vec.y = 0.5F;
+        this.gameObj.transform.position = vec;
     }
 }

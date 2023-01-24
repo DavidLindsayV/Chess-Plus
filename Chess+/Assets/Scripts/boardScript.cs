@@ -5,33 +5,12 @@ using UnityEngine.UI;
 
 public class boardScript : MonoBehaviour
 {
-    //The public piece prefabs
-    public static GameObject pawnPrefab;
-    public static GameObject rookPrefab;
-    public static GameObject bishopPrefab;
-    public static GameObject knightPrefab;
-    public static GameObject queenPrefab;
-    public static GameObject kingPrefab;
-    public static GameObject tilePrefab;
-
-    //The public materials for each team
-    public static Material white;
-    public static Material black;
-    public static Material highLight;
-
     //The text for displaying the result of the game on the UI
     public Text gameResultText;
 
     //The size of the board. For setUpBoard, this must be 8x8 board.
-    private readonly int boardSize = 8;
+    public static readonly int boardSize = 8;
 
-    private GameObject[,] gameObjArray; //Stores the GameObject chess pieces. Goes from 0-7 for col and row. 
-    //Note, it is stored [col, row].
-    //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
-    
-    private Piece[,] pieceArray; //Stores the Piece objects
-
-    private Team currentPlayer; //stores the current turn. White = player, Black = AI
     private List<GameObject> tileList; //stores the moveTiles the player can click on to do a move
 
     enum GameResult { Ongoing, GameWon, GameLost, Stalemate}
@@ -47,17 +26,10 @@ public class boardScript : MonoBehaviour
     private List<Move> checkAvoidingMoves; //The list of moves that, if you're in check, get you out of check (you legally have to do one of these moves).
     private bool[,] safeSquares; //Stores whether every square in under attack by an enemy piece (false), or not (true)
 
-    //Castling variables
-    private bool bLCastle = true; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
-    private bool bRCastle = true; //It's black left, black right, white left and white right
-    private bool wLCastle = true;
-    private bool wRCastle = true;
+    public boardState state; //this boardState stores the current state of the board
 
     //Promotion variables
     private PromoteMenu promotionMenuReference; //Variables used for Promotion
-
-    //En passant variabes
-    Coordinate enPassantPosition;
 
     public enum AIMode { easy, medium };
     public AIMode AIdifficulty = AIMode.easy;
@@ -91,251 +63,17 @@ public class boardScript : MonoBehaviour
         checkAvoidingMoves = new List<Move>();
 
         GameObject Canvas = GameObject.Find("Canvas");
-        promotionMenuReference = Canvas.GetComponent<PromotionMenu>(); //Get the promotion menu script
+        promotionMenuReference = Canvas.GetComponent<PromoteMenu>(); //Get the promotion menu script
 
-        boardArray = new GameObject[boardSize, boardSize];
+        boardArray = new Piece[boardSize, boardSize];
         safeSquares = new bool[boardSize, boardSize];
 
         //Initialise the chess pieces, set up the board with this FEN string
-        loadFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-        Debug.Log(getFEN());
+        state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
         checkForMate(true); //sets up the values of check and checkMate for the first turn, for the user
     }
 
-    //Creates a piece, given its type (one of the prefabs), col, row and team
-    //Fills in boardArray, sets the material, the name, and instantiates it
-    public GameObject makePiece(GameObject type, int col, int row, bool team) //bool hasMoved
-    {
-        float y = 0;
-        if (string.Equals(type.name, "Bishop") || string.Equals(type.name, "Pawn") || string.Equals(type.name, "King"))
-        {
-            y = 0.15F;
-        }
-        else
-        {
-            y = 0.5F;
-        }
-        Quaternion rotation;
-        //The black knights need to be rotated 180 degrees
-        if (string.Equals(type.name, "Knight") && !team) { rotation = Quaternion.Euler(-90, 180, 0); } else { rotation = Quaternion.Euler(-90, 0, 0); }
-        boardArray[col - 1, row - 1] = Instantiate(type, new Vector3(colToX(col), y, colToX(row)), rotation);
-        boardArray[col - 1, row - 1].transform.localScale = new Vector3(35, 35, 35);
-        if (team)
-        {
-            boardArray[col - 1, row - 1].GetComponent<Renderer>().material = white;
-            boardArray[col - 1, row - 1].name = "white" + getPiece(col, row).name;
-        }
-        else
-        {
-            boardArray[col - 1, row - 1].GetComponent<Renderer>().material = black;
-            boardArray[col - 1, row - 1].name = "black" + getPiece(col, row).name;
-        }
-        return boardArray[col - 1, row - 1];
-    }
-
-    //Loads a FEN string to set up the board
-    public void loadFEN(string FENstring)
-    {
-        string[] FENwords = FENstring.Split(' ');
-        //Setting the board
-        int col = 1;
-        int row = 8;
-        for (int i = 0; i < FENwords[0].Length; i++)
-        {
-            char c = FENwords[0][i];
-            if (c.Equals('/'))
-            {
-                row--;
-                col = 1;
-            }
-            else if (char.IsDigit(c))
-            {
-                col = col + c;
-            }
-            else
-           if (c.Equals(' '))
-            {
-                break;
-            }
-            else
-            {
-                //This will be if it's a character for a piece
-                bool team = char.IsUpper(c);
-                GameObject prefab;
-                c = char.ToUpper(c);
-                switch (c)
-                {
-                    case 'K':
-                        prefab = king;
-                        break;
-                    case 'Q':
-                        prefab = queen;
-                        break;
-                    case 'N':
-                        prefab = knight;
-                        break;
-                    case 'B':
-                        prefab = bishop;
-                        break;
-                    case 'R':
-                        prefab = rook;
-                        break;
-                    case 'P':
-                        prefab = pawn;
-                        break;
-                    default:
-                        prefab = pawn; Debug.Log("This should never trigger"); //The default is the pawn. But this should never trigger
-                        break;
-                }
-                makePiece(prefab, col, row, team);
-                if (c.Equals('K')) //Stores the white and black kings
-                {
-                    if (team)
-                    {
-                        whiteKing = boardArray[col - 1, row - 1];
-                    }
-                    else
-                    {
-                        blackKing = boardArray[col - 1, row - 1];
-                    }
-                }
-                col++;
-            }
-        }
-
-        //The player turn
-        playerTurn = FENwords[1].Equals("w");
-
-        //Castling
-        if (!FENwords[2].Contains("K")) { wRCastle = true; }
-        if (!FENwords[2].Contains("Q")) { wLCastle = true; }
-        if (!FENwords[2].Contains("k")) { bLCastle = true; }
-        if (!FENwords[2].Contains("q")) { bRCastle = true; }
-
-        //En Passant square
-        if (!FENwords[3].Contains("-"))
-        {
-            char Col = FENwords[3][0];
-            char Row = FENwords[3][1];
-            if (Col.Equals('a')) { col = 1; } else if (Col.Equals('b')) { col = 2; } else if (Col.Equals('c')) { col = 3; } else if (Col.Equals('d')) { col = 4; } else if (Col.Equals('e')) { col = 5; } else if (Col.Equals('f')) { col = 6; } else if (Col.Equals('g')) { col = 7; } else if (Col.Equals('h')) { col = 8; }
-            row = Row - '0'; //Converts char to int
-            if (playerTurn) { jumpedPawnBlack = new Vector2(col, row); } else { jumpedPawnWhite = new Vector2(col, row); }
-        }
-
-        //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
-
-        //Implement fullmoves??? Stores how many turns have elapsed
-    }
-
-    //Returns the FEN string for the current state of the board
-    public string getFEN()
-    {
-        string fenString = "";
-        //Storing board setup
-        for (int row = 8; row >= 1; row--)
-        {
-            int emptySpaces = 0;
-            for (int col = 1; col <= 8; col++)
-            {
-                if (boardArray[col - 1, row - 1] != null)
-                {
-                    string name = boardArray[col - 1, row - 1].name;
-                    bool team = name.Contains("white");
-                    if (team) { name = name.Remove(name.IndexOf("white"), 5); }
-                    if (!team) { name = name.Remove(name.IndexOf("black"), 5); }
-                    if (name.IndexOf("(Clone)") >= 0) { name = name.Remove(name.IndexOf("(Clone)"), 7); }
-                    char fenChar;
-                    switch (name)
-                    {
-                        case "King":
-                            fenChar = 'k';
-                            break;
-                        case "Queen":
-                            fenChar = 'q';
-                            break;
-                        case "Bishop":
-                            fenChar = 'b';
-                            break;
-                        case "Knight":
-                            fenChar = 'n';
-                            break;
-                        case "Rook":
-                            fenChar = 'r';
-                            break;
-                        case "Pawn":
-                            fenChar = 'p';
-                            break;
-                        default:
-                            Debug.Log("should be impossible here"); fenChar = 'x';
-                            break;
-                    }
-                    if (team) { fenChar = char.ToUpper(fenChar); }
-                    if (emptySpaces != 0) { fenString += emptySpaces; }
-                    fenString += char.ToString(fenChar);
-                    emptySpaces = 0;
-                }
-                else
-                {
-                    emptySpaces++;
-                }
-            }
-            if (emptySpaces != 0) { fenString += emptySpaces; }
-            if (row != 1) { fenString += char.ToString('/'); }
-        }
-
-        //The player turn
-        if (playerTurn) { fenString += " w "; } else { fenString += " b "; }
-
-        //Castling
-        if (wRCastle) { fenString += "K"; }
-        if (wLCastle) { fenString += "Q"; }
-        if (bLCastle) { fenString += "k"; }
-        if (bRCastle) { fenString += "q"; }
-        fenString += ' ';
-
-        //En Passant square
-        Vector2 enemyPawn;
-        if (playerTurn) { enemyPawn = jumpedPawnBlack; } else { enemyPawn = jumpedPawnWhite; }
-        if (enemyPawn == null) { fenString += "- "; }
-        else
-        {
-            int col = (int)enemyPawn.x;
-            switch (col)
-            {
-                case 1:
-                    fenString += 'a';
-                    break;
-                case 2:
-                    fenString += 'b';
-                    break;
-                case 3:
-                    fenString += 'c';
-                    break;
-                case 4:
-                    fenString += 'd';
-                    break;
-                case 5:
-                    fenString += 'e';
-                    break;
-                case 6:
-                    fenString += 'f';
-                    break;
-                case 7:
-                    fenString += 'g';
-                    break;
-                case 8:
-                    fenString += 'h';
-                    break;
-            }
-            fenString += enemyPawn.y + " ";
-        }
-
-        //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
-
-        //Implement fullmoves??? Stores how many turns have elapsed
-
-        return fenString;
-    }
 
     // Update is called once per frame
     void Update()
@@ -371,7 +109,7 @@ public class boardScript : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 1000))
             {
                 //Figure out what the user clicked on
-                if (hit.collider.gameObject.name.Contains("white")) //If they clicked on a white piece, show the moves for that chess piece
+                if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
                 {
                     deselect();
                     selected = hit.transform.gameObject;
@@ -415,7 +153,7 @@ public class boardScript : MonoBehaviour
         updateGamestate(playerTurn);
         turnOver = false;
         playerTurn = !playerTurn;
-        Debug.Log(getFEN());
+        Debug.Log(state.getFEN());
     }
 
     //Deselects the selected chess piece, (changes material and removes the move tiles)
@@ -423,7 +161,7 @@ public class boardScript : MonoBehaviour
     {
         if (selected != null)
         {
-            if (selected.name.Contains("white"))
+            if (selected.name.Contains(Team.White.ToString()))
             {
                 selected.GetComponent<Renderer>().material = white;
             }
@@ -1075,7 +813,7 @@ public class boardScript : MonoBehaviour
     }
 
     //Checks if a spot in boardArray is NOT an ally with a certain chess piece
-    private bool spotNotAlly(GameObject piece, int col, int row)
+    private bool spotNotAlly(Piece piece, int col, int row)
     {
         if (boardArray[col - 1, row - 1] == null) { return true; }
         return (piece.name.Contains("white") != boardArray[col - 1, row - 1].name.Contains("white"));
@@ -1175,42 +913,16 @@ public class boardScript : MonoBehaviour
         }
     }
 
-    //Returns whether a col and row are in bounds
-    private bool inBounds(int col, int row)
-    {
-        return (col >= 1 && col <= 8 && row >= 1 && row <= 8);
-    }
-
     //Returns a King for a certain team
     private GameObject getKing(bool team)
     {
         if (team) { return whiteKing; } else { return blackKing; }
     }
 
-    //Converts a x to Col, or a Z to Row.
-    private int xToCol(float x)
-    {
-        x = Mathf.Round(x + 0.5F) - 0.5F;
-        return (int)(x + 4.5);
-    }
-
-    //Converts a col to X, or row to Z
-    //Note: col should really be an int. But taking in a float prevents typecasting.
-    private float colToX(float col)
-    {
-        return (col - 4.5F);
-    }
-
     //returns the Vector2 (col,row) for a chess piece
-    private Vector2 getPos(GameObject piece)
+    private Coordinate getCoord(GameObject piece)
     {
-        return new Vector2(xToCol(piece.transform.position.x), xToCol(piece.transform.position.z));
-    }
-
-    //Returns the chess piece for a certain col and row. SHOULD I USE THIS???
-    private GameObject getPiece(int col, int row)
-    {
-        return boardArray[col - 1, row - 1];
+        return new Coordinate(Utility.xToCol(piece.transform.position.x), Utility.xToCol(piece.transform.position.z));
     }
 
     //Returns white/black depending on the team

@@ -18,7 +18,7 @@ public class Queen : Piece
         return false;
     }
 
-    public override Move[] getValidMoves(boardState state)
+    public override List<Move> getValidMoves(boardState state)
     {
         //TODO
         return null;

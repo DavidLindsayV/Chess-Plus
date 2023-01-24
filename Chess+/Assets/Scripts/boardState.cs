@@ -7,12 +7,20 @@ using UnityEngine;
 public class boardState : MonoBehaviour
 {
     private Piece[,] boardArray;
+    //Stores the Piece objects
+    //Stores the Piece chess pieces. Goes from 0-7 for col and row. 
+    //Note, it is stored [col, row].
+    //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
     private Team currentPlayer;
     private bool bLCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
     private bool bRCastle; //It's black left, black right, white left and white right
     private bool wLCastle;
     private bool wRCastle;
     private Coordinate enPassant; //can be null
+
+    //Optional fields, used for efficiency
+    private King whiteKing;
+    private King blackKing;
 
     /** Constructor taking in all essential fields */
     public boardState(Piece[,] boardArray, Team currentPlayer, bool bLCastle, bool bRCastle, bool wLCastle, bool wRCastle, Coordinate enPassant)
@@ -32,7 +40,7 @@ public class boardState : MonoBehaviour
         string[] FENwords = FENstring.Split(' ');
         //Setting the board
         int col = 1;
-        int row = 8;
+        int row = boardScript.boardSize;
         for (int i = 0; i < FENwords[0].Length; i++)
         {
             char c = FENwords[0][i];
@@ -51,10 +59,26 @@ public class boardState : MonoBehaviour
             }
             else
             {
-                //This will be if it's a character for a piece
-                //TODO: make something that calls a subclass constructor
-                //Piece piece = new Piece(c, new Coordinate(col, row));
-                //boardArray[col - 1, row - 1] = piece;
+                Piece piece;
+                switch (char.ToLower(c))
+                {
+                    case 'p': piece = new Pawn(c, new Coordinate(col, row));
+                        break;
+                    case 'r': piece = new Rook(c, new Coordinate(col, row));
+                        break;
+                    case 'n': piece = new Knight(c, new Coordinate(col, row));
+                        break;
+                    case 'b': piece = new Bishop(c, new Coordinate(col, row));
+                        break;
+                    case 'q': piece = new Queen(c, new Coordinate(col, row));
+                        break;
+                    case 'k': piece = new King(c, new Coordinate(col, row));
+                        //store white and black kings
+                        if(piece.getTeam() == Team.White) { whiteKing = (King)piece; } else if(piece.getTeam() == Team.Black){ blackKing = (King)piece; }
+                        break;
+                    default: throw new System.Exception("boardState had an oopsie in a switch statement");
+                }
+                boardArray[col - 1, row - 1] = piece;
                 col++;
             }
         }
@@ -85,10 +109,10 @@ public class boardState : MonoBehaviour
     {
         string fenString = "";
         //Storing board setup
-        for (int row = 8; row >= 1; row--)
+        for (int row = boardScript.boardSize; row >= 1; row--)
         {
             int emptySpaces = 0;
-            for (int col = 1; col <= 8; col++)
+            for (int col = 1; col <= boardScript.boardSize; col++)
             {
                 if (boardArray[col - 1, row - 1] != null)
                 {
@@ -128,5 +152,18 @@ public class boardState : MonoBehaviour
         //Implement fullmoves??? Stores how many turns have elapsed
 
         return fenString;
+    }
+
+    //Returns the chess piece for a certain col and row. 
+    private Piece getPiece(int col, int row)
+    {
+        return boardArray[col - 1, row - 1];
+    }
+
+    public void setPiece(Coordinate pos, Piece newPiece)
+    {
+        Piece oldPiece = boardArray[pos.getCol() - 1, pos.getRow() - 1];
+        if(oldPiece != null) { oldPiece.destroy(); }
+        boardArray[pos.getCol() - 1, pos.getRow() - 1] = newPiece;
     }
 }

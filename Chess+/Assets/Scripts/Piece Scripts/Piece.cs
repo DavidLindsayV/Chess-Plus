@@ -14,7 +14,7 @@ public abstract class Piece : MonoBehaviour
     private Team team;
     private Coordinate position;
     private pieceType type;
-    private GameObject gameObj;
+    protected GameObject gameObj;
 
     /** Constructs a Piece object */
     public Piece(Team team, Coordinate pos, pieceType type)
@@ -22,6 +22,7 @@ public abstract class Piece : MonoBehaviour
         this.team = team;
         this.position = pos;
         this.type = type;
+        makePiece();
     }
 
     /**Constructs a piece from it's FEN string character and position */
@@ -30,6 +31,7 @@ public abstract class Piece : MonoBehaviour
         this.type = charToType(FENchar);
         if (char.IsUpper(FENchar)) { this.team = Team.White; } else { this.team = Team.Black; }
         this.position = pos;
+        makePiece();
     }
 
     /** Get the team */
@@ -93,6 +95,28 @@ public abstract class Piece : MonoBehaviour
         }
     }
 
+    protected virtual void makePiece()
+    {
+        float y = 0.5F;
+        Quaternion rotation = Quaternion.Euler(-90, 0, 0);
+        this.gameObj = Instantiate(Prefabs.getPrefab(this.type), new Vector3(Utility.colToX(this.position.getCol()), y, Utility.colToX(this.position.getRow())), rotation);
+        this.gameObj.transform.localScale = new Vector3(35, 35, 35);
+        if(this.team == Team.White)
+        {
+            this.gameObj.GetComponent<Renderer>().material = Prefabs.white;
+        }
+        else
+        {
+            this.gameObj.GetComponent<Renderer>().material = Prefabs.black;
+        }
+        this.gameObj.name = this.team.ToString() + this.type.ToString();
+    }
+
+    public void destroy()
+    {
+        Destroy(this.gameObj);
+    }
+
     public abstract bool isValidMove(boardState state, Move move);
-    public abstract Move[] getValidMoves(boardState state);
+    public abstract List<Move> getValidMoves(boardState state);
 }

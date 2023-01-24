@@ -16,10 +16,10 @@ public class Move
     }
 
     /**gets end coordinate */
-    Coordinate getTo() { return this.to;  }
+    public Coordinate getTo() { return this.to;  }
 
     /** Gets moved piece */
-    Piece getPiece() { return this.movedPiece; }
+    public Piece getPiece() { return this.movedPiece; }
 
     /**Checks if a move is valid */
     public virtual bool isValidMove(boardState state)
@@ -29,4 +29,11 @@ public class Move
         return movedPiece.isValidMove(state, this);
     }
 
+    public void doMove(boardState state)
+    {
+        if (this.isValidMove(state))
+        {
+
+        }
+    }
 }
