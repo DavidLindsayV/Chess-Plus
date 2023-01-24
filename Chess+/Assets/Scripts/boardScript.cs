@@ -36,6 +36,7 @@ public class boardScript : MonoBehaviour
 
     private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
+    private Team playerTeam = Team.White;
     //Notes to know about the code:
     //The cols and rows go from 1 to 8.
     //TRUE is the player team, and FALSE is the AI team. Always.
@@ -43,7 +44,7 @@ public class boardScript : MonoBehaviour
 
     //TODO:
     //replace boardArray with a array of the names, not the gameObjects. Should be less computation to call. Still use an array of gameObjects, though? IDK...
-    //Can you make the prefabs finals?
+
     //ERROR WITH CURRENT CODE
     //If a rook moves or is killed, and when a king moves, it doesn't update the castling variables. IT SHOULD!!!
     //Fix this when you implement boardState() objects
@@ -58,14 +59,12 @@ public class boardScript : MonoBehaviour
     void Start()
     {
         //Set up some variables
-        currentPlayer = Team.White;
         tileList = new List<GameObject>();
         checkAvoidingMoves = new List<Move>();
 
         GameObject Canvas = GameObject.Find("Canvas");
         promotionMenuReference = Canvas.GetComponent<PromoteMenu>(); //Get the promotion menu script
 
-        boardArray = new Piece[boardSize, boardSize];
         safeSquares = new bool[boardSize, boardSize];
 
         //Initialise the chess pieces, set up the board with this FEN string
@@ -78,13 +77,14 @@ public class boardScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameResult == GameResult.Ongoing)
-        {
-            if (turnOver)
+        if (gameResult != GameResult.Ongoing){
+            endGame(); //If the game is over, call endgame
+            return;
+        }else if (turnOver)
             {
-                endTurn(); //This is done separately from userTurn and enemyTurn, because this gives other scripts time to do stuffs between updates.
+                endTurn(); //Either player or enemy has finished their turn. 
             }
-            else if (playerTurn) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
+            else if (boardState.currentPlayer == playerTeam) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
             {
                 userTurn();
             }
@@ -92,22 +92,19 @@ public class boardScript : MonoBehaviour
             {
                 enemyTurn();
             }
-        }
-        else
-        {
-            endGame(); //If the game is over, call endgame
-        }
     }
 
     //The user's turn.
     private void userTurn()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
+        if (!Input.GetMouseButtonDown(0)){ return; }
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, 1000))
-            {
+            if (!Physics.Raycast(ray, out hit, 1000)){
+                //If nothing is hit, deselect
+                deselect();
+                return;
+            }
                 //Figure out what the user clicked on
                 if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
                 {
@@ -138,11 +135,6 @@ public class boardScript : MonoBehaviour
                     turnOver = true;
                 }
             }
-            else
-            { //If they click on nothing in particular, deselect the selected chess piece
-                deselect();
-            }
-        }
     }
 
     //Ends a players turn

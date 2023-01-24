@@ -16,7 +16,7 @@ public class boardState : MonoBehaviour
     private bool bRCastle; //It's black left, black right, white left and white right
     private bool wLCastle;
     private bool wRCastle;
-    private Coordinate enPassant; //can be null
+    private Coordinate enPassant; //Stores a location that can be en-passanted. can be null
 
     //Optional fields, used for efficiency
     private King whiteKing;
@@ -99,9 +99,9 @@ public class boardState : MonoBehaviour
             enPassant = new Coordinate(positionString);
         }
 
-        //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
+        //TODO Implement halfmoves??? (50 moves without pawn progression or killing = draw)
 
-        //Implement fullmoves??? Stores how many turns have elapsed
+        //TODO Implement fullmoves??? Stores how many turns have elapsed
     }
 
     /** Returns the board state as a FEN string */

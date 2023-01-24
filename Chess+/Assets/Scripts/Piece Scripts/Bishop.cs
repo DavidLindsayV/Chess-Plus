@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class Bishop : Piece
 {
-    public Bishop(Team team, Coordinate pos, pieceType type) : base(team, pos, type)
+    public Bishop(Team team, Coordinate pos) : base(team, pos, Piece.pieceType.Bishop)
     {
-
     }
 
     public Bishop(char FENchar, Coordinate pos) : base(FENchar, pos)

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Pawn : Piece
 {
 
-    public Pawn(Team team, Coordinate pos, pieceType type): base(team, pos, type)
+    public Pawn(Team team, Coordinate pos): base(team, pos, Piece.pieceType.Pawn)
     {
     }
 

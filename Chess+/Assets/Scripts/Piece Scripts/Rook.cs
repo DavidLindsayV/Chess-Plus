@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Rook : Piece
 {
-    public Rook(Team team, Coordinate pos, pieceType type) : base(team, pos, type)
+    public Rook(Team team, Coordinate pos) : base(team, pos, Piece.pieceType.Rook)
     {
 
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Knight : Piece
 {
-    public Knight(Team team, Coordinate pos, pieceType type) : base(team, pos, type)
+    public Knight(Team team, Coordinate pos) : base(team, pos, Piece.pieceType.Knight)
     {
 
     }

@@ -1,3 +1,5 @@
+//TODO figure out a way to do this because you're badly juggling playing the game + pausing + promoting
+
 //using System.Collections;
 //using System.Collections.Generic;
 //using UnityEngine;

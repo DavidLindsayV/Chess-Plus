@@ -5,18 +5,18 @@ using UnityEngine;
 public static class Prefabs 
 {
     //The public piece prefabs
-    public static GameObject pawnPrefab;
-    public static GameObject rookPrefab;
-    public static GameObject bishopPrefab;
-    public static GameObject knightPrefab;
-    public static GameObject queenPrefab;
-    public static GameObject kingPrefab;
-    public static GameObject tilePrefab;
+    public static readonly GameObject pawnPrefab;
+    public static readonly GameObject rookPrefab;
+    public static readonly GameObject bishopPrefab;
+    public static readonly GameObject knightPrefab;
+    public static readonly GameObject queenPrefab;
+    public static readonly GameObject kingPrefab;
+    public static readonly GameObject tilePrefab;
 
     //The public materials for each team
-    public static Material white;
-    public static Material black;
-    public static Material highLight;
+    public static readonly Material white;
+    public static readonly Material black;
+    public static readonly Material highLight;
 
     public static GameObject getPrefab(Piece.pieceType type)
     {

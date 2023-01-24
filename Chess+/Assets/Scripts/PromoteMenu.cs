@@ -42,21 +42,21 @@ public class PromoteMenu : MonoBehaviour
     /**Promotes to a queen */
     public void promoteQueen()
     {
-        promotePiece(new Queen(promotionMove.getPiece().getTeam(), promotionMove.getTo(), Piece.pieceType.Queen));
+        promotePiece(new Queen(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
     /** Promotes to a bishop */
     public void promoteBishop()
     {
-        promotePiece(new Bishop(promotionMove.getPiece().getTeam(), promotionMove.getTo(), Piece.pieceType.Bishop));
+        promotePiece(new Bishop(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
     /** Promotes to a rook */
     public void promoteRook()
     {
-        promotePiece(new Rook(promotionMove.getPiece().getTeam(), promotionMove.getTo(), Piece.pieceType.Rook));
+        promotePiece(new Rook(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
     /**Promotes to a knight */
     public void promoteKnight()
     {
-        promotePiece(new Knight(promotionMove.getPiece().getTeam(), promotionMove.getTo(), Piece.pieceType.Knight));
+        promotePiece(new Knight(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
 }
