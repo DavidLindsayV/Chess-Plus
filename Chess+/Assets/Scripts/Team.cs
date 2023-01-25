@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Team : MonoBehaviour
+public class Team
 {
     private enum myTeam{White, Black};
     public static Team White = new Team(myTeam.White);

@@ -4,7 +4,7 @@ using UnityEngine;
 
 /** Stores the state of a board
  */
-public class boardState : MonoBehaviour
+public class boardState
 {
     private Piece[,] boardArray;
 
