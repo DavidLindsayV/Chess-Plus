@@ -18,6 +18,9 @@ public class Move
     /**gets end coordinate */
     public Coordinate getTo() { return this.to;  }
 
+    /**gets start coordinate */
+    public Coordinate getFrom(){ return movedPiece.getPos(); }
+
     /** Gets moved piece */
     public Piece getPiece() { return this.movedPiece; }
 

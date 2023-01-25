@@ -5,22 +5,28 @@ using UnityEngine;
 public class PromoteMove : Move
 {
     public Piece promotedTo;
-    public PromoteMove(Piece movedPiece, Coordinate to, Piece promotedTo) : base(movedPiece, to)
+
+    public PromoteMove(Piece movedPiece, Coordinate to, Piece promotedTo)
+        : base(movedPiece, to)
     {
         this.promotedTo = promotedTo;
-        this.promotedTo.getObject().SetActive(false);
+        this.promotedTo.destroy();
     }
 
     public override bool isValidMove(boardState state)
     {
-        if (!base.isValidMove(state)) { return false; }
+        if (!base.isValidMove(state))
+        {
+            return false;
+        }
         //TODO: do custom checks to make sure the promotion move is valid
         //(promoted to right types and anything else you can think of)
         return false;
     }
 
     //Makes the promoted piece visible
-    public void makePromotedPiece(){
-        this.promotedTo.getObject().SetActive(true);
+    public void makePromotedPiece()
+    {
+        this.promotedTo.makePiece();
     }
 }

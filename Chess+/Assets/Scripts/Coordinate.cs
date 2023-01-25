@@ -6,11 +6,12 @@ using UnityEngine;
  * Class for storing position on the board.
  * Row and col go from 1 to 8
  * Row 1 col 1 is white's left rook
+ * A coordinate object once constructed cannot change its values
  */
-public class Coordinate : MonoBehaviour
+public class Coordinate 
 {
-    private int row;
-    private int col;
+    private readonly int row;
+    private readonly int col;
 
     /** Constructs a coordinate */
     public Coordinate(int col, int row)
@@ -55,6 +56,12 @@ public class Coordinate : MonoBehaviour
         }
         this.row = coord[1] - '0';
     }
+
+    /**Returns the coordinate if it moved by col and row*/
+    public Coordinate move(int colChange, int rowChange){
+        return new Coordinate(this.col+colChange,this.row+rowChange);
+    }
+    
     /**
      * Returns the row of a coordinate
      */
@@ -101,11 +108,14 @@ public class Coordinate : MonoBehaviour
         return toReturn + this.row;
     }
 
-        //Returns whether a col and row are in bounds
-    private static bool inBounds(int col, int row)
+    //Returns whether a col and row are in bounds
+    public static bool inBounds(int col, int row)
     {
         return (col >= 1 && col <= 8 && row >= 1 && row <= 8);
     }
+
+    //Returns whether this coordinate is in bounds
+    public bool inBounds(){ return inBounds(this.col, this.row); }
 
     //TODO see if the below functions for getting X and Z values works when you change board sizes
         //Converts a x to Col, or a Z to Row.

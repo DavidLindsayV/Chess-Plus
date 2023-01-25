@@ -4,27 +4,79 @@ using UnityEngine;
 
 public class King : Piece
 {
-    public King(Team team, Coordinate pos, pieceType type) : base(team, pos, Piece.pieceType.King)
-    {
+    public King(Team team, Coordinate pos)
+        : base(team, pos) { }
 
-    }
+    public King(char FENchar, Coordinate pos)
+        : base(FENchar, pos) { }
 
-    public King(char FENchar, Coordinate pos) : base(FENchar, pos)
-    {
-    }
+    public King(Team team, Coordinate pos, GameObject gameObj)
+        : base(team, pos, gameObj) { }
+
     public override bool isValidMove(boardState state, Move move)
     {
         //TODO
         return false;
     }
 
-    public override List<Move> getValidMoves(boardState state)
+    public override List<Move> getValidMoves(boardState bState)
     {
-        //TODO
-        return null;
+        int col = this.getPos().getCol();
+        int row = this.getPos().getRow();
+        List<Move> moves = new List<Move>();
+        for (int a = -1; a <= 1; a++)
+            for (int b = -1; b <= 1; b++)
+            {
+                Coordinate newCoord = this.getPos().move(a, b);
+                if ((a != 0 || b != 0) && newCoord.inBounds() && bState.spotNotAlly(this, newCoord))
+                {
+                    moves.Add(new Move(this, newCoord));
+                }
+            }
+        //Check for castling
+        bool check = Processing.inCheck(bState, this.getTeam());
+        Team team = this.getTeam();
+        bool leftCastle = bState.canCastle(team, true);
+        bool rightCastle = bState.canCastle(team, false);
+        if (
+            leftCastle
+            && !check
+            && bState.getPiece(2, row) == null
+            && bState.getPiece(3, row) == null
+            && bState.getPiece(4, row) == null
+            && !Processing.inDanger(bState, this.getTeam(), new Coordinate(2, row))
+            && !Processing.inDanger(bState, this.getTeam(), new Coordinate(3, row))
+        )
+        {
+            Move move = new CastlingMove(
+                this,
+                bState.getPiece(1, row),
+                this.getPos().move(-2, 0),
+                new Coordinate(col - 1, row)
+            );
+            moves.Add(move);
+        }
+        if (
+            rightCastle
+            && !check
+            && bState.getPiece(7, row) == null
+            && bState.getPiece(6, row) == null
+            && !Processing.inDanger(bState, this.getTeam(), new Coordinate(5, row))
+            && !Processing.inDanger(bState, this.getTeam(), new Coordinate(6, row))
+        ) //NOTE: I manually entered the numbers for all the squares between king and rook.
+        { //Generalise this?
+            Move move = new CastlingMove(
+                this,
+                bState.getPiece(new Coordinate(8, row)),
+                this.getPos().move(2, 0),
+                this.getPos().move(-2, 0)
+            );
+            moves.Add(move);
+        }
+        return moves;
     }
 
-    protected override void makePiece()
+    public override void makePiece()
     {
         base.makePiece();
         Vector3 vec = this.gameObj.transform.position;

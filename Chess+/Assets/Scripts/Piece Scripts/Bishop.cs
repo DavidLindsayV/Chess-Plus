@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class Bishop : Piece
 {
-    public Bishop(Team team, Coordinate pos) : base(team, pos, Piece.pieceType.Bishop)
-    {
-    }
+    public Bishop(Team team, Coordinate pos)
+        : base(team, pos) { }
 
-    public Bishop(char FENchar, Coordinate pos) : base(FENchar, pos)
-    {
-    }
+    public Bishop(char FENchar, Coordinate pos)
+        : base(FENchar, pos) { }
+
+    public Bishop(Team team, Coordinate pos, GameObject gameObj)
+        : base(team, pos, gameObj) { }
 
     public override bool isValidMove(boardState state, Move move)
     {
@@ -18,13 +19,80 @@ public class Bishop : Piece
         return false;
     }
 
-    public override List<Move> getValidMoves(boardState state)
+    //Returns the moves for a Bishop
+    public override List<Move> getValidMoves(boardState bState)
     {
-        //TODO
-        return null;
+        List<Move> moves = new List<Move>();
+        int col = this.getPos().getCol();
+        int row = this.getPos().getRow();
+        for (int i = 1; i < 8; i++)
+        {
+            if (Coordinate.inBounds(col + i, row + i))
+            {
+                if (bState.spotNotAlly(this, new Coordinate(col + i, row + i)))
+                {
+                    moves.Add(
+                        new Move(this, new Coordinate(col + i, row + i))
+                    );
+                }
+                if (bState.getPiece(col + i, row + i) != null)
+                {
+                    break;
+                }
+            }
+        }
+        for (int i = 1; i < 8; i++)
+        {
+            if (Coordinate.inBounds(col - i, row - i))
+            {
+                if (bState.spotNotAlly(this, new Coordinate(col - i, row - i)))
+                {
+                    moves.Add(
+                        new Move(this, new Coordinate(col - i, row - i))
+                    );
+                }
+                if (bState.getPiece(col - i, row - i) != null)
+                {
+                    break;
+                }
+            }
+        }
+        for (int i = 1; i < 8; i++)
+        {
+            if (Coordinate.inBounds(col - i, row + i))
+            {
+                if (bState.spotNotAlly(this, new Coordinate(col - i, row + i)))
+                {
+                    moves.Add(
+                        new Move(this, new Coordinate(col - i, row + i))
+                    );
+                }
+                if (bState.getPiece(col - i, row + i) != null)
+                {
+                    break;
+                }
+            }
+        }
+        for (int i = 1; i < 8; i++)
+        {
+            if (Coordinate.inBounds(col + i, row - i))
+            {
+                if (bState.spotNotAlly(this, new Coordinate(col + i, row - i)))
+                {
+                    moves.Add(
+                        new Move(this, new Coordinate(col + i, row - i))
+                    );
+                }
+                if (bState.getPiece(col + i, row - i) != null)
+                {
+                    break;
+                }
+            }
+        }
+        return moves;
     }
 
-    protected override void makePiece()
+    public override void makePiece()
     {
         base.makePiece();
         Vector3 vec = this.gameObj.transform.position;
