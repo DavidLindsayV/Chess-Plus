@@ -13,20 +13,15 @@ public class PromoteMove : Move
         this.promotedTo.destroy();
     }
 
-    public override bool isValidMove(boardState state)
-    {
-        if (!base.isValidMove(state))
-        {
-            return false;
-        }
-        //TODO: do custom checks to make sure the promotion move is valid
-        //(promoted to right types and anything else you can think of)
-        return false;
-    }
-
     //Makes the promoted piece visible
     public void makePromotedPiece()
     {
         this.promotedTo.makePiece();
+    }
+
+    public override Piece doMoveState(boardState bState){
+        Piece killedPiece = base.doMoveState(bState);
+        bState.setPiece(this.getTo(), this.promotedTo);
+        return killedPiece;
     }
 }

@@ -44,10 +44,10 @@ public class boardScript : MonoBehaviour
     //Should I make endGame() a function I call directly instead of calling it during update?
     //Should I be using lists so much? What about sets?
 
-    //TODO move AI reasoning into separate file
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
     //TODO make automated testing cover piece movements
     //TODO change heirarchy to make all the pieces children of something so u can minimise them
+    //TODO rename boardScript to something more descriptive of what it does
 
 
     // Start is called before the first frame update
@@ -108,16 +108,15 @@ public class boardScript : MonoBehaviour
             int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
             selected = state.getPiece(new Coordinate(col, row));
             selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
-            Debug.Log(selected.getPos());
             showValidMoveTiles(selected);
         }
         else if (
             hit.collider.gameObject.name.Contains("moveTile")
-            || hit.collider.gameObject.name.Contains("black")
+            || hit.collider.gameObject.name.Contains(Team.Black.ToString())
         )
         { //If you click on a black piece or a move tile
             //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
-            if (hit.collider.gameObject.name.Contains("black"))
+            if (hit.collider.gameObject.name.Contains(Team.Black.ToString()))
             {
             int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
             int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
@@ -177,7 +176,7 @@ public class boardScript : MonoBehaviour
     //Executes a move
     private void doMove(Move move)
     {
-        Piece killedPiece = Processing.doMoveState(state, move); //Updates the boardArray.
+        Piece killedPiece = move.doMoveState(state); //Updates the boardState.
         //It is done separately to allow this function to be reused when testing/checking moves
         showMove(move, killedPiece); //Does the rest of the move, updating the GameObject placements
     }
@@ -223,72 +222,11 @@ public class boardScript : MonoBehaviour
         }
         else
         {
-            List<Move> maxPriMoves = getMaxPriMoves(state, AIMoves, state.enemysTeam());
+            List<Move> maxPriMoves = AI.getMaxPriMoves(state, AIMoves, state.enemysTeam());
             int index = Random.Range(0, maxPriMoves.Count);
             doMove(maxPriMoves[index]);
         }
         turnOver = true;
-    }
-
-    private List<Move> getMaxPriMoves(boardState bState, List<Move> AIMoves, Team team)
-    {
-        int maxPriority = 0; //TODO move AI thinking into separate file
-        List<Move> maxPriMoves = new List<Move>();
-        foreach (Move move in AIMoves)
-        {
-            int movePri = movePriority(bState, move, team);
-            if (movePri == maxPriority)
-            {
-                maxPriMoves.Add(move);
-            }
-            if (movePri > maxPriority)
-            {
-                maxPriority = movePri;
-                maxPriMoves.Clear();
-                maxPriMoves.Add(move);
-            }
-        }
-        return maxPriMoves;
-    }
-
-    /**Generates a "priority" for the move: how good it is. BASIC right now*/
-    private int movePriority(boardState bState, Move move, Team team)
-    {
-        boardState cloneState = bState.clone();
-        Piece killedPiece = Processing.doMoveState(cloneState, move);
-        bool checking = Processing.inCheck(cloneState, team.nextTeam());
-
-        if (checking)
-        {
-            return 10;
-        }
-        if (killedPiece != null)
-        {
-            if (killedPiece is King)
-            {
-                Messages.Log(
-                    MessageType.Error,
-                    "This shouldn't be possible. The game should end with checkmate before this happens"
-                );
-            }
-            if (killedPiece is Queen)
-            {
-                return 9;
-            }
-            if (killedPiece is Rook || killedPiece is Bishop)
-            {
-                return 8;
-            }
-            if (killedPiece is Knight)
-            {
-                return 7;
-            }
-            if (killedPiece is Pawn)
-            {
-                return 6;
-            }
-        }
-        return 0; //If killedPiece == null and its not checking
     }
 
     //Called when the game ends. Does stuff and stops the code from running

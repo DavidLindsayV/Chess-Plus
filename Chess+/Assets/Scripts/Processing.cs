@@ -55,7 +55,7 @@ public static class Processing
             Move move = moves[i];
             //Simulate doing the move
             boardState cloneState = bState.clone();
-            doMoveState(cloneState, move);
+            move.doMoveState(cloneState);
             if (inCheck(cloneState, team))
             {
                 moves.RemoveAt(i); //If the king is in check, remove that move
@@ -96,76 +96,6 @@ public static class Processing
         return allmoves;
     }
 
-    //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
-    //Returns any killed piece
-    public static Piece doMoveState(boardState bState, Move move) 
-    { //TODO put this doMoveState code within Move and its subclasses
-        Piece piece = bState.getPiece(move.getFrom()); //You need to refer to the piece from the cloned board
-        //not from the move, because the one in the move may be from a different board state
-        //(piece may have the same values as move.getPiece(), but only piece can be changed without consequence)
-        Team team = piece.getTeam();
-        bState.setPiece(move.getFrom(), null);
-        Piece killedPiece = null;
-        if (bState.getPiece(move.getTo()) != null)
-        {
-            killedPiece = bState.getPiece(move.getTo()); //Stores the piece that could be killed when the theoretical move is done
-            //Don't need to set the piece to inactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
-            //Updates the castling variables if a rook is killed
-            if (killedPiece is Rook)
-            {
-                if (move.getTo().getCol() == 1)
-                {
-                    bState.setCastle(killedPiece.getTeam(), true, false);
-                }
-                else if (move.getTo().getCol() == 1)
-                {
-                    bState.setCastle(killedPiece.getTeam(), false, false);
-                }
-            }
-        }
-        bState.setPiece(move.getTo(), piece);
-        piece.setPos(move.getTo());
-        if (move is PawnDoublejump)
-        {
-            int direction = 0;
-            if (team == Team.White)
-            {
-                direction = -1;
-            }
-            else
-            {
-                direction = +1;
-            }
-            bState.setEnPassant(
-                new Coordinate(move.getTo().getCol(), move.getTo().getRow() + direction)
-            );
-        }
-        else
-        {
-            bState.setEnPassant(null);
-        }
-        if (move is CastlingMove)
-        {
-            bState.setCastle(team, true, false);
-            bState.setCastle(team, false, false);
-            //Does the rook-moving part of Castling. No pieces will be killed by this, so the return value
-            //can be ignored
-            doMoveState(bState, ((CastlingMove)move).rookMove);
-        }
-        if (move is PromoteMove)
-        {
-            bState.setPiece(move.getTo(), ((PromoteMove)move).promotedTo);
-        }
-        if (move is EnPassantMove)
-        {
-            killedPiece = bState.getPiece(
-                new Coordinate(move.getTo().getCol(), move.getFrom().getRow())
-            );
-            bState.setPiece(new Coordinate(move.getTo().getCol(), move.getFrom().getRow()), null);
-        }
-        return killedPiece;
-    }
-
     //Checks for Stalemate and Checkmate and updates GameResult
     public static void updateGameResult(boardState bState, Team team)
     { //TODO make sure gameresult isn't modified elsewhere as we pretty much only need to set it here
@@ -203,7 +133,7 @@ public static class Processing
         foreach (Move move in allTeamMoves) //This goes through all the moves of your team and simulates them, then sees if you're still in check.
         { //If no move you can do prevents check, then you're in checkmate
             boardState cloneState = bState.clone();
-            doMoveState(cloneState, move);
+            move.doMoveState(cloneState);
             if (!inCheck(cloneState, team))
             {
                 return;

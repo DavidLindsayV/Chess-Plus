@@ -9,9 +9,13 @@ public class CastlingMove : Move
         rookMove = new Move(rookPiece, rookTo);
      }
 
-    public override bool isValidMove(boardState state)
-    {
-        //TODO: check if castling move is valid
-        return false;
+    public override Piece doMoveState(boardState bState){
+        base.doMoveState(bState);
+            bState.setCastle(this.movedPiece.getTeam(), true, false);
+            bState.setCastle(this.movedPiece.getTeam(), false, false);
+            //Does the rook-moving part of Castling. No pieces will be killed by this, so the return value
+            //can be ignored
+            this.rookMove.doMoveState(bState);
+            return null; //castling moves can't kill
     }
 }

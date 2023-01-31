@@ -9,9 +9,12 @@ public class EnPassantMove : Move
 
     }
 
-    public override bool isValidMove(boardState state)
-    {
-        //TODO: check en passant move is valid
-        return false;
+    public override Piece doMoveState(boardState bState){
+        base.doMoveState(bState);
+            Piece killedPiece = bState.getPiece(
+                new Coordinate(this.getTo().getCol(), this.getFrom().getRow())
+            );
+            bState.setPiece(new Coordinate(this.getTo().getCol(), this.getFrom().getRow()), null);
+            return killedPiece;
     }
 }

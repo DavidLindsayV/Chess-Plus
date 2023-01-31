@@ -115,4 +115,6 @@ public abstract class Piece
 
     /**Returns a clone of a piece BUT still refers to the same GameObject */
     public abstract Piece clonePiece();
+
+    
 }

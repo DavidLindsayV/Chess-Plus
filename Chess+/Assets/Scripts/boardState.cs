@@ -390,7 +390,7 @@ public class boardState
     /**Sets the values for castling, whether you can or can't castle on whichever side*/
     public void setCastle(Team team, bool left, bool value)
     {
-        if (team == Team.White)
+        if (team == Team.White) //TODO replace setCastle "left" with queenside and kingside
         {
             if (left)
             {
