@@ -13,14 +13,17 @@ public class Bishop : Piece
     public Bishop(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
-    public override bool isValidMove(boardState state, Move move)
-    {
-        //TODO
-        return false;
+
+    public override char typeToChar(){
+        return 'b';
+    }
+
+    public override Piece clonePiece(){
+        return new Bishop(this.getTeam(), this.getPos(), this.getObject());
     }
 
     //Returns the moves for a Bishop
-    public override List<Move> getValidMoves(boardState bState)
+    public override List<Move> getMoves(boardState bState)
     {
         List<Move> moves = new List<Move>();
         int col = this.getPos().getCol();
@@ -92,11 +95,15 @@ public class Bishop : Piece
         return moves;
     }
 
+    public override List<Move> getAttackingMoves(boardState bState){
+        return this.getMoves(bState);
+    }
+
     public override void makePiece()
     {
         base.makePiece();
         Vector3 vec = this.gameObj.transform.position;
-        vec.y = 0.5F;
+        vec.y = 0.2F;
         this.gameObj.transform.position = vec;
     }
 }

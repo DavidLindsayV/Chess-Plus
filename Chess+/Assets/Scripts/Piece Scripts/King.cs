@@ -13,26 +13,20 @@ public class King : Piece
     public King(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
-    public override bool isValidMove(boardState state, Move move)
+    public override char typeToChar()
     {
-        //TODO
-        return false;
+        return 'k';
     }
 
-    public override List<Move> getValidMoves(boardState bState)
+        public override Piece clonePiece(){
+        return new King(this.getTeam(), this.getPos(), this.getObject());
+    }
+
+    public override List<Move> getMoves(boardState bState)
     {
         int col = this.getPos().getCol();
         int row = this.getPos().getRow();
-        List<Move> moves = new List<Move>();
-        for (int a = -1; a <= 1; a++)
-            for (int b = -1; b <= 1; b++)
-            {
-                Coordinate newCoord = this.getPos().move(a, b);
-                if ((a != 0 || b != 0) && newCoord.inBounds() && bState.spotNotAlly(this, newCoord))
-                {
-                    moves.Add(new Move(this, newCoord));
-                }
-            }
+        List<Move> moves = getAttackingMoves(bState);
         //Check for castling
         bool check = Processing.inCheck(bState, this.getTeam());
         Team team = this.getTeam();
@@ -76,11 +70,27 @@ public class King : Piece
         return moves;
     }
 
+    public override List<Move> getAttackingMoves(boardState bState){
+        int col = this.getPos().getCol();
+        int row = this.getPos().getRow();
+        List<Move> moves = new List<Move>();
+        for (int a = -1; a <= 1; a++)
+            for (int b = -1; b <= 1; b++)
+            {
+                Coordinate newCoord = this.getPos().move(a, b);
+                if ((a != 0 || b != 0) && newCoord.inBounds() && bState.spotNotAlly(this, newCoord))
+                {
+                    moves.Add(new Move(this, newCoord));
+                }
+            }
+        return moves;
+    }
+
     public override void makePiece()
     {
         base.makePiece();
         Vector3 vec = this.gameObj.transform.position;
-        vec.y = 0.5F;
+        vec.y = 0.2F;
         this.gameObj.transform.position = vec;
     }
 }

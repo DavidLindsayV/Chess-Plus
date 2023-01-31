@@ -13,14 +13,17 @@ public class Knight : Piece
     public Knight(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
-    public override bool isValidMove(boardState bState, Move move)
-    {
-        //TODO
-        return false;
+    public override char typeToChar(){
+        return 'n';
     }
 
+        public override Piece clonePiece(){
+        return new Knight(this.getTeam(), this.getPos(), this.getObject());
+    }
+
+
         //Returns the moves for a Knight
-    public override List<Move> getValidMoves(boardState bState)
+    public override List<Move> getMoves(boardState bState)
     {
         List<Move> moves = new List<Move>();
         int col = this.getPos().getCol();
@@ -42,6 +45,10 @@ public class Knight : Piece
                 }
             }
         return moves;
+    }
+
+    public override List<Move> getAttackingMoves(boardState bState){
+        return this.getMoves(bState);
     }
 
     public override void makePiece()

@@ -20,7 +20,7 @@ public static class Processing
     /**This gets the valid + allowed moves (don't put you in check) for a single specified piece */
     public static List<Move> validMoves(boardState bState, Piece piece)
     {
-        List<Move> moves = piece.getValidMoves(bState);
+        List<Move> moves = piece.getMoves(bState);
         removeCheckingMoves(bState, moves, piece.getTeam());
         return moves;
     }
@@ -35,7 +35,7 @@ public static class Processing
     /**A version of inCheck that sees if any enemy moves end at the destination pos specified*/
     public static bool inDanger(boardState bState, Team team, Coordinate pos)
     {
-        List<Move> allEnemyMoves = allMoves(bState, team.nextTeam());
+        List<Move> allEnemyMoves = allAttackingMoves(bState, team.nextTeam());
         foreach (Move move in allEnemyMoves)
         {
             if (move.getTo() == pos)
@@ -67,22 +67,38 @@ public static class Processing
     /**Returns a list of all of the moves of a certain team*/
     private static List<Move> allMoves(boardState bState, Team team)
     {
-        List<Move> allMoves = new List<Move>();
+        List<Move> allmoves = new List<Move>(); //TODO have each piece calculate its possible moves only once for a given board state so its not recalculated several times. Figure out if that would increase efficiency???
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
             { //Goes through each gameObject in boardArray, and if its in the right team it adds all of its moves to the list its going to return
                 Coordinate c = new Coordinate(col, row);
                 if (bState.getPiece(c) != null && bState.getPiece(c).getTeam() == team)
                 {
-                    allMoves.AddRange(bState.getPiece(c).getValidMoves(bState));
+                    allmoves.AddRange(bState.getPiece(c).getMoves(bState));
                 }
             }
-        return allMoves;
+        return allmoves;
+    }
+
+    /**Returns a list of all of the Attacking moves of a certain team*/
+    private static List<Move> allAttackingMoves(boardState bState, Team team)
+    {
+        List<Move> allmoves = new List<Move>();
+        for (int col = 1; col <= bState.boardSize; col++)
+            for (int row = 1; row <= bState.boardSize; row++)
+            { //Goes through each gameObject in boardArray, and if its in the right team it adds all of its moves to the list its going to return
+                Coordinate c = new Coordinate(col, row);
+                if (bState.getPiece(c) != null && bState.getPiece(c).getTeam() == team)
+                {
+                    allmoves.AddRange(bState.getPiece(c).getAttackingMoves(bState));
+                }
+            }
+        return allmoves;
     }
 
     //Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
     //Returns any killed piece
-    public static Piece doMoveState(boardState bState, Move move)
+    public static Piece doMoveState(boardState bState, Move move) 
     { //TODO put this doMoveState code within Move and its subclasses
         Team team = move.getPiece().getTeam();
         bState.setPiece(move.getFrom(), null);
@@ -91,6 +107,18 @@ public static class Processing
         {
             killedPiece = bState.getPiece(move.getTo()); //Stores the piece that could be killed when the theoretical move is done
             //Don't need to set the piece to inactive: remove the reference to it in boardArray, and it won't have any moves calculated for it
+            //Updates the castling variables if a rook is killed
+            if (killedPiece is Rook)
+            {
+                if (move.getTo().getCol() == 1)
+                {
+                    bState.setCastle(killedPiece.getTeam(), true, false);
+                }
+                else if (move.getTo().getCol() == 1)
+                {
+                    bState.setCastle(killedPiece.getTeam(), false, false);
+                }
+            }
         }
         bState.setPiece(move.getTo(), move.getPiece());
         if (move is PawnDoublejump)

@@ -2,21 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Prefabs
+public class Prefabs : MonoBehaviour
 {
     //The public piece prefabs
-    public static readonly GameObject pawnPrefab;
-    public static readonly GameObject rookPrefab;
-    public static readonly GameObject bishopPrefab;
-    public static readonly GameObject knightPrefab;
-    public static readonly GameObject queenPrefab;
-    public static readonly GameObject kingPrefab;
-    public static readonly GameObject tilePrefab;
+    public GameObject[] prefabArray;
+    public Material[] materialArray;
+    public static GameObject pawnPrefab;
+    public static GameObject rookPrefab;
+    public static GameObject bishopPrefab;
+    public static GameObject knightPrefab;
+    public static GameObject queenPrefab;
+    public static GameObject kingPrefab;
+    public static GameObject tilePrefab;
 
     //The public materials for each team
-    public static readonly Material white;
-    public static readonly Material black;
-    public static readonly Material highLight;
+    public static Material white;
+    public static Material black;
+    public static Material highLight;
+
+
 
     public static GameObject getPrefab(Piece type)
     {
@@ -45,5 +49,24 @@ public static class Prefabs
             return kingPrefab;
         }
         throw new System.Exception("Invalid impossible pieceType???");
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        setPrefabs();
+    }
+    private void setPrefabs()
+    {
+        pawnPrefab = prefabArray[0];
+        rookPrefab = prefabArray[1];
+        knightPrefab = prefabArray[2];
+        bishopPrefab = prefabArray[3];
+        queenPrefab = prefabArray[4];
+        kingPrefab = prefabArray[5];
+        tilePrefab = prefabArray[6];
+        white = materialArray[0];
+        black = materialArray[1];
+        highLight = materialArray[2];
     }
 }

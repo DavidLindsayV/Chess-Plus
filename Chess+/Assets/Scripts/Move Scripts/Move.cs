@@ -29,7 +29,8 @@ public class Move
     {
         //TODO: do checks that don't depend on the piece checking if the move is valid
         //check state isn't null, row and col are valid numbers, etc
-        return movedPiece.isValidMove(state, this);
+        //do you need isValidMove under Move??
+        return false;
     }
 
     public void doMove(boardState state)

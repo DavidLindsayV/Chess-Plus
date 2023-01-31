@@ -27,7 +27,6 @@ public class boardScript : MonoBehaviour
 
     private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
-
     //Notes to know about the code:
     //The cols and rows go from 1 to 8.
     //TRUE is the player team, and FALSE is the AI team. Always.
@@ -35,7 +34,7 @@ public class boardScript : MonoBehaviour
 
     //TODO:
     //replace boardArray with a array of the names, not the gameObjects. Should be less computation to call. Still use an array of gameObjects, though? IDK...
-
+    //Make automated tests
     //ERROR WITH CURRENT CODE
     //If a rook moves or is killed, and when a king moves, it doesn't update the castling variables. IT SHOULD!!!
     //Fix this when you implement boardState() objects
@@ -44,6 +43,10 @@ public class boardScript : MonoBehaviour
     //Maybe implement getPiece used more instead of referring to boardArray directly?
     //Should I make endGame() a function I call directly instead of calling it during update?
     //Should I be using lists so much? What about sets?
+
+    //TODO move AI reasoning into separate file
+    //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
+    //TODO make automated testing
 
 
     // Start is called before the first frame update
@@ -57,8 +60,6 @@ public class boardScript : MonoBehaviour
 
         //Initialise the chess pieces, set up the board with this FEN string
         state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-        Processing.updateGameResult(state, Team.White); //sets up the values of check and checkMate for the first turn, for the user
     }
 
     // Update is called once per frame
@@ -102,7 +103,9 @@ public class boardScript : MonoBehaviour
         if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
         {
             deselect();
-            selected = hit.transform.gameObject.GetComponent<Piece>();
+            int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
+            int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
+            selected = state.getPiece(new Coordinate(col, row));
             selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
             showValidMoveTiles(selected);
         }
@@ -152,13 +155,13 @@ public class boardScript : MonoBehaviour
     {
         if (selected != null)
         {
-            if (selected.name.Contains(Team.White.ToString()))
+            if (selected.getTeam() == Team.White)
             {
-                selected.GetComponent<Renderer>().material = Prefabs.white;
+                selected.getObject().GetComponent<Renderer>().material = Prefabs.white;
             }
             else
             {
-                selected.GetComponent<Renderer>().material = Prefabs.black;
+                selected.getObject().GetComponent<Renderer>().material = Prefabs.black;
             }
             selected = null;
         }
@@ -185,7 +188,7 @@ public class boardScript : MonoBehaviour
         }
         move.getPiece().getObject().transform.position = new Vector3(
             move.getTo().getX(),
-            move.getPiece().transform.position.y,
+            move.getPiece().getObject().transform.position.y,
             move.getTo().getZ()
         );
         if (move is CastlingMove)
@@ -209,6 +212,7 @@ public class boardScript : MonoBehaviour
     //The AI/Enemy's turn
     private void enemyTurn()
     { //TODO simplify so that it doesn't branch with Check or !Check (modify removeCheckingMoves?)
+        Messages.Log(MessageType.Debugging, "enemy turn started");
         List<Move> AIMoves = Processing.allValidMoves(state, state.enemysTeam());
         if (AIdifficulty == AIMode.easy)
         {
@@ -221,12 +225,18 @@ public class boardScript : MonoBehaviour
             int index = Random.Range(0, maxPriMoves.Count);
             doMove(maxPriMoves[index]);
         }
+        int i = 0;
+        while (i < 2147483647)
+        {
+            i += 1;
+        }
+        Messages.Log(MessageType.Debugging, "enemy turn ended");
         turnOver = true;
     }
 
     private List<Move> getMaxPriMoves(boardState bState, List<Move> AIMoves, Team team)
     {
-        int maxPriority = 0;
+        int maxPriority = 0; //TODO move AI thinking into separate file
         List<Move> maxPriMoves = new List<Move>();
         foreach (Move move in AIMoves)
         {

@@ -13,16 +13,20 @@ public class Pawn : Piece
     public Pawn(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
-    public override bool isValidMove(boardState bState, Move move)
+    public override char typeToChar()
     {
-        //TODO
-        return false;
+        return 'p';
+    }
+
+    public override Piece clonePiece()
+    {
+        return new Pawn(this.getTeam(), this.getPos(), this.getObject());
     }
 
     //Returns the moves for a Pawn
-    public override List<Move> getValidMoves(boardState bState)
+    public override List<Move> getMoves(boardState bState)
     {
-        List<Move> moves = new List<Move>();
+        List<Move> moves = getAttackingMoves(bState);
         int col = this.getPos().getCol();
         int row = this.getPos().getRow();
         int direction = -1;
@@ -30,7 +34,6 @@ public class Pawn : Piece
         {
             direction = 1;
         }
-
         bool promotion = false;
         if ((direction == 1 && row + direction == 8) || (direction == -1 && row + direction == 1))
         {
@@ -60,7 +63,38 @@ public class Pawn : Piece
                 moves.Add((new PawnDoublejump(this, new Coordinate(col, row + 2 * direction))));
             }
         }
-        //The killing moves
+        return moves;
+    }
+
+    private List<Move> promotionMoves(Coordinate to)
+    {
+        Move m1 = new PromoteMove(this, to, new Queen(this.getTeam(), to));
+        Move m2 = new PromoteMove(this, to, new Rook(this.getTeam(), to));
+        Move m3 = new PromoteMove(this, to, new Bishop(this.getTeam(), to));
+        Move m4 = new PromoteMove(this, to, new Knight(this.getTeam(), to));
+        List<Move> moves = new List<Move>();
+        moves.Add(m1);
+        moves.Add(m2);
+        moves.Add(m3);
+        moves.Add(m4);
+        return moves;
+    }
+
+    public override List<Move> getAttackingMoves(boardState bState)
+    {
+        List<Move> moves = new List<Move>();
+        int col = this.getPos().getCol();
+        int row = this.getPos().getRow();
+        int direction = -1;
+        if (this.getTeam() == Team.White)
+        {
+            direction = 1;
+        }
+        bool promotion = false;
+        if ((direction == 1 && row + direction == 8) || (direction == -1 && row + direction == 1))
+        {
+            promotion = true;
+        }
         if (
             Coordinate.inBounds(col - 1, row + direction)
             && bState.spotIsEnemy(this, new Coordinate(col - 1, row + direction))
@@ -108,25 +142,11 @@ public class Pawn : Piece
         return moves;
     }
 
-    private List<Move> promotionMoves(Coordinate to)
-    {
-        Move m1 = new PromoteMove(this, to, new Queen(this.getTeam(), to));
-        Move m2 = new PromoteMove(this, to, new Rook(this.getTeam(), to));
-        Move m3 = new PromoteMove(this, to, new Bishop(this.getTeam(), to));
-        Move m4 = new PromoteMove(this, to, new Knight(this.getTeam(), to));
-        List<Move> moves = new List<Move>();
-        moves.Add(m1);
-        moves.Add(m2);
-        moves.Add(m3);
-        moves.Add(m4);
-        return moves;
-    }
-
     public override void makePiece()
     {
         base.makePiece();
         Vector3 vec = this.gameObj.transform.position;
-        vec.y = 0.5F;
+        vec.y = 0.2F;
         this.gameObj.transform.position = vec;
     }
 }

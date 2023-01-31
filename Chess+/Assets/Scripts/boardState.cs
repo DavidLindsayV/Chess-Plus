@@ -18,7 +18,7 @@ public class boardState
     private Team currentPlayer;
     private bool bLCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
     private bool bRCastle; //It's black left, black right, white left and white right
-    private bool wLCastle;
+    private bool wLCastle; //TODO rename castling variables to kingside and queenside
     private bool wRCastle;
     private Coordinate enPassant; //Stores a location that can be en-passanted. can be null
 
@@ -63,6 +63,7 @@ public class boardState
     public boardState(string FENstring)
     {
         string[] FENwords = FENstring.Split(' ');
+        boardArray = new Piece[boardSize, boardSize];
         //Setting the board
         int col = 1;
         int row = boardSize;
@@ -87,7 +88,7 @@ public class boardState
                 Piece piece;
                 switch (char.ToLower(c))
                 {
-                    case 'p':
+                    case 'p': //TODO dynamic dispatch this?
                         piece = new Pawn(c, new Coordinate(col, row));
                         break;
                     case 'r':
@@ -181,7 +182,7 @@ public class boardState
                     {
                         fenString += emptySpaces;
                     }
-                    fenString += currentPiece.toString();
+                    fenString += currentPiece.ToString();
                     emptySpaces = 0;
                 }
                 else
@@ -235,7 +236,7 @@ public class boardState
         }
         else
         {
-            fenString += enPassant.toString() + " ";
+            fenString += enPassant.ToString() + " ";
         }
 
         //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
@@ -260,10 +261,6 @@ public class boardState
     public void setPiece(Coordinate pos, Piece newPiece)
     {
         Piece oldPiece = boardArray[pos.getCol() - 1, pos.getRow() - 1];
-        if (oldPiece != null)
-        {
-            oldPiece.destroy();
-        }
         boardArray[pos.getCol() - 1, pos.getRow() - 1] = newPiece;
     }
 
@@ -305,13 +302,15 @@ public class boardState
         this.currentPlayer = team;
     }
 
-/**Returns which Team is the player */
-    public Team playersTeam(){
+    /**Returns which Team is the player */
+    public Team playersTeam()
+    {
         return this.playerTeam;
     }
 
     /**Returns which Team is the enemy */
-    public Team enemysTeam(){
+    public Team enemysTeam()
+    {
         return this.enemyTeam;
     }
 
@@ -385,7 +384,7 @@ public class boardState
     }
 
     /**Clones a boardState.
-    Makes clones of everything EXCEPT the gameObject the pieces refer to */
+    Makes clones of everything EXCEPT the gameObject the Pieces refer to */
     public boardState clone()
     {
         Piece[,] newBoardArray = new Piece[
@@ -396,7 +395,10 @@ public class boardState
         {
             for (int col = 0; col < this.boardArray.GetLength(1); col++)
             {
-                newBoardArray[col, row] = clonePiece(boardArray[col, row]);
+                if (boardArray[col, row] != null)
+                {
+                    newBoardArray[col, row] = boardArray[col, row].clonePiece();
+                }
             }
         }
         boardState clone = new boardState(
@@ -409,36 +411,6 @@ public class boardState
             this.enPassant
         );
         return clone;
-    }
-
-    private Piece clonePiece(Piece p)
-    { //TODO dynamically dispatch this making a method that is NOT normal clone, but clones everything
-        //but the gameobject
-        if (p is Pawn)
-        {
-            return new Pawn(p.getTeam(), p.getPos(), p.getObject());
-        }
-        if (p is Rook)
-        {
-            return new Rook(p.getTeam(), p.getPos(), p.getObject());
-        }
-        if (p is Bishop)
-        {
-            return new Bishop(p.getTeam(), p.getPos(), p.getObject());
-        }
-        if (p is Knight)
-        {
-            return new Knight(p.getTeam(), p.getPos(), p.getObject());
-        }
-        if (p is Queen)
-        {
-            return new Queen(p.getTeam(), p.getPos(), p.getObject());
-        }
-        if (p is King)
-        {
-            return new King(p.getTeam(), p.getPos(), p.getObject());
-        }
-        throw new System.Exception("clonePiece has error");
     }
 
     //Checks if a spot in boardArray is NOT an ally with a certain chess piece

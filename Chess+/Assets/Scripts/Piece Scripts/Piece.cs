@@ -5,7 +5,7 @@ using UnityEngine;
 /**
  * A class to represent a chess piece
  */
-public abstract class Piece : MonoBehaviour
+public abstract class Piece
 {
     //Fields for a generic piece
     private Team team;
@@ -52,9 +52,9 @@ public abstract class Piece : MonoBehaviour
     }
 
     /** To FEN string */
-    public string toString()
+    public override string ToString()
     {
-        char c = typeToChar(this);
+        char c = this.typeToChar();
         if (this.team == Team.White)
         {
             c = char.ToUpper(c);
@@ -62,41 +62,11 @@ public abstract class Piece : MonoBehaviour
         return char.ToString(c);
     }
 
-    /**Converts a Piece class to FEN char (does not take into account Team) */
-    public static char typeToChar(Piece type)
-    {
-        if (type is Pawn)
-        {
-            return 'p';
-        }
-        if (type is Rook)
-        {
-            return 'r';
-        }
-        if (type is Knight)
-        {
-            return 'n';
-        }
-        if (type is Bishop)
-        {
-            return 'b';
-        }
-        if (type is Queen)
-        {
-            return 'q';
-        }
-        if (type is King)
-        {
-            return 'k';
-        }
-        throw new System.Exception("Invalid fen char");
-    }
-
     public virtual void makePiece()
     {
         float y = 0.5F;
         Quaternion rotation = Quaternion.Euler(-90, 0, 0);
-        this.gameObj = Instantiate(
+        this.gameObj = UnityEngine.Object.Instantiate(
             Prefabs.getPrefab(this),
             new Vector3(this.position.getX(), y, this.position.getZ()),
             rotation
@@ -110,12 +80,12 @@ public abstract class Piece : MonoBehaviour
         {
             this.gameObj.GetComponent<Renderer>().material = Prefabs.black;
         }
-        this.gameObj.name = this.team.ToString() + char.ToUpper(typeToChar(this));
+        this.gameObj.name = this.team.ToString() + char.ToUpper(this.typeToChar());
     }
 
     public void destroy()
     {
-        Destroy(this.gameObj);
+        UnityEngine.Object.Destroy(this.gameObj);
     }
 
     public GameObject getObject()
@@ -128,6 +98,17 @@ public abstract class Piece : MonoBehaviour
         return this.position;
     }
 
-    public abstract bool isValidMove(boardState bState, Move move);
-    public abstract List<Move> getValidMoves(boardState bState);
+    /**Returns all the moves a piece can make.
+    Does not check if a move leaves the king in check */
+    public abstract List<Move> getMoves(boardState bState);
+
+    /**Returns all the moves a piece can make that CAN take pieces (not necessarily WILL - but 
+    have the ability to take pieces*/
+    public abstract List<Move> getAttackingMoves(boardState bState);
+
+    /**Converts a Piece class to FEN char (does not take into account Team) */
+    public abstract char typeToChar();
+
+    /**Returns a clone of a piece BUT still refers to the same GameObject */
+    public abstract Piece clonePiece();
 }

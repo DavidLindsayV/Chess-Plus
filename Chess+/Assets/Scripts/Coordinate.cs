@@ -8,7 +8,7 @@ using UnityEngine;
  * Row 1 col 1 is white's left rook
  * A coordinate object once constructed cannot change its values
  */
-public class Coordinate 
+public class Coordinate
 {
     private readonly int row;
     private readonly int col;
@@ -16,11 +16,7 @@ public class Coordinate
     /** Constructs a coordinate */
     public Coordinate(int col, int row)
     {
-        if(row >= 1 && row <= 8 && col >= 1 && col <= 8)
-        {
-            throw new System.Exception("Invalid coordinate constructed, row: " + row + " col: " + col);
-        }
-        this.row = row;
+        this.row = row; //TODO replace all 8s with references to boardSize
         this.col = col;
     }
 
@@ -58,24 +54,31 @@ public class Coordinate
     }
 
     /**Returns the coordinate if it moved by col and row*/
-    public Coordinate move(int colChange, int rowChange){
-        return new Coordinate(this.col+colChange,this.row+rowChange);
+    public Coordinate move(int colChange, int rowChange)
+    {
+        return new Coordinate(this.col + colChange, this.row + rowChange);
     }
-    
+
     /**
      * Returns the row of a coordinate
      */
-    public int getRow() { return this.row;  }
+    public int getRow()
+    {
+        return this.row;
+    }
 
     /**
      * Returns the column of a coordinate
      */
-    public int getCol() { return this.col;  }
+    public int getCol()
+    {
+        return this.col;
+    }
 
     /**
      * A toString method
      */
-    public string toString()
+    public override string ToString()
     {
         string toReturn = "";
         switch (this.col)
@@ -115,11 +118,13 @@ public class Coordinate
     }
 
     //Returns whether this coordinate is in bounds
-    public bool inBounds(){ return inBounds(this.col, this.row); }
+    public bool inBounds()
+    {
+        return inBounds(this.col, this.row);
+    }
 
-    //TODO see if the below functions for getting X and Z values works when you change board sizes
-        //Converts a x to Col, or a Z to Row.
-    private static int xToCol(float x)
+    //Converts a x to Col, or a Z to Row.
+    public static int xToCol(float x)
     {
         x = Mathf.Round(x + 0.5F) - 0.5F;
         return (int)(x + 4.5);
@@ -127,16 +132,18 @@ public class Coordinate
 
     //Converts a col to X, or row to Z
     //Note: col should really be an int. But taking in a float prevents typecasting.
-    private static float colToX(float col)
+    public static float colToX(float col)
     {
         return (col - 4.5F);
     }
 
-    public float getX(){
+    public float getX()
+    {
         return colToX(this.col);
     }
 
-    public float getZ(){
+    public float getZ()
+    {
         return colToX(this.row);
     }
 }

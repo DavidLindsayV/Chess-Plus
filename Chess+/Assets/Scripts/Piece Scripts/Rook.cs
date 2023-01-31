@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Rook : Piece
 {
-    //TODO see if you can delete these 2 constructors as they add nothing
     public Rook(Team team, Coordinate pos)
         : base(team, pos) { }
 
@@ -14,14 +13,18 @@ public class Rook : Piece
     public Rook(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
-    public override bool isValidMove(boardState bState, Move move)
+    public override char typeToChar()
     {
-        //TODO
-        return false;
+        return 'r';
+    }
+
+    public override Piece clonePiece()
+    {
+        return new Rook(this.getTeam(), this.getPos(), this.getObject());
     }
 
     //Returns the moves for a Rook
-    public override List<Move> getValidMoves(boardState bState)
+    public override List<Move> getMoves(boardState bState)
     {
         List<Move> moves = new List<Move>();
         int col = this.getPos().getCol();
@@ -32,9 +35,7 @@ public class Rook : Piece
             {
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row)))
                 {
-                    moves.Add(
-                        new Move(this, new Coordinate(col + i, row))
-                    );
+                    moves.Add(new Move(this, new Coordinate(col + i, row)));
                 }
                 if (bState.getPiece(col + i, row) != null)
                 {
@@ -48,9 +49,7 @@ public class Rook : Piece
             {
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row)))
                 {
-                    moves.Add(
-                        new Move(this, new Coordinate(col - i, row))
-                    );
+                    moves.Add(new Move(this, new Coordinate(col - i, row)));
                 }
                 if (bState.getPiece(col - i, row) != null)
                 {
@@ -64,9 +63,7 @@ public class Rook : Piece
             {
                 if (bState.spotNotAlly(this, new Coordinate(col, row + i)))
                 {
-                    moves.Add(
-                        new Move(this, new Coordinate(col, row + i))
-                    );
+                    moves.Add(new Move(this, new Coordinate(col, row + i)));
                 }
                 if (bState.getPiece(col, row + i) != null)
                 {
@@ -80,9 +77,7 @@ public class Rook : Piece
             {
                 if (bState.spotNotAlly(this, new Coordinate(col, row - i)))
                 {
-                    moves.Add(
-                        new Move(this, new Coordinate(col, row - i))
-                    );
+                    moves.Add(new Move(this, new Coordinate(col, row - i)));
                 }
                 if (bState.getPiece(col, row - i) != null)
                 {
@@ -91,5 +86,10 @@ public class Rook : Piece
             }
         }
         return moves;
+    }
+
+    public override List<Move> getAttackingMoves(boardState bState)
+    {
+        return this.getMoves(bState);
     }
 }
