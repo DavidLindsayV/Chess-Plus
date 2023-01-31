@@ -70,24 +70,17 @@ public class boardScript : MonoBehaviour
             endGame(); //If the game is over, call endgame
             return;
         }
-        else if (turnOver)
+        else if (turnOver)  
         {
             endTurn(); //Either player or enemy has finished their turn.
         }
         else if (state.currentTeam() == state.playersTeam()) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
         {
-            userTurn();
-        }
+            userTurn();  
+        }  
         else
         {
-            Messages.Log(MessageType.Debugging, "enemystart");
-            enemyTurn(); //TODO check if one enemyTurn can start before the last updates enemyTurn finishes
-                int i = 0;
-        while (i < 2147483647)
-        {
-            i += 1;
-        }
-            Messages.Log(MessageType.Debugging, "enemyEnd");
+            enemyTurn(); //TODO change enemyTurn into a coroutine so frames can still happen when enemy is having its turn
         }
     }
 
