@@ -199,7 +199,12 @@ public class boardState
                 fenString += char.ToString('/');
             }
         }
+        return fenString + endOfFen();
+    }
 
+/**Returns the end of the FEN string (all but the board state)*/
+    private string endOfFen(){
+        string fenString = "";
         //The player turn
         if (this.currentPlayer == Team.White)
         {
@@ -244,6 +249,23 @@ public class boardState
         //Implement fullmoves??? Stores how many turns have elapsed
 
         return fenString;
+    }
+
+    public override string ToString(){
+        string boardString = "";
+        for (int row = boardSize; row >= 1; row--)
+        {
+            for (int col = 1; col <= boardSize; col++)
+            {
+                if(getPiece(col,row) != null){
+                boardString += getPiece(col,row).typeToChar();
+                }else{
+                    boardString += "_";
+                }
+            }
+            boardString += "\n";
+        }
+        return boardString + endOfFen();
     }
 
     //Returns the chess piece for a certain col and row.

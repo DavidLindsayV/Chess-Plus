@@ -46,7 +46,7 @@ public class boardScript : MonoBehaviour
 
     //TODO move AI reasoning into separate file
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
-    //TODO make automated testing
+    //TODO make automated testing cover piece movements
 
 
     // Start is called before the first frame update
@@ -80,7 +80,14 @@ public class boardScript : MonoBehaviour
         }
         else
         {
+            Messages.Log(MessageType.Debugging, "enemystart");
             enemyTurn(); //TODO check if one enemyTurn can start before the last updates enemyTurn finishes
+                int i = 0;
+        while (i < 2147483647)
+        {
+            i += 1;
+        }
+            Messages.Log(MessageType.Debugging, "enemyEnd");
         }
     }
 
@@ -212,7 +219,6 @@ public class boardScript : MonoBehaviour
     //The AI/Enemy's turn
     private void enemyTurn()
     { //TODO simplify so that it doesn't branch with Check or !Check (modify removeCheckingMoves?)
-        Messages.Log(MessageType.Debugging, "enemy turn started");
         List<Move> AIMoves = Processing.allValidMoves(state, state.enemysTeam());
         if (AIdifficulty == AIMode.easy)
         {
@@ -225,12 +231,6 @@ public class boardScript : MonoBehaviour
             int index = Random.Range(0, maxPriMoves.Count);
             doMove(maxPriMoves[index]);
         }
-        int i = 0;
-        while (i < 2147483647)
-        {
-            i += 1;
-        }
-        Messages.Log(MessageType.Debugging, "enemy turn ended");
         turnOver = true;
     }
 
