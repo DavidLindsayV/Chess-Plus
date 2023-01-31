@@ -23,33 +23,7 @@ public class Coordinate
     /** Constructs a Coordinate from a string */
     public Coordinate(string coord)
     {
-        switch (coord[0])
-        {
-            case 'a':
-                this.col = 1;
-                break;
-            case 'b':
-                this.col = 2;
-                break;
-            case 'c':
-                this.col = 3;
-                break;
-            case 'd':
-                this.col = 4;
-                break;
-            case 'e':
-                this.col = 5;
-                break;
-            case 'f':
-                this.col = 6;
-                break;
-            case 'g':
-                this.col = 7;
-                break;
-            case 'h':
-                this.col = 8;
-                break;
-        }
+        this.col = decimal.ToInt32(char.ToLower(coord[0])) - 96;
         this.row = coord[1] - '0';
     }
 
@@ -80,35 +54,7 @@ public class Coordinate
      */
     public override string ToString()
     {
-        string toReturn = "";
-        switch (this.col)
-        {
-            case 1:
-                toReturn += 'a';
-                break;
-            case 2:
-                toReturn += 'b';
-                break;
-            case 3:
-                toReturn += 'c';
-                break;
-            case 4:
-                toReturn += 'd';
-                break;
-            case 5:
-                toReturn += 'e';
-                break;
-            case 6:
-                toReturn += 'f';
-                break;
-            case 7:
-                toReturn += 'g';
-                break;
-            case 8:
-                toReturn += 'h';
-                break;
-        }
-        return toReturn + this.row;
+        return (char)(this.col+96) + this.row.ToString();
     }
 
     //Returns whether a col and row are in bounds
