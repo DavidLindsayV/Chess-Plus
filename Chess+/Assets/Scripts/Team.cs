@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/**Stores the Team of pieces (currently black and white) and limited functionality associated with that
+Should be an IMMUTABLE class
+*/
 public class Team
 {
     private enum myTeam

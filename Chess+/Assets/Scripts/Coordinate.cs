@@ -7,6 +7,7 @@ using UnityEngine;
  * Row and col go from 1 to 8
  * Row 1 col 1 is white's left rook
  * A coordinate object once constructed cannot change its values
+ Should be an IMMUTABLE class
  */
 public class Coordinate
 {

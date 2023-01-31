@@ -98,6 +98,10 @@ public abstract class Piece
         return this.position;
     }
 
+    public void setPos(Coordinate pos){
+        this.position = pos;
+    }
+
     /**Returns all the moves a piece can make.
     Does not check if a move leaves the king in check */
     public abstract List<Move> getMoves(boardState bState);

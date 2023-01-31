@@ -47,7 +47,9 @@ public class boardState
         bool bRCastle,
         bool wLCastle,
         bool wRCastle,
-        Coordinate enPassant
+        Coordinate enPassant,
+        King whiteKing,
+        King blackKing
     )
     {
         this.boardArray = boardArray;
@@ -57,6 +59,8 @@ public class boardState
         this.wLCastle = wLCastle;
         this.wRCastle = wRCastle;
         this.enPassant = enPassant;
+        this.whiteKing = whiteKing;
+        this.blackKing = blackKing;
     }
 
     /**Loads in the board state from a FEN string */
@@ -251,6 +255,23 @@ public class boardState
         return fenString;
     }
 
+/**Sets the fields whiteKing and blackKing*/
+    public void setKings(){
+                for (int row = boardSize; row >= 1; row--)
+        {
+            for (int col = 1; col <= boardSize; col++)
+            {
+                if(boardArray[col-1,row-1] is King){
+                    if(boardArray[col-1,row-1].getTeam() == Team.White){
+                        whiteKing = (King)boardArray[col-1,row-1];
+                    }else{
+                        blackKing = (King)boardArray[col-1,row-1];
+                    }
+                }
+            }
+        }
+    }
+
     public override string ToString(){
         string boardString = "";
         for (int row = boardSize; row >= 1; row--)
@@ -430,7 +451,9 @@ public class boardState
             this.bRCastle,
             this.wLCastle,
             this.wRCastle,
-            this.enPassant
+            this.enPassant,
+            (King)newBoardArray[whiteKing.getPos().getCol()-1,whiteKing.getPos().getRow()-1],
+            (King)newBoardArray[blackKing.getPos().getCol()-1,blackKing.getPos().getRow()-1]
         );
         return clone;
     }

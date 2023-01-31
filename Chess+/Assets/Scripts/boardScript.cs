@@ -47,6 +47,7 @@ public class boardScript : MonoBehaviour
     //TODO move AI reasoning into separate file
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
     //TODO make automated testing cover piece movements
+    //TODO change heirarchy to make all the pieces children of something so u can minimise them
 
 
     // Start is called before the first frame update
@@ -107,6 +108,7 @@ public class boardScript : MonoBehaviour
             int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
             selected = state.getPiece(new Coordinate(col, row));
             selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
+            Debug.Log(selected.getPos());
             showValidMoveTiles(selected);
         }
         else if (
@@ -117,11 +119,12 @@ public class boardScript : MonoBehaviour
             //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
             if (hit.collider.gameObject.name.Contains("black"))
             {
-                Piece blackPiece = hit.collider.gameObject.GetComponent<Piece>();
-                Coordinate blackPos = blackPiece.getPos();
+            int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
+            int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
+            Coordinate blackPosCoord = new Coordinate(col,row);
                 LayerMask mask = LayerMask.GetMask("Move tiles");
                 Physics.Raycast(
-                    new Vector3(blackPos.getX(), 0.2F, blackPos.getZ()),
+                    new Vector3(blackPosCoord.getX(), 0.2F, blackPosCoord.getZ()),
                     Vector3.down,
                     out hit,
                     1000,
@@ -147,7 +150,7 @@ public class boardScript : MonoBehaviour
         Processing.updateGameResult(state, state.currentTeam().nextTeam());
         turnOver = false;
         state.setTeam(state.currentTeam().nextTeam());
-        Messages.Log(MessageType.BoardState, state.toFEN());
+        Messages.Log(MessageType.BoardState, state.ToString());
     }
 
     //Deselects the selected chess piece, (changes material and removes the move tiles)
@@ -211,7 +214,7 @@ public class boardScript : MonoBehaviour
 
     //The AI/Enemy's turn
     private void enemyTurn()
-    { //TODO simplify so that it doesn't branch with Check or !Check (modify removeCheckingMoves?)
+    { 
         List<Move> AIMoves = Processing.allValidMoves(state, state.enemysTeam());
         if (AIdifficulty == AIMode.easy)
         {

@@ -56,7 +56,7 @@ public static class Processing
             //Simulate doing the move
             boardState cloneState = bState.clone();
             doMoveState(cloneState, move);
-            if (inCheck(bState, team))
+            if (inCheck(cloneState, team))
             {
                 moves.RemoveAt(i); //If the king is in check, remove that move
                 i--;
@@ -100,7 +100,10 @@ public static class Processing
     //Returns any killed piece
     public static Piece doMoveState(boardState bState, Move move) 
     { //TODO put this doMoveState code within Move and its subclasses
-        Team team = move.getPiece().getTeam();
+        Piece piece = bState.getPiece(move.getFrom()); //You need to refer to the piece from the cloned board
+        //not from the move, because the one in the move may be from a different board state
+        //(piece may have the same values as move.getPiece(), but only piece can be changed without consequence)
+        Team team = piece.getTeam();
         bState.setPiece(move.getFrom(), null);
         Piece killedPiece = null;
         if (bState.getPiece(move.getTo()) != null)
@@ -120,7 +123,8 @@ public static class Processing
                 }
             }
         }
-        bState.setPiece(move.getTo(), move.getPiece());
+        bState.setPiece(move.getTo(), piece);
+        piece.setPos(move.getTo());
         if (move is PawnDoublejump)
         {
             int direction = 0;
