@@ -5,25 +5,32 @@ using UnityEngine;
 /**Move stores within it one move a chess piece can do. */
 public class Move
 {
-    protected Piece movedPiece; //The Piece chess piece that is being moved 
-    //TODO remove movedPiece as using it can cause errors. You should look at the piece from your current board
+    protected Coordinate from; //The coordinate of the chess piece being moved
     protected Coordinate to; //The Coordinate of the spot its being moved to
 
+    private Coordinate piecePos; //the coordinate the piece actually is
+
     /**Constructor function */
-    public Move(Piece movedPiece, Coordinate to)
+    public Move(Coordinate from, Coordinate to)
     {
-        this.movedPiece = movedPiece;
+        this.from = from;
         this.to = to;
+        this.piecePos = from;
     }
 
     /**gets end coordinate */
     public Coordinate getTo() { return this.to;  }
 
     /**gets start coordinate */
-    public Coordinate getFrom(){ return movedPiece.getPos(); }
+    public Coordinate getFrom(){ return from; }
 
     /** Gets moved piece */
-    public Piece getPiece() { return this.movedPiece; }
+    public Piece getPiece(boardState bState) { return bState.getPiece(piecePos); }
+
+/**If a move is to be undone/ignored and used again, this resets the piecePos in move to be used once more */
+    public void resetMove(){
+        this.piecePos = from;
+    }
 
 /**Updates the boardState as if the move had happened. Does not update the visuals/gameObjects 
     Moves the Pieces in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
@@ -32,7 +39,11 @@ public class Move
     */
     public virtual Piece doMoveState(boardState bState)
     {
-        Piece piece = bState.getPiece(this.getFrom()); //You need to refer to the piece from the cloned board
+        Debug.Log(
+    new System.Diagnostics.StackTrace().ToString()
+    );
+        piecePos = from;
+        Piece piece = getPiece(bState); //You need to refer to the piece from the cloned board
         //not from the move, because the one in the move may be from a different board state
         //(piece may have the same values as move.getPiece(), but only piece can be changed without consequence)
         Team team = piece.getTeam();
@@ -70,6 +81,7 @@ public class Move
         bState.setPiece(this.getTo(), piece);
         piece.setPos(this.getTo());
         bState.setEnPassant(null);
+        piecePos = to;
         return killedPiece;
     }
 }

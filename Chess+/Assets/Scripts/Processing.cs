@@ -56,6 +56,7 @@ public static class Processing
             //Simulate doing the move
             boardState cloneState = bState.clone();
             move.doMoveState(cloneState);
+            move.resetMove();
             if (inCheck(cloneState, team))
             {
                 moves.RemoveAt(i); //If the king is in check, remove that move
@@ -136,6 +137,7 @@ public static class Processing
         { //If no move you can do prevents check, then you're in checkmate
             boardState cloneState = bState.clone();
             move.doMoveState(cloneState);
+            move.resetMove();
             if (!inCheck(cloneState, team))
             {
                 return;

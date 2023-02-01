@@ -17,7 +17,7 @@ public class Coordinate
     /** Constructs a coordinate */
     public Coordinate(int col, int row)
     {
-        this.row = row; //TODO replace all 8s with references to boardSize
+        this.row = row; 
         this.col = col;
     }
 

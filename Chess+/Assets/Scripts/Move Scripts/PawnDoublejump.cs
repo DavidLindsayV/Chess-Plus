@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PawnDoublejump : Move
 {
-    public PawnDoublejump(Piece movedPiece, Coordinate to) : base(movedPiece, to)
+    public PawnDoublejump(Coordinate from, Coordinate to) : base(from, to)
     {
 
     }
@@ -12,7 +12,7 @@ public class PawnDoublejump : Move
     public override Piece doMoveState(boardState bState){
         Piece killedPiece = base.doMoveState(bState);
             int direction = 0;
-            if (this.movedPiece.getTeam() == Team.White)
+            if (this.getPiece(bState).getTeam() == Team.White)
             {
                 direction = -1;
             }

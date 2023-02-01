@@ -35,6 +35,8 @@ public class PromoteMenu : MonoBehaviour
     public void promotePiece(Piece piece)
     {
         //TODO: update promotePiece and Run and Resume once you've updated boardScript/active screen managers
+        //Currently user promotion is not working
+        //Still need to update: PromoteMenu, gameStateManager, PauseMenu, and stuff in boardScript
         boardScriptReference.state.setPiece(promotionMove.getTo(), piece);
         Resume();
     }
@@ -42,21 +44,21 @@ public class PromoteMenu : MonoBehaviour
     /**Promotes to a queen */
     public void promoteQueen()
     {
-        promotePiece(new Queen(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
+        //promotePiece(new Queen(promotionMove.getTeam(), promotionMove.getTo()));
     }
     /** Promotes to a bishop */
     public void promoteBishop()
     {
-        promotePiece(new Bishop(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
+        //promotePiece(new Bishop(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
     /** Promotes to a rook */
     public void promoteRook()
     {
-        promotePiece(new Rook(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
+        //promotePiece(new Rook(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
     /**Promotes to a knight */
     public void promoteKnight()
     {
-        promotePiece(new Knight(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
+        //promotePiece(new Knight(promotionMove.getPiece().getTeam(), promotionMove.getTo()));
     }
 }

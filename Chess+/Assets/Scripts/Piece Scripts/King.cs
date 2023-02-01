@@ -41,8 +41,8 @@ public class King : Piece
         )
         {
             Move move = new CastlingMove(
-                this,
-                bState.getPiece(1, row),
+                this.getPos(),
+                new Coordinate(1, row),
                 this.getPos().move(-2, 0),
                 new Coordinate(col - 1, row)
             );
@@ -58,8 +58,8 @@ public class King : Piece
         ) 
         { 
             Move move = new CastlingMove(
-                this,
-                bState.getPiece(new Coordinate(8, row)),
+                this.getPos(),
+                new Coordinate(8, row),
                 this.getPos().move(2, 0),
                 this.getPos().move(-2, 0)
             );
@@ -78,7 +78,7 @@ public class King : Piece
                 Coordinate newCoord = this.getPos().move(a, b);
                 if ((a != 0 || b != 0) && newCoord.inBounds(bState) && bState.spotNotAlly(this, newCoord))
                 {
-                    moves.Add(new Move(this, newCoord));
+                    moves.Add(new Move(this.getPos(), newCoord));
                 }
             }
         return moves;

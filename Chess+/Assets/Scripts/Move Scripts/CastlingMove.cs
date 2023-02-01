@@ -5,14 +5,14 @@ using UnityEngine;
 public class CastlingMove : Move
 {
     public Move rookMove;
-    public CastlingMove(Piece kingPiece, Piece rookPiece, Coordinate kingTo, Coordinate rookTo): base(kingPiece, kingTo) { 
-        rookMove = new Move(rookPiece, rookTo);
+    public CastlingMove(Coordinate kingFrom, Coordinate rookFrom, Coordinate kingTo, Coordinate rookTo): base(kingFrom, kingTo) { 
+        rookMove = new Move(rookFrom, rookTo);
      }
 
     public override Piece doMoveState(boardState bState){
         base.doMoveState(bState);
-            bState.setCastle(this.movedPiece.getTeam(), true, false);
-            bState.setCastle(this.movedPiece.getTeam(), false, false);
+            bState.setCastle(this.getPiece(bState).getTeam(), true, false);
+            bState.setCastle(this.getPiece(bState).getTeam(), false, false);
             //Does the rook-moving part of Castling. No pieces will be killed by this, so the return value
             //can be ignored
             this.rookMove.doMoveState(bState);

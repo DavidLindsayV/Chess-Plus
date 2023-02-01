@@ -6,8 +6,8 @@ public class PromoteMove : Move
 {
     public Piece promotedTo;
 
-    public PromoteMove(Piece movedPiece, Coordinate to, Piece promotedTo)
-        : base(movedPiece, to)
+    public PromoteMove(Coordinate from, Coordinate to, Piece promotedTo)
+        : base(from, to)
     {
         this.promotedTo = promotedTo;
         this.promotedTo.destroy();

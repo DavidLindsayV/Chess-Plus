@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnPassantMove : Move
 {
-    public EnPassantMove(Piece movedPiece, Coordinate to): base(movedPiece, to)
+    public EnPassantMove(Coordinate from, Coordinate to): base(from, to)
     {
 
     }

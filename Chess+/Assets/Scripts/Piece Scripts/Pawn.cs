@@ -44,7 +44,7 @@ public class Pawn : Piece
         {
             if (!promotion)
             {
-                moves.Add(new Move(this, new Coordinate(col, row + direction)));
+                moves.Add(new Move(this.getPos(), new Coordinate(col, row + direction)));
             }
             else
             {
@@ -57,7 +57,7 @@ public class Pawn : Piece
                 && bState.getPiece(col, row + 2 * direction) == null
             )
             { //This is for moving 2 spaces forwards. Don't check for promotion here.
-                moves.Add((new PawnDoublejump(this, new Coordinate(col, row + 2 * direction))));
+                moves.Add((new PawnDoublejump(this.getPos(), new Coordinate(col, row + 2 * direction))));
             }
         }
         return moves;
@@ -65,10 +65,10 @@ public class Pawn : Piece
 
     private List<Move> promotionMoves(Coordinate to)
     {
-        Move m1 = new PromoteMove(this, to, new Queen(this.getTeam(), to));
-        Move m2 = new PromoteMove(this, to, new Rook(this.getTeam(), to));
-        Move m3 = new PromoteMove(this, to, new Bishop(this.getTeam(), to));
-        Move m4 = new PromoteMove(this, to, new Knight(this.getTeam(), to));
+        Move m1 = new PromoteMove(this.getPos(), to, new Queen(this.getTeam(), to));
+        Move m2 = new PromoteMove(this.getPos(), to, new Rook(this.getTeam(), to));
+        Move m3 = new PromoteMove(this.getPos(), to, new Bishop(this.getTeam(), to));
+        Move m4 = new PromoteMove(this.getPos(), to, new Knight(this.getTeam(), to));
         List<Move> moves = new List<Move>();
         moves.Add(m1);
         moves.Add(m2);
@@ -99,7 +99,7 @@ public class Pawn : Piece
         {
             if (!promotion)
             {
-                moves.Add(new Move(this, new Coordinate(col - 1, row + direction)));
+                moves.Add(new Move(this.getPos(), new Coordinate(col - 1, row + direction)));
             }
             else
             {
@@ -113,7 +113,7 @@ public class Pawn : Piece
         {
             if (!promotion)
             {
-                moves.Add(new Move(this, new Coordinate(col + 1, row + direction)));
+                moves.Add(new Move(this.getPos(), new Coordinate(col + 1, row + direction)));
             }
             else
             {
@@ -130,7 +130,7 @@ public class Pawn : Piece
             moves.Add(
                 (
                     new EnPassantMove(
-                        this,
+                        this.getPos(),
                         new Coordinate(bState.enPassantPos().getCol(), row + direction)
                     )
                 )

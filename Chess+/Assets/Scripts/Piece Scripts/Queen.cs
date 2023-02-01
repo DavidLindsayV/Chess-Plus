@@ -32,7 +32,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col + i, row))
+                        new Move(this.getPos(), new Coordinate(col + i, row))
                     );
                 }
                 if (bState.getPiece(col + i, row) != null)
@@ -48,7 +48,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col - i, row))
+                        new Move(this.getPos(), new Coordinate(col - i, row))
                     );
                 }
                 if (bState.getPiece(col - i, row) != null)
@@ -64,7 +64,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col, row + i)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col, row + i))
+                        new Move(this.getPos(), new Coordinate(col, row + i))
                     );
                 }
                 if (bState.getPiece(col, row + i) != null)
@@ -80,7 +80,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col, row - i)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col, row - i))
+                        new Move(this.getPos(), new Coordinate(col, row - i))
                     );
                 }
                 if (bState.getPiece(col, row - i) != null)
@@ -96,7 +96,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row + i)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col + i, row + i))
+                        new Move(this.getPos(), new Coordinate(col + i, row + i))
                     );
                 }
                 if (bState.getPiece(col + i, row + i) != null)
@@ -112,7 +112,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row - i)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col - i, row - i))
+                        new Move(this.getPos(), new Coordinate(col - i, row - i))
                     );
                 }
                 if (bState.getPiece(col - i, row - i) != null)
@@ -128,7 +128,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row + i)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col - i, row + i))
+                        new Move(this.getPos(), new Coordinate(col - i, row + i))
                     );
                 }
                 if (bState.getPiece(col - i, row + i) != null)
@@ -144,7 +144,7 @@ public class Queen : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row - i)))
                 {
                     moves.Add(
-                        new Move(this, new Coordinate(col + i, row - i))
+                        new Move(this.getPos(), new Coordinate(col + i, row - i))
                     );
                 }
                 if (bState.getPiece(col + i, row - i) != null)

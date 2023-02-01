@@ -171,9 +171,9 @@ public class boardScript : MonoBehaviour
         {
             killedPiece.destroy();
         }
-        move.getPiece().getObject().transform.position = new Vector3(
+        state.getPiece(move.getTo()).getObject().transform.position = new Vector3(
             move.getTo().getX(),
-            move.getPiece().getObject().transform.position.y,
+            state.getPiece(move.getTo()).getObject().transform.position.y,
             move.getTo().getZ()
         );
         if (move is CastlingMove)
@@ -188,7 +188,7 @@ public class boardScript : MonoBehaviour
             }
             else //Promotion for enemy AI
             {
-                move.getPiece().destroy();
+                state.getPiece(move.getTo()).destroy();
                 ((PromoteMove)move).makePromotedPiece(); //Allow the new piece replacing the pawn to appear
             }
         }
