@@ -16,10 +16,12 @@ public class boardState
     //Note, it is stored [col, row].
     //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
     private Team currentPlayer;
-    private bool bLCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
-    private bool bRCastle; //It's black left, black right, white left and white right
-    private bool wLCastle; //TODO rename castling variables to kingside and queenside
-    private bool wRCastle;
+    
+    //Queenside is left from white's perspective, and kingside is right
+    private bool bQCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
+    private bool bKCastle; //It's black queenside, black kngside, white queenside and white kingside
+    private bool wQCastle; 
+    private bool wKCastle;
     private Coordinate enPassant; //Stores a location that can be en-passanted. can be null
 
     private Team playerTeam = Team.White;
@@ -43,10 +45,10 @@ public class boardState
     public boardState(
         Piece[,] boardArray,
         Team currentPlayer,
-        bool bLCastle,
-        bool bRCastle,
-        bool wLCastle,
-        bool wRCastle,
+        bool bQCastle,
+        bool bKCastle,
+        bool wQCastle,
+        bool wKCastle,
         Coordinate enPassant,
         King whiteKing,
         King blackKing
@@ -54,10 +56,10 @@ public class boardState
     {
         this.boardArray = boardArray;
         this.currentPlayer = currentPlayer;
-        this.bLCastle = bLCastle;
-        this.bRCastle = bRCastle;
-        this.wLCastle = wLCastle;
-        this.wRCastle = wRCastle;
+        this.bQCastle = bQCastle;
+        this.bKCastle = bKCastle;
+        this.wQCastle = wQCastle;
+        this.wKCastle = wKCastle;
         this.enPassant = enPassant;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
@@ -142,19 +144,19 @@ public class boardState
         //Castling
         if (!FENwords[2].Contains("K"))
         {
-            wRCastle = true;
+            wKCastle = true;
         }
         if (!FENwords[2].Contains("Q"))
         {
-            wLCastle = true;
+            wQCastle = true;
         }
         if (!FENwords[2].Contains("k"))
         {
-            bLCastle = true;
+            bKCastle = true;
         }
         if (!FENwords[2].Contains("q"))
         {
-            bRCastle = true;
+            bQCastle = true;
         }
 
         //En Passant square
@@ -220,19 +222,19 @@ public class boardState
         }
 
         //Castling
-        if (wRCastle)
+        if (wKCastle)
         {
             fenString += "K";
         }
-        if (wLCastle)
+        if (wQCastle)
         {
             fenString += "Q";
         }
-        if (bLCastle)
+        if (bKCastle)
         {
             fenString += "k";
         }
-        if (bRCastle)
+        if (bQCastle)
         {
             fenString += "q";
         }
@@ -359,28 +361,28 @@ public class boardState
 
     /**Gets the value for whether this team can castle on this side or not
     The left is true if you want to know if you can castle on the left, false if you're checking the right */
-    public bool canCastle(Team team, bool left)
+    public bool canCastle(Team team, bool queenside)
     {
         if (team == Team.White)
         {
-            if (left)
+            if (queenside)
             {
-                return wLCastle;
+                return wQCastle;
             }
             else
             {
-                return wRCastle;
+                return wKCastle;
             }
         }
         else if (team == Team.Black)
         {
-            if (left)
+            if (queenside)
             {
-                return bLCastle;
+                return bQCastle;
             }
             else
             {
-                return bRCastle;
+                return bKCastle;
             }
         }
         Messages.Log(MessageType.Error, "canCastle had a booboo");
@@ -388,28 +390,28 @@ public class boardState
     }
 
     /**Sets the values for castling, whether you can or can't castle on whichever side*/
-    public void setCastle(Team team, bool left, bool value)
+    public void setCastle(Team team, bool queenside, bool value)
     {
-        if (team == Team.White) //TODO replace setCastle "left" with queenside and kingside
+        if (team == Team.White) 
         {
-            if (left)
+            if (queenside)
             {
-                wLCastle = value;
+                wQCastle = value;
             }
             else
             {
-                wRCastle = value;
+                wKCastle = value;
             }
         }
         else if (team == Team.Black)
         {
-            if (left)
+            if (queenside)
             {
-                bLCastle = value;
+                bQCastle = value;
             }
             else
             {
-                bRCastle = value;
+                bKCastle = value;
             }
         }
     }
@@ -447,10 +449,10 @@ public class boardState
         boardState clone = new boardState(
             newBoardArray,
             this.currentPlayer,
-            this.bLCastle,
-            this.bRCastle,
-            this.wLCastle,
-            this.wRCastle,
+            this.bQCastle,
+            this.bKCastle,
+            this.wQCastle,
+            this.wKCastle,
             this.enPassant,
             (King)newBoardArray[whiteKing.getPos().getCol()-1,whiteKing.getPos().getRow()-1],
             (King)newBoardArray[blackKing.getPos().getCol()-1,blackKing.getPos().getRow()-1]
