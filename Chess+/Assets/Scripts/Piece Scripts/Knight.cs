@@ -7,9 +7,6 @@ public class Knight : Piece
     public Knight(Team team, Coordinate pos)
         : base(team, pos) { }
 
-    public Knight(char FENchar, Coordinate pos)
-        : base(FENchar, pos) { }
-
     public Knight(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
@@ -31,13 +28,13 @@ public class Knight : Piece
         for (int a = -2; a <= 2; a = a + 4)
             for (int b = -1; b <= 1; b = b + 2)
             {
-                if (Coordinate.inBounds(col + a, row + b) && bState.spotNotAlly(this, new Coordinate(col + a, row + b)))
+                if (Coordinate.inBounds(col + a, row + b, bState) && bState.spotNotAlly(this, new Coordinate(col + a, row + b)))
                 {
                     moves.Add(
                         new Move(this, new Coordinate(col + a, row + b))
                     );
                 }
-                if (Coordinate.inBounds(col + b, row + a) && bState.spotNotAlly(this, new Coordinate(col + b, row + a)))
+                if (Coordinate.inBounds(col + b, row + a, bState) && bState.spotNotAlly(this, new Coordinate(col + b, row + a)))
                 {
                     moves.Add(
                         new Move(this, new Coordinate(col + b, row + a))

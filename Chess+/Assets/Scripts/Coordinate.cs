@@ -59,15 +59,15 @@ public class Coordinate
     }
 
     //Returns whether a col and row are in bounds
-    public static bool inBounds(int col, int row)
+    public static bool inBounds(int col, int row, boardState bState)
     {
-        return (col >= 1 && col <= 8 && row >= 1 && row <= 8);
+        return (col >= 1 && col <= bState.boardSize && row >= 1 && row <= bState.boardSize);
     }
 
     //Returns whether this coordinate is in bounds
-    public bool inBounds()
+    public bool inBounds(boardState bState)
     {
-        return inBounds(this.col, this.row);
+        return inBounds(this.col, this.row, bState);
     }
 
     //Converts a x to Col, or a Z to Row.
@@ -78,8 +78,7 @@ public class Coordinate
     }
 
     //Converts a col to X, or row to Z
-    //Note: col should really be an int. But taking in a float prevents typecasting.
-    public static float colToX(float col)
+    public static float colToX(int col)
     {
         return (col - 4.5F);
     }
@@ -92,5 +91,35 @@ public class Coordinate
     public float getZ()
     {
         return colToX(this.row);
+    }
+
+    
+    /**Override == operator */
+    public static bool operator== (Coordinate obj1, Coordinate obj2)
+    {
+        if(obj1 is null && obj2 is null){ return true; }
+        return !(obj1 is null)
+         && !(obj2 is null) 
+         && obj1.row == obj2.row 
+         && obj1.col == obj2.col;
+    }
+
+/**Override != operator */
+    public static bool operator!= (Coordinate obj1, Coordinate obj2)
+    {
+        if( obj1 is null && obj2 is null){ return false; }
+        return (obj1 is null || obj2 is null || obj1.row != obj2.row || obj1.col != obj2.col);
+    }
+
+/**Override equals operator */
+    public override bool Equals(object obj)
+    {
+        return obj is Coordinate c && c.row == this.row && c.col == this.col;
+    }
+
+    /**Override hashcode */
+    public override int GetHashCode()
+    {
+        return col*31 + row;
     }
 }

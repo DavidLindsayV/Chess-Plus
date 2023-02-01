@@ -1,4 +1,3 @@
-using System; //TODO lessen this import into a more specified library for allowing use of Enum.GetName
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,7 +27,7 @@ public class Team
      */
     public override string ToString()
     {
-        return Enum.GetName(typeof(myTeam), mt);
+        return mt.ToString();
     }
 
     public Team nextTeam()

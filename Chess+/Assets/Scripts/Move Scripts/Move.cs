@@ -26,7 +26,7 @@ public class Move
     public Piece getPiece() { return this.movedPiece; }
 
 /**Updates the boardState as if the move had happened. Does not update the visuals/gameObjects 
-    Moves the GameObjects in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
+    Moves the Pieces in boardArray. Is used as part of doMove, and also used to test/check moves (for check and whatnot)
     Returns any killed piece
     Overridden by subclasses of move with special additional implementations
     */
@@ -49,7 +49,7 @@ public class Move
                 {
                     bState.setCastle(killedPiece.getTeam(), true, false);
                 }
-                else if (this.getTo().getCol() == 8)
+                else if (this.getTo().getCol() == bState.boardSize)
                 {
                     bState.setCastle(killedPiece.getTeam(), false, false);
                 }
@@ -63,7 +63,7 @@ public class Move
         if (piece is Rook){
             if (this.getFrom().getCol() == 1){
                 bState.setCastle(team, true, false);
-            }else if(this.getFrom().getCol() == 8){
+            }else if(this.getFrom().getCol() == bState.boardSize){
                 bState.setCastle(team, false, false);
             }
         }

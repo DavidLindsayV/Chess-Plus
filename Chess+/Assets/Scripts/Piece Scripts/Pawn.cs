@@ -7,9 +7,6 @@ public class Pawn : Piece
     public Pawn(Team team, Coordinate pos)
         : base(team, pos) { }
 
-    public Pawn(char FENchar, Coordinate pos)
-        : base(FENchar, pos) { }
-
     public Pawn(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
@@ -35,13 +32,13 @@ public class Pawn : Piece
             direction = 1;
         }
         bool promotion = false;
-        if ((direction == 1 && row + direction == 8) || (direction == -1 && row + direction == 1))
+        if ((direction == 1 && row + direction == bState.boardSize) || (direction == -1 && row + direction == 1))
         {
             promotion = true;
         }
 
         if (
-            Coordinate.inBounds(col, row + direction)
+            Coordinate.inBounds(col, row + direction, bState)
             && bState.getPiece(col, row + direction) == null
         )
         {
@@ -56,7 +53,7 @@ public class Pawn : Piece
             //The "row == 4.5 + 2.5*direction" ensures that the pawn is in its original starting row, hence hasn't moved
             if (
                 row == 4.5 + 2.5 * -direction
-                && Coordinate.inBounds(col, row + 2 * direction)
+                && Coordinate.inBounds(col, row + 2 * direction, bState)
                 && bState.getPiece(col, row + 2 * direction) == null
             )
             { //This is for moving 2 spaces forwards. Don't check for promotion here.
@@ -91,12 +88,12 @@ public class Pawn : Piece
             direction = 1;
         }
         bool promotion = false;
-        if ((direction == 1 && row + direction == 8) || (direction == -1 && row + direction == 1))
+        if ((direction == 1 && row + direction == bState.boardSize) || (direction == -1 && row + direction == 1))
         {
             promotion = true;
         }
         if (
-            Coordinate.inBounds(col - 1, row + direction)
+            Coordinate.inBounds(col - 1, row + direction, bState)
             && bState.spotIsEnemy(this, new Coordinate(col - 1, row + direction))
         )
         {
@@ -110,7 +107,7 @@ public class Pawn : Piece
             }
         }
         if (
-            Coordinate.inBounds(col + 1, row + direction)
+            Coordinate.inBounds(col + 1, row + direction, bState)
             && bState.spotIsEnemy(this, new Coordinate(col + 1, row + direction))
         )
         {

@@ -7,9 +7,6 @@ public class Bishop : Piece
     public Bishop(Team team, Coordinate pos)
         : base(team, pos) { }
 
-    public Bishop(char FENchar, Coordinate pos)
-        : base(FENchar, pos) { }
-
     public Bishop(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
@@ -28,9 +25,9 @@ public class Bishop : Piece
         List<Move> moves = new List<Move>();
         int col = this.getPos().getCol();
         int row = this.getPos().getRow();
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col + i, row + i))
+            if (Coordinate.inBounds(col + i, row + i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row + i)))
                 {
@@ -44,9 +41,9 @@ public class Bishop : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col - i, row - i))
+            if (Coordinate.inBounds(col - i, row - i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row - i)))
                 {
@@ -60,9 +57,9 @@ public class Bishop : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col - i, row + i))
+            if (Coordinate.inBounds(col - i, row + i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row + i)))
                 {
@@ -76,9 +73,9 @@ public class Bishop : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col + i, row - i))
+            if (Coordinate.inBounds(col + i, row - i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row - i)))
                 {

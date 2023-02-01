@@ -67,10 +67,13 @@ public static class Processing
     /**Returns a list of all of the moves of a certain team*/
     private static List<Move> allMoves(boardState bState, Team team)
     {
-        List<Move> allmoves = new List<Move>(); //TODO have each piece calculate its possible moves only once for a given board state so its not recalculated several times. Figure out if that would increase efficiency???
+        List<Move> allmoves = new List<Move>(); 
+        //TODO have each piece calculate its possible moves only once for a given board state so its not recalculated several times. Figure out if that would increase efficiency???
+        //eg each piece stores all the moves it recently returned and if the board state hasn't changed it returns the same moves?
+        //something like this to remove the same moves being recalculated lots of times
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
-            { //Goes through each gameObject in boardArray, and if its in the right team it adds all of its moves to the list its going to return
+            { //Goes through each Piece in boardArray, and if its in the right team it adds all of its moves to the list its going to return
                 Coordinate c = new Coordinate(col, row);
                 if (bState.getPiece(c) != null && bState.getPiece(c).getTeam() == team)
                 {
@@ -86,7 +89,7 @@ public static class Processing
         List<Move> allmoves = new List<Move>();
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
-            { //Goes through each gameObject in boardArray, and if its in the right team it adds all of its moves to the list its going to return
+            { //Goes through each Piece in boardArray, and if its in the right team it adds all of its moves to the list its going to return
                 Coordinate c = new Coordinate(col, row);
                 if (bState.getPiece(c) != null && bState.getPiece(c).getTeam() == team)
                 {
@@ -98,7 +101,7 @@ public static class Processing
 
     //Checks for Stalemate and Checkmate and updates GameResult
     public static void updateGameResult(boardState bState, Team team)
-    { //TODO make sure gameresult isn't modified elsewhere as we pretty much only need to set it here
+    { 
         checkForStaleMate(bState, team); //sets the value of staleMate
         if (bState.getGameResult() != boardState.GameResult.Ongoing)
         {
@@ -108,7 +111,6 @@ public static class Processing
     }
 
     //Checks if the game is in a stale mate (if the game is not in check but there are no valid moves (that don't put you in check)
-    //TODO check stalemates don't cause softlocking and stopping the game with infinite loops
     private static void checkForStaleMate(boardState bState, Team team)
     {
         List<Move> moves = allMoves(bState, team);

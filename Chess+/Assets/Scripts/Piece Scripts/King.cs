@@ -7,9 +7,6 @@ public class King : Piece
     public King(Team team, Coordinate pos)
         : base(team, pos) { }
 
-    public King(char FENchar, Coordinate pos)
-        : base(FENchar, pos) { }
-
     public King(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
@@ -28,6 +25,7 @@ public class King : Piece
         int row = this.getPos().getRow();
         List<Move> moves = getAttackingMoves(bState);
         //Check for castling
+        //Castling does not scale with board size
         bool check = Processing.inCheck(bState, this.getTeam());
         Team team = this.getTeam();
         bool leftCastle = bState.canCastle(team, true);
@@ -57,8 +55,8 @@ public class King : Piece
             && bState.getPiece(6, row) == null
             && !Processing.inDanger(bState, this.getTeam(), new Coordinate(5, row))
             && !Processing.inDanger(bState, this.getTeam(), new Coordinate(6, row))
-        ) //NOTE: I manually entered the numbers for all the squares between king and rook.
-        { //Generalise this?
+        ) 
+        { 
             Move move = new CastlingMove(
                 this,
                 bState.getPiece(new Coordinate(8, row)),
@@ -78,7 +76,7 @@ public class King : Piece
             for (int b = -1; b <= 1; b++)
             {
                 Coordinate newCoord = this.getPos().move(a, b);
-                if ((a != 0 || b != 0) && newCoord.inBounds() && bState.spotNotAlly(this, newCoord))
+                if ((a != 0 || b != 0) && newCoord.inBounds(bState) && bState.spotNotAlly(this, newCoord))
                 {
                     moves.Add(new Move(this, newCoord));
                 }

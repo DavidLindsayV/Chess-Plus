@@ -27,23 +27,6 @@ public class boardScript : MonoBehaviour
 
     private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
-    //Notes to know about the code:
-    //The cols and rows go from 1 to 8.
-    //TRUE is the player team, and FALSE is the AI team. Always.
-    //Currently white is the player and black is the AI.
-
-    //TODO:
-    //replace boardArray with a array of the names, not the gameObjects. Should be less computation to call. Still use an array of gameObjects, though? IDK...
-    //Make automated tests
-    //ERROR WITH CURRENT CODE
-    //If a rook moves or is killed, and when a king moves, it doesn't update the castling variables. IT SHOULD!!!
-    //Fix this when you implement boardState() objects
-
-    //To consider:
-    //Maybe implement getPiece used more instead of referring to boardArray directly?
-    //Should I make endGame() a function I call directly instead of calling it during update?
-    //Should I be using lists so much? What about sets?
-
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
     //TODO make automated testing cover piece movements
     //TODO change heirarchy to make all the pieces children of something so u can minimise them
@@ -60,10 +43,10 @@ public class boardScript : MonoBehaviour
         promotionMenuReference = Canvas.GetComponent<PromoteMenu>(); //Get the promotion menu script
 
         //Initialise the chess pieces, set up the board with this FEN string
-        state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
     }
 
-    // Update is called once per frame
+    // Update is called once per frame 
     void Update()
     {
         if (state.getGameResult() != boardState.GameResult.Ongoing)

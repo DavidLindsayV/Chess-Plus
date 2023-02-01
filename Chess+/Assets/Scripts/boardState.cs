@@ -13,8 +13,8 @@ public class boardState
 
     //Stores the Piece objects
     //Stores the Piece chess pieces. Goes from 0-7 for col and row.
-    //Note, it is stored [col, row].
-    //Note, 0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
+    //It is stored [col, row].
+    //0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
     private Team currentPlayer;
     
     //Queenside is left from white's perspective, and kingside is right
@@ -66,7 +66,7 @@ public class boardState
     }
 
     /**Loads in the board state from a FEN string */
-    public boardState(string FENstring)
+    public boardState(string FENstring) 
     {
         string[] FENwords = FENstring.Split(' ');
         boardArray = new Piece[boardSize, boardSize];
@@ -92,25 +92,30 @@ public class boardState
             else
             {
                 Piece piece;
+                Coordinate coor = new Coordinate(col, row);
+                Team team = Team.White;
+                if(char.IsLower(c)){
+                    team = Team.Black;
+                }
                 switch (char.ToLower(c))
                 {
-                    case 'p': //TODO dynamic dispatch this?
-                        piece = new Pawn(c, new Coordinate(col, row));
+                    case 'p': 
+                        piece = new Pawn(team, coor);
                         break;
                     case 'r':
-                        piece = new Rook(c, new Coordinate(col, row));
+                        piece = new Rook(team, coor);
                         break;
                     case 'n':
-                        piece = new Knight(c, new Coordinate(col, row));
+                        piece = new Knight(team, coor);
                         break;
                     case 'b':
-                        piece = new Bishop(c, new Coordinate(col, row));
+                        piece = new Bishop(team, coor);
                         break;
                     case 'q':
-                        piece = new Queen(c, new Coordinate(col, row));
+                        piece = new Queen(team, coor);
                         break;
                     case 'k':
-                        piece = new King(c, new Coordinate(col, row));
+                        piece = new King(team, coor);
                         //store white and black kings
                         if (piece.getTeam() == Team.White)
                         {
@@ -167,8 +172,10 @@ public class boardState
         }
 
         //TODO Implement halfmoves??? (50 moves without pawn progression or killing = draw)
-
-        //TODO Implement fullmoves??? Stores how many turns have elapsed
+        //A halfmove is the number of individual player turns have happened since capture or pawn advance
+        //Implement fullmoves??? Stores how many black turns have elapsed, starting at 1
+        //Implement loading in gameResult (B/W/S)?
+        //If you update this then update bStateTests board-loading function too, and endOfFen()
     }
 
     /** Returns the board state as a FEN string */
@@ -210,7 +217,7 @@ public class boardState
 
 /**Returns the end of the FEN string (all but the board state)*/
     private string endOfFen(){
-        string fenString = "";
+        string fenString = ""; 
         //The player turn
         if (this.currentPlayer == Team.White)
         {
@@ -250,9 +257,21 @@ public class boardState
             fenString += enPassant.ToString() + " ";
         }
 
-        //Implement halfmoves??? (50 moves without pawn progression or killing = draw)
-
-        //Implement fullmoves??? Stores how many turns have elapsed
+        //Include the current result of the game - ongoing O, black won B, white won W, stalemate S
+        switch(gameResult){
+            case GameResult.Ongoing:
+                fenString += "O";
+                break;
+            case GameResult.GameWon:
+                if(playersTeam() == Team.White){ fenString += "W"; }else{ fenString += "B";}
+                break;
+            case GameResult.GameLost:
+                if(playersTeam() == Team.White){ fenString += "B"; }else{ fenString += "W";}
+                break;
+            case GameResult.Stalemate:
+                fenString += "S";
+                break;
+        }
 
         return fenString;
     }
@@ -281,12 +300,12 @@ public class boardState
             for (int col = 1; col <= boardSize; col++)
             {
                 if(getPiece(col,row) != null){
-                boardString += getPiece(col,row).typeToChar();
+                boardString += getPiece(col,row).ToString();
                 }else{
                     boardString += "_";
                 }
             }
-            boardString += "\n";
+            boardString += "\r\n";
         }
         return boardString + endOfFen();
     }

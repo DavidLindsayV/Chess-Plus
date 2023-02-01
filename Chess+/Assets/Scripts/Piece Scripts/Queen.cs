@@ -7,9 +7,6 @@ public class Queen : Piece
     public Queen(Team team, Coordinate pos)
         : base(team, pos) { }
 
-    public Queen(char FENchar, Coordinate pos)
-        : base(FENchar, pos) { }
-
     public Queen(Team team, Coordinate pos, GameObject gameObj)
         : base(team, pos, gameObj) { }
 
@@ -28,9 +25,9 @@ public class Queen : Piece
         List<Move> moves = new List<Move>();
         int col = this.getPos().getCol();
         int row = this.getPos().getRow();
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col + i, row))
+            if (Coordinate.inBounds(col + i, row, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row)))
                 {
@@ -44,9 +41,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col - i, row))
+            if (Coordinate.inBounds(col - i, row, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row)))
                 {
@@ -60,9 +57,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col, row + i))
+            if (Coordinate.inBounds(col, row + i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col, row + i)))
                 {
@@ -76,9 +73,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col, row - i))
+            if (Coordinate.inBounds(col, row - i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col, row - i)))
                 {
@@ -92,9 +89,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col + i, row + i))
+            if (Coordinate.inBounds(col + i, row + i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row + i)))
                 {
@@ -108,9 +105,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col - i, row - i))
+            if (Coordinate.inBounds(col - i, row - i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row - i)))
                 {
@@ -124,9 +121,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col - i, row + i))
+            if (Coordinate.inBounds(col - i, row + i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row + i)))
                 {
@@ -140,9 +137,9 @@ public class Queen : Piece
                 }
             }
         }
-        for (int i = 1; i < 8; i++)
+        for (int i = 1; i < bState.boardSize; i++)
         {
-            if (Coordinate.inBounds(col + i, row - i))
+            if (Coordinate.inBounds(col + i, row - i, bState))
             {
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row - i)))
                 {
