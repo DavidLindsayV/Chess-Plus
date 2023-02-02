@@ -171,11 +171,17 @@ public class boardState
             enPassant = new Coordinate(positionString);
         }
 
-        //TODO Implement halfmoves??? (50 moves without pawn progression or killing = draw)
-        //A halfmove is the number of individual player turns have happened since capture or pawn advance
-        //Implement fullmoves??? Stores how many black turns have elapsed, starting at 1
-        //Implement loading in gameResult (B/W/S)?
-        //If you update this then update bStateTests board-loading function too, and endOfFen()
+        switch(FENwords[4]){
+            case "B":
+                if(playersTeam() == Team.Black){ gameResult = GameResult.GameWon; }else{ gameResult = GameResult.GameLost; }
+                break;
+            case "W":
+                    if(playersTeam() == Team.White){ gameResult = GameResult.GameWon; }else{ gameResult = GameResult.GameLost; }
+                break;
+            case "O":
+                this.gameResult = GameResult.Ongoing;
+                break;
+        }
     }
 
     /** Returns the board state as a FEN string */

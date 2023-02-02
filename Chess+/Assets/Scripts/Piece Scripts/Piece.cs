@@ -81,6 +81,7 @@ public abstract class Piece
             this.gameObj.GetComponent<Renderer>().material = Prefabs.black;
         }
         this.gameObj.name = this.team.ToString() + char.ToUpper(this.typeToChar());
+        this.gameObj.transform.SetParent(GameObject.Find("Board").transform);
     }
 
     public void destroy()

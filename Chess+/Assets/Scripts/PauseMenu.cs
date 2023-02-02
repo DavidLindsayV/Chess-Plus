@@ -15,7 +15,6 @@ public class PauseMenu : MonoBehaviour //This is for the pause menu
     void Start()
     {
         boardScriptReference = board.GetComponent<boardScript>(); 
-        //TODO IS THERE A BETTER WAY TO DIRECTLY REFER TO THE SCRIPT WITHOUT GETTING THE SCRIPT VIA THE OBJECT???
     }
 
     // Update is called once per frame

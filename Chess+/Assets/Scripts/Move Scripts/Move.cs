@@ -27,7 +27,10 @@ public class Move
     /** Gets moved piece */
     public Piece getPiece(boardState bState) { return bState.getPiece(piecePos); }
 
-/**If a move is to be undone/ignored and used again, this resets the piecePos in move to be used once more */
+/**If a move is to be used again (after doMoveState has been called), this resets
+ the move so it may be used again
+ Intended for use in things like removeCheckingMoves that simply checks the results of moves
+ but does not keep their permanent consequences */
     public void resetMove(){
         this.piecePos = from;
     }

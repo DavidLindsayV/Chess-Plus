@@ -194,6 +194,22 @@ RNB_KBNR
             enPassant = new Coordinate(positionString);
         }
 
-        return new boardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing);
+        boardState b =  new boardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing);
+        
+        boardState.GameResult g = (boardState.GameResult)(-1); 
+        switch(FENwords[4]){
+            case "B":
+                if(b.playersTeam() == Team.Black){ g = boardState.GameResult.GameWon; }else{ g = boardState.GameResult.GameLost; }
+                break;
+            case "W":
+                    if(b.playersTeam() == Team.White){ g = boardState.GameResult.GameWon; }else{ g = boardState.GameResult.GameLost; }
+                break;
+            case "O":
+                g = boardState.GameResult.Ongoing;
+                break;
+        }
+
+        b.setGameResult(g);
+        return b;
     }
 }

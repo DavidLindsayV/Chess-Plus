@@ -31,6 +31,7 @@ public class boardScript : MonoBehaviour
     //TODO make automated testing cover piece movements
     //TODO change heirarchy to make all the pieces children of something so u can minimise them
     //TODO rename boardScript to something more descriptive of what it does
+    //TODO update comments/documentation in all files
 
 
     // Start is called before the first frame update

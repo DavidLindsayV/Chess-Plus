@@ -69,9 +69,8 @@ public static class Processing
     private static List<Move> allMoves(boardState bState, Team team)
     {
         List<Move> allmoves = new List<Move>(); 
-        //TODO have each piece calculate its possible moves only once for a given board state so its not recalculated several times. Figure out if that would increase efficiency???
-        //eg each piece stores all the moves it recently returned and if the board state hasn't changed it returns the same moves?
-        //something like this to remove the same moves being recalculated lots of times
+        //TODO make move generation/checking more efficient
+        //Currently pieces make the same move multiple times. Fix this?
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
             { //Goes through each Piece in boardArray, and if its in the right team it adds all of its moves to the list its going to return
