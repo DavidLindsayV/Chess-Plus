@@ -147,19 +147,19 @@ public class boardState
         }
 
         //Castling
-        if (!FENwords[2].Contains("K"))
+        if (FENwords[2].Contains("K"))
         {
             wKCastle = true;
         }
-        if (!FENwords[2].Contains("Q"))
+        if (FENwords[2].Contains("Q"))
         {
             wQCastle = true;
         }
-        if (!FENwords[2].Contains("k"))
+        if (FENwords[2].Contains("k"))
         {
             bKCastle = true;
         }
-        if (!FENwords[2].Contains("q"))
+        if (FENwords[2].Contains("q"))
         {
             bQCastle = true;
         }
@@ -234,7 +234,7 @@ public class boardState
             fenString += " b ";
         }
 
-        //Castling
+        //Castling TODO find out why none of the fen ends say castling is open
         if (wKCastle)
         {
             fenString += "K";

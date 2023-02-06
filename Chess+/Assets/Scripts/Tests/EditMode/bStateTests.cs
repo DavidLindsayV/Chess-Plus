@@ -20,7 +20,7 @@ ________
 ________
 PPPPPPPP
 RNBQKBNR
- w  - O";     
+ w KQkq - O";     
         runMoves(new List<Coordinate>(), new List<Coordinate>(), board);
     }
 
@@ -35,7 +35,7 @@ ________
 ______P_
 PPPPPP_P
 RNBQKBNR
- b  - O";
+ b KQkq - O";
  List<Coordinate> froms = new List<Coordinate>();
  List<Coordinate> tos = new List<Coordinate>();
     froms.Add(new Coordinate(7, 2)); tos.Add(new Coordinate(7,3));
@@ -53,7 +53,7 @@ __P____P
 ________
 PP_PPPP_
 RNB_KBNR
- b  - S"; 
+ b KQ - S"; 
  List<Coordinate> froms = new List<Coordinate>{
     new Coordinate("c2"), new Coordinate("h7"), new Coordinate("h2"), new Coordinate("a7"), new Coordinate("d1"), new Coordinate("a8"), new Coordinate("a4"), new Coordinate("a6"), new Coordinate("a5"), new Coordinate("f7"), new Coordinate("c7"), new Coordinate("e8"), new Coordinate("d7"), new Coordinate("d8"), new Coordinate("b7"), new Coordinate("d3"), new Coordinate("b8"), new Coordinate("f7"), new Coordinate("c8")};
  List<Coordinate> tos = new List<Coordinate>{
@@ -61,7 +61,31 @@ RNB_KBNR
         runMoves(froms, tos, board);
     }
 
-    public void runMoves(List<Coordinate> froms, List<Coordinate> tos, string board){
+            [Test]
+    public void Pawna2Toa3(){
+        string board = 
+@"rnbqkbnr
+pppppppp
+________
+________
+________
+P_______
+_PPPPPPP
+RNBQKBNR
+ b KQkq - O"; 
+ List<Coordinate> froms = new List<Coordinate>{
+    new Coordinate("a2")};
+ List<Coordinate> tos = new List<Coordinate>{
+    new Coordinate("a3") };
+        runMoves(froms, tos, board);
+    }
+
+/**Basic test checking that a series of moves, stored as from and to coordinates, result in a certain board state
+Cannot check for Checks at the correct times
+Cannot do Promotion, as several moves have the same from/to coordinates 
+It is kept because it is used in preexisting tests, but it is difficult to use as it requires
+lists of coordinates */
+    public static void runMoves(List<Coordinate> froms, List<Coordinate> tos, string board){
         boardState bState = makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
         for(int i = 0; i < froms.Count; i++){
             Coordinate from = froms[i];
@@ -70,12 +94,14 @@ RNB_KBNR
             Move move = null;
             List<Move> allMoves = Processing.allValidMoves(bState, bState.currentTeam());
             foreach(Move m in allMoves){
-                if(m.getFrom() == from && m.getTo() == to){
+                if(m.getFrom().Equals(from) && m.getTo().Equals(to)){
                     move = m;
                     break;
                 }
             }
-            if(move == null){ Assert.Fail(); }
+            if(move == null){ 
+                Assert.Fail("Move " + froms[i].ToString() + "-" + tos[i].ToString() + " not valid"); 
+                }
             Assert.AreEqual(bState.getPiece(from).getTeam(), bState.currentTeam());
             move.doMoveState(bState);
             Processing.updateGameResult(bState, bState.currentTeam().nextTeam());
@@ -86,7 +112,7 @@ RNB_KBNR
 
 /** The constructor for a board from a FEN string that doesn't create gameobjects
 */
-    public boardState makeBoard(string FENstring){
+    public static boardState makeBoard(string FENstring){
         string[] FENwords = FENstring.Split(' ');
         Piece[,] boardArray = new Piece[8, 8];
         King whiteKing = null;
@@ -169,19 +195,19 @@ RNB_KBNR
         bool bKCastle = false;
         bool bQCastle = false;
         //Castling
-        if (!FENwords[2].Contains("K"))
+        if (FENwords[2].Contains("K"))
         {
             wKCastle = true;
         }
-        if (!FENwords[2].Contains("Q"))
+        if (FENwords[2].Contains("Q"))
         {
             wQCastle = true;
         }
-        if (!FENwords[2].Contains("k"))
+        if (FENwords[2].Contains("k"))
         {
             bKCastle = true;
         }
-        if (!FENwords[2].Contains("q"))
+        if (FENwords[2].Contains("q"))
         {
             bQCastle = true;
         }

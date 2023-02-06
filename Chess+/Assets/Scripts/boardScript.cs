@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class boardScript : MonoBehaviour
 {
@@ -25,13 +26,17 @@ public class boardScript : MonoBehaviour
 
     public AIMode AIdifficulty = AIMode.easy;
 
+    private bool enemyRunning = false; //stores whether the enemyTurn async method is running
+
     private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
+    private System.Random random = new System.Random();
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
     //TODO make automated testing cover piece movements
-    //TODO change heirarchy to make all the pieces children of something so u can minimise them
     //TODO rename boardScript to something more descriptive of what it does
     //TODO update comments/documentation in all files
+    //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
+    //also format the testing stuff better and tidy up that code
 
 
     // Start is called before the first frame update
@@ -65,7 +70,7 @@ public class boardScript : MonoBehaviour
         }  
         else
         {
-            enemyTurn(); //TODO change enemyTurn into a coroutine so frames can still happen when enemy is having its turn
+            if(!enemyRunning){ enemyTurn(); }
         }
     }
 
@@ -167,7 +172,7 @@ public class boardScript : MonoBehaviour
 
     //Updates the gameobjects (creates, destroys, moves) so the user can see the changes to the chess game
     private void showMove(Move move, Piece killedPiece)
-    {
+    { //TODO fix this up with dynamic dispatch
         if (killedPiece != null)
         {
             killedPiece.destroy();
@@ -196,21 +201,30 @@ public class boardScript : MonoBehaviour
     }
 
     //The AI/Enemy's turn
-    private void enemyTurn()
+    private async void enemyTurn()
     { 
-        List<Move> AIMoves = Processing.allValidMoves(state, state.enemysTeam());
+        enemyRunning = true;
+        Move move = null;
+        await Task.Run(()=>{ 
+        //This creates a separate thread that doesn't execute the code below
+        //until this task of selecting moves has finished
+        //Allowing Update to still run while the enemy is taking its time to think
+        List<Move> AIMoves  = Processing.allValidMoves(state, state.enemysTeam());
         if (AIdifficulty == AIMode.easy)
         {
-            int index = Random.Range(0, AIMoves.Count);
-            doMove(AIMoves[index]);
+            int index = this.random.Next(0, AIMoves.Count);
+            move = AIMoves[index];
         }
         else
         {
             List<Move> maxPriMoves = AI.getMaxPriMoves(state, AIMoves, state.enemysTeam());
-            int index = Random.Range(0, maxPriMoves.Count);
-            doMove(maxPriMoves[index]);
+            int index = this.random.Next(0, maxPriMoves.Count);
+            move = maxPriMoves[index];
         }
+        });
+        doMove(move);
         turnOver = true;
+        enemyRunning = false;
     }
 
     //Called when the game ends. Does stuff and stops the code from running

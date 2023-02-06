@@ -61,7 +61,7 @@ public class King : Piece
                 this.getPos(),
                 new Coordinate(8, row),
                 this.getPos().move(2, 0),
-                this.getPos().move(-2, 0)
+                this.getPos().move(1, 0)
             );
             moves.Add(move);
         }

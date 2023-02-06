@@ -63,12 +63,15 @@ public class Pawn : Piece
         return moves;
     }
 
+/**Creates the promotion moves */
     private List<Move> promotionMoves(Coordinate to)
     {
-        Move m1 = new PromoteMove(this.getPos(), to, new Queen(this.getTeam(), to));
-        Move m2 = new PromoteMove(this.getPos(), to, new Rook(this.getTeam(), to));
-        Move m3 = new PromoteMove(this.getPos(), to, new Bishop(this.getTeam(), to));
-        Move m4 = new PromoteMove(this.getPos(), to, new Knight(this.getTeam(), to));
+        //The piece constructors take in a specific game object so makePiece isn't called
+        //(null is given so the pieces don't yet have gameObjects)
+        Move m1 = new PromoteMove(this.getPos(), to, new Queen(this.getTeam(), to, null));
+        Move m2 = new PromoteMove(this.getPos(), to, new Rook(this.getTeam(), to, null));
+        Move m3 = new PromoteMove(this.getPos(), to, new Bishop(this.getTeam(), to, null));
+        Move m4 = new PromoteMove(this.getPos(), to, new Knight(this.getTeam(), to, null));
         List<Move> moves = new List<Move>();
         moves.Add(m1);
         moves.Add(m2);
@@ -123,7 +126,7 @@ public class Pawn : Piece
         //En Passant
         if (
             bState.enPassantPos() != null
-            && bState.enPassantPos().getRow() == row
+            && bState.enPassantPos().getRow() == row + direction
             && Mathf.Abs(bState.enPassantPos().getCol() - col) == 1
         )
         {

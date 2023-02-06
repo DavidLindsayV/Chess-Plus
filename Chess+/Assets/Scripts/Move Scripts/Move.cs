@@ -42,9 +42,6 @@ public class Move
     */
     public virtual Piece doMoveState(boardState bState)
     {
-        Debug.Log(
-    new System.Diagnostics.StackTrace().ToString()
-    );
         piecePos = from;
         Piece piece = getPiece(bState); //You need to refer to the piece from the cloned board
         //not from the move, because the one in the move may be from a different board state

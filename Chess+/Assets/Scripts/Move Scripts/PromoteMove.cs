@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class PromoteMove : Move
 {
+    //promotedTo should be a Piece (rook/queen/knight/bishop) that does NOT have a gameObject
     public Piece promotedTo;
 
     public PromoteMove(Coordinate from, Coordinate to, Piece promotedTo)
         : base(from, to)
     {
-        this.promotedTo = promotedTo;
-        this.promotedTo.destroy();
+        this.promotedTo = promotedTo; 
     }
 
     //Makes the promoted piece visible

@@ -56,7 +56,7 @@ public static class Processing
             //Simulate doing the move
             boardState cloneState = bState.clone();
             move.doMoveState(cloneState);
-            move.resetMove();
+            move.resetMove(); //TODO turn the clone-domove-reset stuff into one function so the reset isn't forgotten
             if (inCheck(cloneState, team))
             {
                 moves.RemoveAt(i); //If the king is in check, remove that move
@@ -69,8 +69,6 @@ public static class Processing
     private static List<Move> allMoves(boardState bState, Team team)
     {
         List<Move> allmoves = new List<Move>(); 
-        //TODO make move generation/checking more efficient
-        //Currently pieces make the same move multiple times. Fix this?
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
             { //Goes through each Piece in boardArray, and if its in the right team it adds all of its moves to the list its going to return
@@ -102,53 +100,24 @@ public static class Processing
     //Checks for Stalemate and Checkmate and updates GameResult
     public static void updateGameResult(boardState bState, Team team)
     { 
-        checkForStaleMate(bState, team); //sets the value of staleMate
-        if (bState.getGameResult() != boardState.GameResult.Ongoing)
-        {
-            return;
-        }
-        checkForMate(bState, team);
-    }
-
-    //Checks if the game is in a stale mate (if the game is not in check but there are no valid moves (that don't put you in check)
-    private static void checkForStaleMate(boardState bState, Team team)
-    {
         List<Move> moves = allMoves(bState, team);
         removeCheckingMoves(bState, moves, team);
         if (moves.Count == 0)
         {
-            bState.setGameResult(boardState.GameResult.Stalemate);
-        } //If there are no valid moves that don't put you in check, then its a stalemate
-    }
-
-    private static void checkForMate(boardState bState, Team team)
-    {
-        //See if you're in check. If not, stop there.
-        if (!inCheck(bState, team))
-        {
-            return;
-        }
-        //If you are in check, check all possible moves and see if you can avoid check
-        //This is more efficient than checking if allValidMoves is of size 0
-        //because if an escape from check is found the program terminates early
-        List<Move> allTeamMoves = allMoves(bState, team);
-        foreach (Move move in allTeamMoves) //This goes through all the moves of your team and simulates them, then sees if you're still in check.
-        { //If no move you can do prevents check, then you're in checkmate
-            boardState cloneState = bState.clone();
-            move.doMoveState(cloneState);
-            move.resetMove();
-            if (!inCheck(cloneState, team))
-            {
-                return;
+            //If there are no moves that don't leave you in check, you're either in stalemate
+            //or checkmate
+            if(inCheck(bState, team)){ //If you have no moves and you're in check, its checkmate
+                if (team == bState.playersTeam())
+                {
+                    bState.setGameResult(boardState.GameResult.GameLost);
+                }
+                else
+                {
+                    bState.setGameResult(boardState.GameResult.GameWon);
+                }
+            }else{
+                bState.setGameResult(boardState.GameResult.Stalemate);
             }
-        }
-        if (team == bState.playersTeam())
-        {
-            bState.setGameResult(boardState.GameResult.GameLost);
-        }
-        else
-        {
-            bState.setGameResult(boardState.GameResult.GameWon);
         }
     }
 }
