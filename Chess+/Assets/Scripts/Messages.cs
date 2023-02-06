@@ -6,7 +6,7 @@ public enum MessageType{ Error, BoardState, Debugging, Other}
 public static class Messages 
 {
     private static bool showErrors = true;
-    private static bool showBoardState = true;
+    private static bool showBoardState = false;
     private static bool showDebugging = true;
     private static bool showOther = true;
 

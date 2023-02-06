@@ -234,7 +234,6 @@ public class boardState
             fenString += " b ";
         }
 
-        //Castling TODO find out why none of the fen ends say castling is open
         if (wKCastle)
         {
             fenString += "K";

@@ -18,4 +18,10 @@ public class CastlingMove : Move
             this.rookMove.doMoveState(bState);
             return null; //castling moves can't kill
     }
+
+    public override void showMove(boardState bState, Piece killedPiece)
+    {
+        base.showMove(bState, killedPiece);
+        rookMove.showMove(bState, null);
+    }
 }

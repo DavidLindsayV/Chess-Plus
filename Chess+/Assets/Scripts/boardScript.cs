@@ -32,7 +32,6 @@ public class boardScript : MonoBehaviour
 
     private System.Random random = new System.Random();
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
-    //TODO make automated testing cover piece movements
     //TODO rename boardScript to something more descriptive of what it does
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
@@ -162,42 +161,12 @@ public class boardScript : MonoBehaviour
         }
     }
 
-    //Executes a move
+    /**Executes a move. Updates the internal state as well as the external view*/
     private void doMove(Move move)
     {
         Piece killedPiece = move.doMoveState(state); //Updates the boardState.
         //It is done separately to allow this function to be reused when testing/checking moves
-        showMove(move, killedPiece); //Does the rest of the move, updating the GameObject placements
-    }
-
-    //Updates the gameobjects (creates, destroys, moves) so the user can see the changes to the chess game
-    private void showMove(Move move, Piece killedPiece)
-    { //TODO fix this up with dynamic dispatch
-        if (killedPiece != null)
-        {
-            killedPiece.destroy();
-        }
-        state.getPiece(move.getTo()).getObject().transform.position = new Vector3(
-            move.getTo().getX(),
-            state.getPiece(move.getTo()).getObject().transform.position.y,
-            move.getTo().getZ()
-        );
-        if (move is CastlingMove)
-        {
-            showMove(((CastlingMove)move).rookMove, null);
-        }
-        if (move is PromoteMove)
-        {
-            if (state.currentTeam() == state.playersTeam())
-            {
-                promotionMenuReference.Run((PromoteMove)move); //If its the user's turn, let them choose what to promote to
-            }
-            else //Promotion for enemy AI
-            {
-                state.getPiece(move.getTo()).destroy();
-                ((PromoteMove)move).makePromotedPiece(); //Allow the new piece replacing the pawn to appear
-            }
-        }
+        move.showMove(state, killedPiece); //Does the rest of the move, updating the GameObject placements
     }
 
     //The AI/Enemy's turn

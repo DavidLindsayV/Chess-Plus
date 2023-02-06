@@ -84,4 +84,20 @@ public class Move
         piecePos = to;
         return killedPiece;
     }
+
+    /**Does the parts of a move that the user can see.
+    Updates the gameobjects (creates, destroys, moves) so the user can see the changes to the chess game*/
+    public virtual void showMove(boardState bState, Piece killedPiece)
+    {
+        if (killedPiece != null)
+        {
+            killedPiece.destroy();
+        }
+        Piece movedPiece = this.getPiece(bState);
+        movedPiece.getObject().transform.position = new Vector3(
+            this.getTo().getX(),
+            movedPiece.getObject().transform.position.y,
+            this.getTo().getZ()
+        );
+    }
 }
