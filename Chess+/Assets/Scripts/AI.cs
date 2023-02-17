@@ -5,6 +5,8 @@ using UnityEngine;
 /**The thinking and planning for the enemy chess AI */
 public class AI
 {
+    //TODO create AI mode "difficult" where the AI looks more than 1 step ahead into the future to see which
+    //move is best
     public static List<Move> getMaxPriMoves(boardState bState, List<Move> AIMoves, Team team)
     {
         int maxPriority = 0; 

@@ -930,8 +930,7 @@ I am NOT using ep to show en passant, or O-O-O to show castling, or # to show ch
 				m.getPiece(bState)))) { continue; }
                 //Simulate the move
                 boardState cloneState = bState.clone();
-                Piece killedPiece = m.doMoveState(cloneState);
-                m.resetMove();
+                Piece killedPiece = Processing.simulateMove(cloneState, m);
                 //If its a killing move, check the piece killed is correct type
                 if (moveString.Contains("x"))
                 {

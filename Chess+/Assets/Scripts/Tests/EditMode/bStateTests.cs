@@ -80,11 +80,16 @@ RNBQKBNR
         runMoves(froms, tos, board);
     }
 
+//TODO take runMoves (both versions) and some other useful testing functions and put them in a separate file so they're 
+//better organised instead of higgledy piggledy across your tests
+
 /**Basic test checking that a series of moves, stored as from and to coordinates, result in a certain board state
 Cannot check for Checks at the correct times
 Cannot do Promotion, as several moves have the same from/to coordinates 
 It is kept because it is used in preexisting tests, but it is difficult to use as it requires
-lists of coordinates */
+lists of coordinates 
+Cannot do things such as check when the board is in Check, or do moves where there are multiple options
+with the same start & end coordinates (such as promotion)*/
     public static void runMoves(List<Coordinate> froms, List<Coordinate> tos, string board){
         boardState bState = makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
         for(int i = 0; i < froms.Count; i++){

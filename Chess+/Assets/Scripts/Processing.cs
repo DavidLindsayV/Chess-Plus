@@ -55,14 +55,22 @@ public static class Processing
             Move move = moves[i];
             //Simulate doing the move
             boardState cloneState = bState.clone();
-            move.doMoveState(cloneState);
-            move.resetMove(); //TODO turn the clone-domove-reset stuff into one function so the reset isn't forgotten
+            simulateMove(cloneState, move); 
             if (inCheck(cloneState, team))
             {
                 moves.RemoveAt(i); //If the king is in check, remove that move
                 i--;
             }
         }
+    }
+
+/**This method returns the killed piece
+This method is used if a move is to be done but the move might be used again later
+A cloned boardState should be passed in */
+    public static Piece simulateMove(boardState bState, Move move){
+        Piece killedPiece = move.doMoveState(bState);
+        move.resetMove();
+        return killedPiece;
     }
 
     /**Returns a list of all of the moves of a certain team*/

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 
-public class boardScript : MonoBehaviour
+public class Game : MonoBehaviour
 {
     //The text for displaying the result of the game on the UI
     public Text gameResultText;
@@ -32,10 +32,10 @@ public class boardScript : MonoBehaviour
 
     private System.Random random = new System.Random();
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
-    //TODO rename boardScript to something more descriptive of what it does
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
     //also format the testing stuff better and tidy up that code
+
 
 
     // Start is called before the first frame update
@@ -59,17 +59,17 @@ public class boardScript : MonoBehaviour
             endGame(); //If the game is over, call endgame
             return;
         }
-        else if (turnOver)  
+        else if (turnOver)
         {
             endTurn(); //Either player or enemy has finished their turn.
         }
         else if (state.currentTeam() == state.playersTeam()) //if the game isn't over, go do userTurn or enemyTurn depending on whose turn it is
         {
-            userTurn();  
-        }  
+            userTurn();
+        }
         else
         {
-            if(!enemyRunning){ enemyTurn(); }
+            if (!enemyRunning) { enemyTurn(); }
         }
     }
 
@@ -106,9 +106,9 @@ public class boardScript : MonoBehaviour
             //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
             if (hit.collider.gameObject.name.Contains(Team.Black.ToString()))
             {
-            int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
-            int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
-            Coordinate blackPosCoord = new Coordinate(col,row);
+                int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
+                int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
+                Coordinate blackPosCoord = new Coordinate(col, row);
                 LayerMask mask = LayerMask.GetMask("Move tiles");
                 Physics.Raycast(
                     new Vector3(blackPosCoord.getX(), 0.2F, blackPosCoord.getZ()),
@@ -171,25 +171,26 @@ public class boardScript : MonoBehaviour
 
     //The AI/Enemy's turn
     private async void enemyTurn()
-    { 
+    {
         enemyRunning = true;
         Move move = null;
-        await Task.Run(()=>{ 
-        //This creates a separate thread that doesn't execute the code below
-        //until this task of selecting moves has finished
-        //Allowing Update to still run while the enemy is taking its time to think
-        List<Move> AIMoves  = Processing.allValidMoves(state, state.enemysTeam());
-        if (AIdifficulty == AIMode.easy)
+        await Task.Run(() =>
         {
-            int index = this.random.Next(0, AIMoves.Count);
-            move = AIMoves[index];
-        }
-        else
-        {
-            List<Move> maxPriMoves = AI.getMaxPriMoves(state, AIMoves, state.enemysTeam());
-            int index = this.random.Next(0, maxPriMoves.Count);
-            move = maxPriMoves[index];
-        }
+            //This creates a separate thread that doesn't execute the code below
+            //until this task of selecting moves has finished
+            //Allowing Update to still run while the enemy is taking its time to think
+            List<Move> AIMoves = Processing.allValidMoves(state, state.enemysTeam());
+            if (AIdifficulty == AIMode.easy)
+            {
+                int index = this.random.Next(0, AIMoves.Count);
+                move = AIMoves[index];
+            }
+            else
+            {
+                List<Move> maxPriMoves = AI.getMaxPriMoves(state, AIMoves, state.enemysTeam());
+                int index = this.random.Next(0, maxPriMoves.Count);
+                move = maxPriMoves[index];
+            }
         });
         doMove(move);
         turnOver = true;

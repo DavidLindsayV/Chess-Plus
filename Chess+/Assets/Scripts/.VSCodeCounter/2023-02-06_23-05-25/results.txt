@@ -1,0 +1,60 @@
+Date : 2023-02-06 23:05:25
+Directory : c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts
+Total : 30 files,  3127 codes, 351 comments, 351 blanks, all 3829 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C#       |         30 |      3,127 |        351 |        351 |      3,829 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                            | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                               |         30 |      3,127 |        351 |        351 |      3,829 |
+| . (Files)                                                                                       |         13 |      1,119 |        206 |        144 |      1,469 |
+| Move Scripts                                                                                    |          5 |        170 |         31 |         28 |        229 |
+| Piece Scripts                                                                                   |          7 |        695 |         28 |         70 |        793 |
+| Tests                                                                                           |          5 |      1,143 |         86 |        109 |      1,338 |
+| Tests\EditMode                                                                                  |          4 |      1,130 |         81 |        105 |      1,316 |
+| Tests\PlayMode                                                                                  |          1 |         13 |          5 |          4 |         22 |
++-------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                        | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\AI.cs                               | C#       |         63 |          2 |          4 |         69 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\CMFreeLookOnlyWhenRightMouseDown.cs | C#       |         37 |          0 |          1 |         38 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Coordinate.cs                       | C#       |         80 |         27 |         19 |        126 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\GameStateManager.cs                 | C#       |          0 |         60 |         11 |         71 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Messages.cs                         | C#       |         29 |          0 |          3 |         32 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Move Scripts\CastlingMove.cs        | C#       |         22 |          2 |          4 |         28 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Move Scripts\EnPassantMove.cs       | C#       |         17 |          0 |          4 |         21 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Move Scripts\Move.cs                | C#       |         73 |         21 |         10 |        104 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Move Scripts\PawnDoublejump.cs      | C#       |         25 |          0 |          4 |         29 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Move Scripts\PromoteMove.cs         | C#       |         33 |          8 |          6 |         47 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\PauseMenu.cs                        | C#       |         49 |          3 |          7 |         59 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\Bishop.cs             | C#       |         97 |          1 |          9 |        107 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\King.cs               | C#       |         85 |          2 |          8 |         95 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\Knight.cs             | C#       |         50 |          1 |          9 |         60 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\Pawn.cs               | C#       |        137 |          6 |         10 |        153 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\Piece.cs              | C#       |         87 |         16 |         19 |        122 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\Queen.cs              | C#       |        154 |          1 |          8 |        163 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Piece Scripts\Rook.cs               | C#       |         85 |          1 |          7 |         93 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Prefabs.cs                          | C#       |         63 |          3 |          7 |         73 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Processing.cs                       | C#       |         97 |         18 |          9 |        124 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\PromoteMenu.cs                      | C#       |         44 |         14 |          7 |         65 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Team.cs                             | C#       |         35 |          6 |          6 |         47 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Tests\EditMode\CoordTests.cs        | C#       |         32 |          1 |          2 |         35 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Tests\EditMode\TeamTests.cs         | C#       |         26 |          1 |          2 |         29 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Tests\EditMode\bStateTests.cs       | C#       |        215 |         16 |         13 |        244 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Tests\EditMode\swen221Tests.cs      | C#       |        857 |         63 |         88 |      1,008 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Tests\PlayMode\PlayTests.cs         | C#       |         13 |          5 |          4 |         22 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\Game.cs                      | C#       |        190 |         29 |         26 |        245 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\boardState.cs                       | C#       |        419 |         40 |         40 |        499 |
+| c:\Users\david\Unity Games\Chess-Plus\Chess+\Assets\Scripts\tileScript.cs                       | C#       |         13 |          4 |          4 |         21 |
+| Total                                                                                           |          |      3,127 |        351 |        351 |      3,829 |
++-------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

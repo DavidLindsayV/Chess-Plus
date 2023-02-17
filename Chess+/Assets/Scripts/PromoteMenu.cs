@@ -6,12 +6,12 @@ public class PromoteMenu : MonoBehaviour
 {
     public GameObject PromotionPanel;
     public GameObject board;
-    private boardScript boardScriptReference; //Used to stop boardScript from running whilst paused
+    private Game GameReference; //Used to stop Game from running whilst paused
     private PromoteMove promotionMove;
 
     void Start()
     {
-        boardScriptReference = board.GetComponent<boardScript>();
+        GameReference = board.GetComponent<Game>();
     }
 
     /** Resumes the game for the menu selection */
@@ -19,7 +19,7 @@ public class PromoteMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
         PromotionPanel.SetActive(false);
-        boardScriptReference.enabled = true;
+        GameReference.enabled = true;
     }
 
     /** Pause game for the selection */
@@ -28,16 +28,16 @@ public class PromoteMenu : MonoBehaviour
         this.promotionMove = move;
         Time.timeScale = 0f;
         PromotionPanel.SetActive(true);
-        boardScriptReference.enabled = false;
+        GameReference.enabled = false;
     }
 
     /**Promotes to a piece of the given type */
     public void promotePiece(Piece piece)
     {
-        //TODO: update promotePiece and Run and Resume once you've updated boardScript/active screen managers
+        //TODO: update promotePiece and Run and Resume once you've updated Game/active screen managers
         //Currently user promotion is not working
-        //Still need to update: PromoteMenu, gameStateManager, PauseMenu, and stuff in boardScript
-        boardScriptReference.state.setPiece(promotionMove.getTo(), piece);
+        //Still need to update: PromoteMenu, gameStateManager, PauseMenu, and stuff in Game
+        GameReference.state.setPiece(promotionMove.getTo(), piece);
         Resume();
     }
 

@@ -31,7 +31,7 @@ public class Move
  the move so it may be used again
  Intended for use in things like removeCheckingMoves that simply checks the results of moves
  but does not keep their permanent consequences */
-    public void resetMove(){
+    public virtual void resetMove(){
         this.piecePos = from;
     }
 

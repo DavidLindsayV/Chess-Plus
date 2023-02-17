@@ -17,7 +17,7 @@
 //    public Text gameResultText;
 //    public GameObject PromotionPanel;
 //    public GameObject board;
-//    private boardScript boardScriptReference;
+//    private Game GameReference;
 
 //    Stack<GameState> stateStack;
 
@@ -25,7 +25,7 @@
 //    void Start()
 //    {
 //        stateStack = new Stack<GameState>();
-//        boardScriptReference = board.GetComponent<boardScript>();
+//        GameReference = board.GetComponent<Game>();
 //        //deactivate all states
 //        setState(GameState.Running);
 //    }
