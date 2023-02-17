@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PromoteMove : Move
 {
+    private static GameState promoteMenu;
+
     //promotedTo should be a Piece (rook/queen/knight/bishop) that does NOT have a gameObject
     public Piece promotedTo;
 
@@ -26,22 +28,16 @@ public class PromoteMove : Move
         return killedPiece;
     }
 
+    /**promoted a piece, and it uses a menu to see what the piece is promoted to if it's the players turn
+*/
     public override void showMove(boardState bState, Piece killedPiece)
     {
-        base.showMove(bState, killedPiece);
         if (bState.currentTeam() == bState.playersTeam())
         {
-            //promotionMenuReference.Run(this); 
-            //TODO figure out what to do here
-            //Make the promotion menu stuff happen when a tile is selected under Game?
-            //Or have it trigger when the move is enacted in showMove?
-            //probably under showMove is safe - it only triggers when its ready to be shown to player
-            //but need to fix the promotion menu and stuff
+            ((PromoteMenu)(StateManager.promoteMenu)).GetPromotedTo(this, bState);
         }
-        else //Promotion for enemy AI
-        {
-            getPiece(bState).destroy();
-            this.makePromotedPiece(); //Allow the new piece replacing the pawn to appear
-        }
+        getPiece(bState).destroy();
+        this.makePromotedPiece(); //Allow the new piece replacing the pawn to appear
+        base.showMove(bState, killedPiece);
     }
 }

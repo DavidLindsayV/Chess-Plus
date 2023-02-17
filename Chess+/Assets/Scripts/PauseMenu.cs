@@ -2,58 +2,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PauseMenu : MonoBehaviour //This is for the pause menu
+/**A game state for the pause menu 
+Attached to the Canvas*/
+public class PauseMenu : GameState 
 {
-    public static bool GamePaused = false;
-    public GameObject PauseMenuPanel;
-    public GameObject PromotionMenuPanel;
-    private bool wasPromotion;
-    public GameObject board;
-    private Game GameReference; //Used to stop Game from running whilst paused
-
-
+    private GameState previousState; 
+    private GameObject PauseMenuPanel;
     void Start()
     {
-        GameReference = board.GetComponent<Game>(); 
+        this.PauseMenuPanel = GameObject.Find("Canvas").transform.Find("PauseMenuPanel").gameObject;
     }
 
     // Update is called once per frame
+    /**The game is paused via ESC*/
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (GamePaused)
+            if (PauseMenuPanel.activeSelf)
             {
-                Resume();
+                resume();
             }
             else
             {
-                Pause();
+                previousState = StateManager.OpenState(this);
             }
         }
     }
 
-    //Resumes the game
-    public void Resume()
-    {
-        GamePaused = false;
-        Time.timeScale = 1f;
-        PauseMenuPanel.SetActive(false);
-        if (wasPromotion) { PromotionMenuPanel.SetActive(true); }
-        GameReference.enabled = true;
+/**Exists so that the button has a function to call */
+    public void resume(){
+        StateManager.OpenState(previousState);
     }
 
-    //Pauses the game
-    private void Pause()
-    {
-        GamePaused = true;
-        Time.timeScale = 0f;
-        PauseMenuPanel.SetActive(true);
-        if (PromotionMenuPanel.activeInHierarchy)
-        {
-            wasPromotion = true;
-            PromotionMenuPanel.SetActive(false);
-        }
-        GameReference.enabled = false;
+    public override void runState(){
+        Time.timeScale = 1f;
+        this.enabled = true;
+        this.PauseMenuPanel.SetActive(true);
+    }
+
+    public override void closeState(){
+        this.PauseMenuPanel.SetActive(false);
     }
 }

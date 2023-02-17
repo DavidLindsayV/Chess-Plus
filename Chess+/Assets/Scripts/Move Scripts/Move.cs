@@ -94,7 +94,7 @@ public class Move
             killedPiece.destroy();
         }
         Piece movedPiece = this.getPiece(bState);
-        movedPiece.getObject().transform.position = new Vector3(
+        movedPiece.getObject().transform.position = new Vector3( 
             this.getTo().getX(),
             movedPiece.getObject().transform.position.y,
             this.getTo().getZ()

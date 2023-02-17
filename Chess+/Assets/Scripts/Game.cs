@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 
-public class Game : MonoBehaviour
+public class Game : GameState
 {
     //The text for displaying the result of the game on the UI
     public Text gameResultText;
@@ -14,9 +14,6 @@ public class Game : MonoBehaviour
     private Piece selected; //The current Piece (white chess piece) selected by the player
 
     public boardState state; //this boardState stores the current state of the board
-
-    //Promotion variables
-    private PromoteMenu promotionMenuReference; //Variables used for Promotion
 
     public enum AIMode
     {
@@ -43,10 +40,8 @@ public class Game : MonoBehaviour
     {
         //Set up some variables
         tileList = new List<GameObject>();
-
         GameObject Canvas = GameObject.Find("Canvas");
-        promotionMenuReference = Canvas.GetComponent<PromoteMenu>(); //Get the promotion menu script
-
+        StateManager.Init();
         //Initialise the chess pieces, set up the board with this FEN string
         state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
     }
@@ -241,5 +236,14 @@ public class Game : MonoBehaviour
         );
         tileList.Add(newTile);
         newTile.GetComponent<tileScript>().setMove(move);
+    }
+
+    public override void runState(){
+        Time.timeScale = 1f;
+        this.enabled = true;
+    }
+
+    public override void closeState(){
+        this.enabled = false;
     }
 }
