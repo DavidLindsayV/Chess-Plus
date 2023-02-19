@@ -7,7 +7,7 @@ This is attached to the Canvas */
 public class PromoteMenu : GameState
 {
     private GameState previousState;
-    private boardState bState;
+    private BoardState bState;
     private PromoteMove promotionMove;
 
     private GameObject PromotionPanel;
@@ -18,7 +18,7 @@ public class PromoteMenu : GameState
     }
 
     /** Pause game for the selection */
-    public void GetPromotedTo(PromoteMove move, boardState bState)
+    public void GetPromotedTo(PromoteMove move, BoardState bState)
     {
         this.promotionMove = move;
         this.bState = bState;

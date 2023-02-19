@@ -21,7 +21,7 @@ public class Rook : Piece
     }
 
     //Returns the moves for a Rook
-    public override List<Move> getMoves(boardState bState)
+    public override List<Move> getMoves(BoardState bState)
     {
         List<Move> moves = new List<Move>();
         int col = this.getPos().getCol();
@@ -85,7 +85,7 @@ public class Rook : Piece
         return moves;
     }
 
-    public override List<Move> getAttackingMoves(boardState bState)
+    public override List<Move> getAttackingMoves(BoardState bState)
     {
         return this.getMoves(bState);
     }

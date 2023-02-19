@@ -9,7 +9,7 @@ public class PawnDoublejump : Move
 
     }
 
-    public override Piece doMoveState(boardState bState){
+    public override Piece doMoveState(BoardState bState){
         Piece killedPiece = base.doMoveState(bState);
             int direction = 0;
             if (this.getPiece(bState).getTeam() == Team.White)

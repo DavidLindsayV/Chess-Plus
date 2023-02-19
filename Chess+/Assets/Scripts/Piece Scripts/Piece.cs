@@ -105,11 +105,11 @@ public abstract class Piece
 
     /**Returns all the moves a piece can make.
     Does not check if a move leaves the king in check */
-    public abstract List<Move> getMoves(boardState bState);
+    public abstract List<Move> getMoves(BoardState bState);
 
     /**Returns all the moves a piece can make that CAN take pieces (not necessarily WILL - but 
     have the ability to take pieces*/
-    public abstract List<Move> getAttackingMoves(boardState bState);
+    public abstract List<Move> getAttackingMoves(BoardState bState);
 
     /**Converts a Piece class to FEN char (does not take into account Team) */
     public abstract char typeToChar();

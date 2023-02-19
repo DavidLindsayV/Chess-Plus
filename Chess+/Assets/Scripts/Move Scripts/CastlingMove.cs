@@ -9,7 +9,7 @@ public class CastlingMove : Move
         rookMove = new Move(rookFrom, rookTo);
      }
 
-    public override Piece doMoveState(boardState bState){
+    public override Piece doMoveState(BoardState bState){
         base.doMoveState(bState);
             bState.setCastle(this.getPiece(bState).getTeam(), true, false);
             bState.setCastle(this.getPiece(bState).getTeam(), false, false);
@@ -19,7 +19,7 @@ public class CastlingMove : Move
             return null; //castling moves can't kill
     }
 
-    public override void showMove(boardState bState, Piece killedPiece)
+    public override void showMove(BoardState bState, Piece killedPiece)
     {
         base.showMove(bState, killedPiece);
         rookMove.showMove(bState, null);

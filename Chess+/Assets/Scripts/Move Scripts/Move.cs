@@ -25,7 +25,7 @@ public class Move
     public Coordinate getFrom(){ return from; }
 
     /** Gets moved piece */
-    public Piece getPiece(boardState bState) { return bState.getPiece(piecePos); }
+    public Piece getPiece(BoardState bState) { return bState.getPiece(piecePos); }
 
 /**If a move is to be used again (after doMoveState has been called), this resets
  the move so it may be used again
@@ -40,7 +40,7 @@ public class Move
     Returns any killed piece
     Overridden by subclasses of move with special additional implementations
     */
-    public virtual Piece doMoveState(boardState bState)
+    public virtual Piece doMoveState(BoardState bState)
     {
         piecePos = from;
         Piece piece = getPiece(bState); //You need to refer to the piece from the cloned board
@@ -87,7 +87,7 @@ public class Move
 
     /**Does the parts of a move that the user can see.
     Updates the gameobjects (creates, destroys, moves) so the user can see the changes to the chess game*/
-    public virtual void showMove(boardState bState, Piece killedPiece)
+    public virtual void showMove(BoardState bState, Piece killedPiece)
     {
         if (killedPiece != null)
         {
@@ -104,7 +104,7 @@ public class Move
 /**If the User is going to do this move, this does any actions needed by the move
 before the Board is modified and doMoveState/showMove happen 
 Used by Promoting by the user, to select which to promote to*/
-    public virtual void prepareMove(boardState bState){
+    public virtual void prepareMove(BoardState bState){
 
     }
 }

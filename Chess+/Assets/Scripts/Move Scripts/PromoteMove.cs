@@ -22,7 +22,7 @@ public class PromoteMove : Move
         this.promotedTo.makePiece();
     }
 
-    public override Piece doMoveState(boardState bState)
+    public override Piece doMoveState(BoardState bState)
     {
         Piece killedPiece = base.doMoveState(bState);
         promotedFrom = bState.getPiece(this.getTo());
@@ -32,14 +32,14 @@ public class PromoteMove : Move
 
     /**promoted a piece, and it uses a menu to see what the piece is promoted to if it's the players turn
 */
-    public override void showMove(boardState bState, Piece killedPiece)
+    public override void showMove(BoardState bState, Piece killedPiece)
     {
         promotedFrom.destroy();
         this.makePromotedPiece(); //Allow the new piece replacing the pawn to make a gameobject
         base.showMove(bState, killedPiece);
     }
 
-    public override void prepareMove(boardState bState)
+    public override void prepareMove(BoardState bState)
     {
         base.prepareMove(bState);
         //prepareMove only happens on the players turn, so the promotion menu only appears for the player

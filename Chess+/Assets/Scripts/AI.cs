@@ -7,7 +7,7 @@ public class AI
 {
     //TODO create AI mode "difficult" where the AI looks more than 1 step ahead into the future to see which
     //move is best
-    public static List<Move> getMaxPriMoves(boardState bState, List<Move> AIMoves, Team team)
+    public static List<Move> getMaxPriMoves(BoardState bState, List<Move> AIMoves, Team team)
     {
         int maxPriority = 0; 
         List<Move> maxPriMoves = new List<Move>();
@@ -29,9 +29,9 @@ public class AI
     }
 
     /**Generates a "priority" for the move: how good it is. BASIC right now*/
-    private static int movePriority(boardState bState, Move move, Team team)
+    private static int movePriority(BoardState bState, Move move, Team team)
     {
-        boardState cloneState = bState.clone();
+        BoardState cloneState = bState.clone();
         Piece killedPiece = move.doMoveState(cloneState);
         bool checking = Processing.inCheck(cloneState, team.nextTeam());
 

@@ -19,7 +19,7 @@ public class King : Piece
         return new King(this.getTeam(), this.getPos(), this.getObject());
     }
 
-    public override List<Move> getMoves(boardState bState)
+    public override List<Move> getMoves(BoardState bState)
     {
         int col = this.getPos().getCol();
         int row = this.getPos().getRow();
@@ -68,7 +68,7 @@ public class King : Piece
         return moves;
     }
 
-    public override List<Move> getAttackingMoves(boardState bState){
+    public override List<Move> getAttackingMoves(BoardState bState){
         int col = this.getPos().getCol();
         int row = this.getPos().getRow();
         List<Move> moves = new List<Move>();

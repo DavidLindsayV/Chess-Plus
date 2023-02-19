@@ -4,7 +4,7 @@ using UnityEngine;
 
 /** Stores the state of a board
  */
-public class boardState
+public class BoardState
 {
     private Piece[,] boardArray;
 
@@ -16,11 +16,11 @@ public class boardState
     //It is stored [col, row].
     //0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
     private Team currentPlayer;
-    
+
     //Queenside is left from white's perspective, and kingside is right
     private bool bQCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)
     private bool bKCastle; //It's black queenside, black kngside, white queenside and white kingside
-    private bool wQCastle; 
+    private bool wQCastle;
     private bool wKCastle;
     private Coordinate enPassant; //Stores a location that can be en-passanted. can be null
 
@@ -42,7 +42,7 @@ public class boardState
     private King blackKing;
 
     /** Constructor taking in all essential fields */
-    public boardState(
+    public BoardState(
         Piece[,] boardArray,
         Team currentPlayer,
         bool bQCastle,
@@ -66,7 +66,7 @@ public class boardState
     }
 
     /**Loads in the board state from a FEN string */
-    public boardState(string FENstring) 
+    public BoardState(string FENstring)
     {
         string[] FENwords = FENstring.Split(' ');
         boardArray = new Piece[boardSize, boardSize];
@@ -94,12 +94,13 @@ public class boardState
                 Piece piece;
                 Coordinate coor = new Coordinate(col, row);
                 Team team = Team.White;
-                if(char.IsLower(c)){
+                if (char.IsLower(c))
+                {
                     team = Team.Black;
                 }
                 switch (char.ToLower(c))
                 {
-                    case 'p': 
+                    case 'p':
                         piece = new Pawn(team, coor);
                         break;
                     case 'r':
@@ -171,12 +172,13 @@ public class boardState
             enPassant = new Coordinate(positionString);
         }
 
-        switch(FENwords[4]){
+        switch (FENwords[4])
+        {
             case "B":
-                if(playersTeam() == Team.Black){ gameResult = GameResult.GameWon; }else{ gameResult = GameResult.GameLost; }
+                if (playersTeam() == Team.Black) { gameResult = GameResult.GameWon; } else { gameResult = GameResult.GameLost; }
                 break;
             case "W":
-                    if(playersTeam() == Team.White){ gameResult = GameResult.GameWon; }else{ gameResult = GameResult.GameLost; }
+                if (playersTeam() == Team.White) { gameResult = GameResult.GameWon; } else { gameResult = GameResult.GameLost; }
                 break;
             case "O":
                 this.gameResult = GameResult.Ongoing;
@@ -221,9 +223,10 @@ public class boardState
         return fenString + endOfFen();
     }
 
-/**Returns the end of the FEN string (all but the board state)*/
-    private string endOfFen(){
-        string fenString = ""; 
+    /**Returns the end of the FEN string (all but the board state)*/
+    private string endOfFen()
+    {
+        string fenString = "";
         //The player turn
         if (this.currentPlayer == Team.White)
         {
@@ -263,15 +266,16 @@ public class boardState
         }
 
         //Include the current result of the game - ongoing O, black won B, white won W, stalemate S
-        switch(gameResult){
+        switch (gameResult)
+        {
             case GameResult.Ongoing:
                 fenString += "O";
                 break;
             case GameResult.GameWon:
-                if(playersTeam() == Team.White){ fenString += "W"; }else{ fenString += "B";}
+                if (playersTeam() == Team.White) { fenString += "W"; } else { fenString += "B"; }
                 break;
             case GameResult.GameLost:
-                if(playersTeam() == Team.White){ fenString += "B"; }else{ fenString += "W";}
+                if (playersTeam() == Team.White) { fenString += "B"; } else { fenString += "W"; }
                 break;
             case GameResult.Stalemate:
                 fenString += "S";
@@ -281,32 +285,41 @@ public class boardState
         return fenString;
     }
 
-/**Sets the fields whiteKing and blackKing*/
-    public void setKings(){
-                for (int row = boardSize; row >= 1; row--)
+    /**Sets the fields whiteKing and blackKing*/
+    public void setKings()
+    {
+        for (int row = boardSize; row >= 1; row--)
         {
             for (int col = 1; col <= boardSize; col++)
             {
-                if(boardArray[col-1,row-1] is King){
-                    if(boardArray[col-1,row-1].getTeam() == Team.White){
-                        whiteKing = (King)boardArray[col-1,row-1];
-                    }else{
-                        blackKing = (King)boardArray[col-1,row-1];
+                if (boardArray[col - 1, row - 1] is King)
+                {
+                    if (boardArray[col - 1, row - 1].getTeam() == Team.White)
+                    {
+                        whiteKing = (King)boardArray[col - 1, row - 1];
+                    }
+                    else
+                    {
+                        blackKing = (King)boardArray[col - 1, row - 1];
                     }
                 }
             }
         }
     }
 
-    public override string ToString(){
+    public override string ToString()
+    {
         string boardString = "";
         for (int row = boardSize; row >= 1; row--)
         {
             for (int col = 1; col <= boardSize; col++)
             {
-                if(getPiece(col,row) != null){
-                boardString += getPiece(col,row).ToString();
-                }else{
+                if (getPiece(col, row) != null)
+                {
+                    boardString += getPiece(col, row).ToString();
+                }
+                else
+                {
                     boardString += "_";
                 }
             }
@@ -416,7 +429,7 @@ public class boardState
     /**Sets the values for castling, whether you can or can't castle on whichever side*/
     public void setCastle(Team team, bool queenside, bool value)
     {
-        if (team == Team.White) 
+        if (team == Team.White)
         {
             if (queenside)
             {
@@ -454,7 +467,7 @@ public class boardState
 
     /**Clones a boardState.
     Makes clones of everything EXCEPT the gameObject the Pieces refer to */
-    public boardState clone()
+    public BoardState clone()
     {
         Piece[,] newBoardArray = new Piece[
             this.boardArray.GetLength(0),
@@ -470,7 +483,7 @@ public class boardState
                 }
             }
         }
-        boardState clone = new boardState(
+        BoardState clone = new BoardState(
             newBoardArray,
             this.currentPlayer,
             this.bQCastle,
@@ -478,8 +491,8 @@ public class boardState
             this.wQCastle,
             this.wKCastle,
             this.enPassant,
-            (King)newBoardArray[whiteKing.getPos().getCol()-1,whiteKing.getPos().getRow()-1],
-            (King)newBoardArray[blackKing.getPos().getCol()-1,blackKing.getPos().getRow()-1]
+            (King)newBoardArray[whiteKing.getPos().getCol() - 1, whiteKing.getPos().getRow() - 1],
+            (King)newBoardArray[blackKing.getPos().getCol() - 1, blackKing.getPos().getRow() - 1]
         );
         return clone;
     }

@@ -17,7 +17,7 @@ public class Game : GameState
     private Move selectedMove; //the selected move
     private Piece selected; //The current Piece (white chess piece) selected by the player
 
-    public boardState state; //this boardState stores the current state of the board
+    public BoardState state; //this boardState stores the current state of the board
 
     public enum AIMode
     {
@@ -32,11 +32,9 @@ public class Game : GameState
     private bool turnOver = false; //Stores whether a turn is over. This allows update to go to a third function, endTurn(), before letting the other player go
 
     private System.Random random = new System.Random();
-    //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
-    //TODO make boardState have a capital B
-    //TODO put the menus in a menus folder
+    //TODO make card-holding and card-playing mechanics
     //also format the testing stuff better and tidy up that code
 
 
@@ -49,13 +47,13 @@ public class Game : GameState
         GameObject Canvas = GameObject.Find("Canvas");
         StateManager.Init();
         //Initialise the chess pieces, set up the board with this FEN string
-        state = new boardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
+        state = new BoardState("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
     }
 
     // Update is called once per frame 
     void Update()
     {
-        if (state.getGameResult() != boardState.GameResult.Ongoing)
+        if (state.getGameResult() != BoardState.GameResult.Ongoing)
         {
             endGame(); //If the game is over, call endgame
             return;
@@ -213,15 +211,15 @@ public class Game : GameState
     //Called when the game ends. Does stuff and stops the code from running
     private void endGame()
     { //Displays text depending on the game outcome
-        if (state.getGameResult() == boardState.GameResult.Stalemate)
+        if (state.getGameResult() == BoardState.GameResult.Stalemate)
         {
             gameResultText.text = "You got a stalemate. Impressive";
         }
-        else if (state.getGameResult() == boardState.GameResult.GameWon)
+        else if (state.getGameResult() == BoardState.GameResult.GameWon)
         {
             gameResultText.text = "YOU WON YOU LITTLE BEAUTY!!!";
         }
-        else if (state.getGameResult() == boardState.GameResult.GameLost)
+        else if (state.getGameResult() == BoardState.GameResult.GameLost)
         {
             gameResultText.text = "YOU LOST!!! HOW DID YOU MANAGE THAT???";
         }

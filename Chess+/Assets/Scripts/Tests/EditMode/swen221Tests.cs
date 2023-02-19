@@ -911,7 +911,7 @@ a3-a4=R  the =R shows promotion to Rook
 I am NOT using ep to show en passant, or O-O-O to show castling, or # to show checkmate */
     public static void runMoves(List<string> moves, string board)
     {
-        boardState bState = bStateTests.makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
+        BoardState bState = bStateTests.makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
         for (int i = 0; i < moves.Count; i++)
         {
             string moveString = moves[i];
@@ -929,7 +929,7 @@ I am NOT using ep to show en passant, or O-O-O to show castling, or # to show ch
                 if (!(isRightType(moveSplitter.Split(moveString)[0], 
 				m.getPiece(bState)))) { continue; }
                 //Simulate the move
-                boardState cloneState = bState.clone();
+                BoardState cloneState = bState.clone();
                 Piece killedPiece = Processing.simulateMove(cloneState, m);
                 //If its a killing move, check the piece killed is correct type
                 if (moveString.Contains("x"))

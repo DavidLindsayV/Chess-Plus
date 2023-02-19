@@ -59,13 +59,13 @@ public class Coordinate
     }
 
     //Returns whether a col and row are in bounds
-    public static bool inBounds(int col, int row, boardState bState)
+    public static bool inBounds(int col, int row, BoardState bState)
     {
         return (col >= 1 && col <= bState.boardSize && row >= 1 && row <= bState.boardSize);
     }
 
     //Returns whether this coordinate is in bounds
-    public bool inBounds(boardState bState)
+    public bool inBounds(BoardState bState)
     {
         return inBounds(this.col, this.row, bState);
     }

@@ -9,7 +9,7 @@ public class EnPassantMove : Move
 
     }
 
-    public override Piece doMoveState(boardState bState){
+    public override Piece doMoveState(BoardState bState){
         base.doMoveState(bState);
             Piece killedPiece = bState.getPiece(
                 new Coordinate(this.getTo().getCol(), this.getFrom().getRow())

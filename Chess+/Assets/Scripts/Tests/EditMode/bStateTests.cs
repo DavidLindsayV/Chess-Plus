@@ -91,7 +91,7 @@ lists of coordinates
 Cannot do things such as check when the board is in Check, or do moves where there are multiple options
 with the same start & end coordinates (such as promotion)*/
     public static void runMoves(List<Coordinate> froms, List<Coordinate> tos, string board){
-        boardState bState = makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
+        BoardState bState = makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
         for(int i = 0; i < froms.Count; i++){
             Coordinate from = froms[i];
             Coordinate to = tos[i]; 
@@ -117,7 +117,7 @@ with the same start & end coordinates (such as promotion)*/
 
 /** The constructor for a board from a FEN string that doesn't create gameobjects
 */
-    public static boardState makeBoard(string FENstring){
+    public static BoardState makeBoard(string FENstring){
         string[] FENwords = FENstring.Split(' ');
         Piece[,] boardArray = new Piece[8, 8];
         King whiteKing = null;
@@ -225,18 +225,18 @@ with the same start & end coordinates (such as promotion)*/
             enPassant = new Coordinate(positionString);
         }
 
-        boardState b =  new boardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing);
+        BoardState b =  new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing);
         
-        boardState.GameResult g = (boardState.GameResult)(-1); 
+        BoardState.GameResult g = (BoardState.GameResult)(-1); 
         switch(FENwords[4]){
             case "B":
-                if(b.playersTeam() == Team.Black){ g = boardState.GameResult.GameWon; }else{ g = boardState.GameResult.GameLost; }
+                if(b.playersTeam() == Team.Black){ g = BoardState.GameResult.GameWon; }else{ g = BoardState.GameResult.GameLost; }
                 break;
             case "W":
-                    if(b.playersTeam() == Team.White){ g = boardState.GameResult.GameWon; }else{ g = boardState.GameResult.GameLost; }
+                    if(b.playersTeam() == Team.White){ g = BoardState.GameResult.GameWon; }else{ g = BoardState.GameResult.GameLost; }
                 break;
             case "O":
-                g = boardState.GameResult.Ongoing;
+                g = BoardState.GameResult.Ongoing;
                 break;
         }
 
