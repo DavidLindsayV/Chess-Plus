@@ -100,4 +100,11 @@ public class Move
             this.getTo().getZ()
         );
     }
+
+/**If the User is going to do this move, this does any actions needed by the move
+before the Board is modified and doMoveState/showMove happen 
+Used by Promoting by the user, to select which to promote to*/
+    public virtual void prepareMove(boardState bState){
+
+    }
 }

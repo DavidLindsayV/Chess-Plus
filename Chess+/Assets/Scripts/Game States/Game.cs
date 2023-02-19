@@ -11,6 +11,10 @@ public class Game : GameState
 
     private List<GameObject> tileList; //stores the moveTiles the player can click on to do a move
 
+    private enum PlayerState { moveSelecting, movePreparing, moveDoing }; //stores the state of the player
+
+    private PlayerState playerState = PlayerState.moveSelecting;
+    private Move selectedMove; //the selected move
     private Piece selected; //The current Piece (white chess piece) selected by the player
 
     public boardState state; //this boardState stores the current state of the board
@@ -31,6 +35,8 @@ public class Game : GameState
     //TODO improve menu/screen management (promotion, pausing, gameplay) (maybe using GameStateManager)
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
+    //TODO make boardState have a capital B
+    //TODO put the menus in a menus folder
     //also format the testing stuff better and tidy up that code
 
 
@@ -71,57 +77,69 @@ public class Game : GameState
     //The user's turn.
     private void userTurn()
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (playerState == PlayerState.moveSelecting)
         {
-            return;
-        }
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (!Physics.Raycast(ray, out hit, 1000))
-        {
-            //If nothing is hit, deselect
-            deselect();
-            return;
-        }
-        //Figure out what the user clicked on
-        if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
-        {
-            deselect();
-            int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
-            int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
-            selected = state.getPiece(new Coordinate(col, row));
-            selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
-            showValidMoveTiles(selected);
-        }
-        else if (
-            hit.collider.gameObject.name.Contains("moveTile")
-            || hit.collider.gameObject.name.Contains(Team.Black.ToString())
-        )
-        { //If you click on a black piece or a move tile
-            //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
-            if (hit.collider.gameObject.name.Contains(Team.Black.ToString()))
+            if (!Input.GetMouseButtonDown(0))
             {
+                return;
+            }
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (!Physics.Raycast(ray, out hit, 1000))
+            {
+                //If nothing is hit, deselect
+                deselect();
+                return;
+            }
+            //Figure out what the user clicked on
+            if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
+            {
+                deselect();
                 int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
                 int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
-                Coordinate blackPosCoord = new Coordinate(col, row);
-                LayerMask mask = LayerMask.GetMask("Move tiles");
-                Physics.Raycast(
-                    new Vector3(blackPosCoord.getX(), 0.2F, blackPosCoord.getZ()),
-                    Vector3.down,
-                    out hit,
-                    1000,
-                    mask
-                );
-                if (hit.collider == null)
-                {
-                    deselect(); //If you clicked on a piece and there was no tile beneath it
-                    return;
-                }
+                selected = state.getPiece(new Coordinate(col, row));
+                selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
+                showValidMoveTiles(selected);
             }
-            //Do the move associated with that moveTile
-            Move move = hit.collider.gameObject.GetComponent<tileScript>().getMove();
-            deselect();
-            doMove(move);
+            else if (
+                hit.collider.gameObject.name.Contains("moveTile")
+                || hit.collider.gameObject.name.Contains(Team.Black.ToString())
+            )
+            { //If you click on a black piece or a move tile
+              //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
+                if (hit.collider.gameObject.name.Contains(Team.Black.ToString()))
+                {
+                    int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
+                    int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
+                    Coordinate blackPosCoord = new Coordinate(col, row);
+                    LayerMask mask = LayerMask.GetMask("Move tiles");
+                    Physics.Raycast(
+                        new Vector3(blackPosCoord.getX(), 0.2F, blackPosCoord.getZ()),
+                        Vector3.down,
+                        out hit,
+                        1000,
+                        mask
+                    );
+                    if (hit.collider == null)
+                    {
+                        deselect(); //If you clicked on a piece and there was no tile beneath it
+                        return;
+                    }
+                }
+                //Do the move associated with that moveTile
+                Move move = hit.collider.gameObject.GetComponent<tileScript>().getMove();
+                deselect();
+                selectedMove = move;
+                playerState = PlayerState.movePreparing;
+            }
+        }
+        else if (playerState == PlayerState.movePreparing){
+            selectedMove.prepareMove(state);
+            playerState = PlayerState.moveDoing;
+        }
+        else if (playerState == PlayerState.moveDoing){
+            doMove(selectedMove);
+            playerState = PlayerState.moveSelecting;
             turnOver = true;
         }
     }
@@ -238,12 +256,14 @@ public class Game : GameState
         newTile.GetComponent<tileScript>().setMove(move);
     }
 
-    public override void runState(){
+    public override void runState()
+    {
         Time.timeScale = 1f;
         this.enabled = true;
     }
 
-    public override void closeState(){
+    public override void closeState()
+    {
         this.enabled = false;
     }
 }

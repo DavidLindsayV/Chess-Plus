@@ -8,6 +8,7 @@ public class PromoteMove : Move
 
     //promotedTo should be a Piece (rook/queen/knight/bishop) that does NOT have a gameObject
     public Piece promotedTo;
+    private Piece promotedFrom; //this is used to store the Pawn that was promoted, so it can be destroyed
 
     public PromoteMove(Coordinate from, Coordinate to, Piece promotedTo)
         : base(from, to)
@@ -24,6 +25,7 @@ public class PromoteMove : Move
     public override Piece doMoveState(boardState bState)
     {
         Piece killedPiece = base.doMoveState(bState);
+        promotedFrom = bState.getPiece(this.getTo());
         bState.setPiece(this.getTo(), this.promotedTo);
         return killedPiece;
     }
@@ -32,12 +34,15 @@ public class PromoteMove : Move
 */
     public override void showMove(boardState bState, Piece killedPiece)
     {
-        if (bState.currentTeam() == bState.playersTeam())
-        {
-            ((PromoteMenu)(StateManager.promoteMenu)).GetPromotedTo(this, bState);
-        }
-        getPiece(bState).destroy();
-        this.makePromotedPiece(); //Allow the new piece replacing the pawn to appear
+        promotedFrom.destroy();
+        this.makePromotedPiece(); //Allow the new piece replacing the pawn to make a gameobject
         base.showMove(bState, killedPiece);
+    }
+
+    public override void prepareMove(boardState bState)
+    {
+        base.prepareMove(bState);
+        //prepareMove only happens on the players turn, so the promotion menu only appears for the player
+        ((PromoteMenu)(StateManager.promoteMenu)).GetPromotedTo(this, bState);
     }
 }
