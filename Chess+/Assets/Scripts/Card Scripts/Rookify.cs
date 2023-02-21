@@ -16,7 +16,7 @@ public class Rookify: Card
         }
         return new List<CardMove>();
     }
-    public override List<CardMove> getGeneralMoves(BoardState bState){
+    public override List<CardMove> getGeneralMoves(BoardState bState, Team team){
         return new List<CardMove>();
     }
 }

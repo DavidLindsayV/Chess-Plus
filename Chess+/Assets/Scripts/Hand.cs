@@ -38,10 +38,10 @@ public class Hand
     }
 
 /**Returns the moves that do not need a specific piece to do them */
-    public List<CardMove> generalMoves(BoardState bState){
+    public List<CardMove> generalMoves(BoardState bState, Team team){
         List<CardMove> moves = new List<CardMove>();
         foreach(Card c in cards){
-            moves.AddRange(c.getGeneralMoves(bState));
+            moves.AddRange(c.getGeneralMoves(bState, team));
         }
         return moves;
     }

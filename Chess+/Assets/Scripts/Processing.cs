@@ -13,7 +13,7 @@ public static class Processing
     public static List<Move> allValidMoves(BoardState bState, Team team)
     {
         List<Move> moves = allMoves(bState, team);
-        moves.AddRange(bState.getHand(team).generalMoves(bState));
+        moves.AddRange(bState.getHand(team).generalMoves(bState, team));
         removeCheckingMoves(bState, moves, team);
         return moves;
     }

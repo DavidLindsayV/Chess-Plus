@@ -33,5 +33,5 @@ public abstract class Card
     /**getPieceSpecificMoves takes in the boardState, the Team that is playing the card, and the
 Piece it is being played on */
     public abstract List<CardMove> getPieceSpecificMoves(BoardState bState, Team team, Piece piece);
-    public abstract List<CardMove> getGeneralMoves(BoardState bState);
+    public abstract List<CardMove> getGeneralMoves(BoardState bState, Team team);
 }
