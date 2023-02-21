@@ -896,6 +896,8 @@ public class swen221Tests
         return coors;
     }
 
+//TODO check all your editmode tests still run after your changes of adding in Hands is finished
+
     /**Takes in moves as a String in algebraic notation
 Checks that the move specified is one of the offered moves, allows for promotion moves, 
 AND checks that the board goes into check at the correct times, also checking the end result board is correctly
@@ -920,8 +922,10 @@ I am NOT using ep to show en passant, or O-O-O to show castling, or # to show ch
             //Look through all the valid moves, find one which the From and To match.
             Move move = null;
             List<Move> allMoves = Processing.allValidMoves(bState, bState.currentTeam());
-            foreach (Move m in allMoves)
+            foreach (Move mo in allMoves)
             {
+                if(!(mo is PieceMove)){ continue; }
+                PieceMove m = (PieceMove)mo;
                 //Check this move has correct from and to coords
                 if (!m.getFrom().Equals(from) || !m.getTo().Equals(to))
                 { continue; }

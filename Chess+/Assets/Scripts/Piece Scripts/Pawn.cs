@@ -44,7 +44,7 @@ public class Pawn : Piece
         {
             if (!promotion)
             {
-                moves.Add(new Move(this.getPos(), new Coordinate(col, row + direction)));
+                moves.Add(new PieceMove(this.getPos(), new Coordinate(col, row + direction)));
             }
             else
             {
@@ -102,7 +102,7 @@ public class Pawn : Piece
         {
             if (!promotion)
             {
-                moves.Add(new Move(this.getPos(), new Coordinate(col - 1, row + direction)));
+                moves.Add(new PieceMove(this.getPos(), new Coordinate(col - 1, row + direction)));
             }
             else
             {
@@ -116,7 +116,7 @@ public class Pawn : Piece
         {
             if (!promotion)
             {
-                moves.Add(new Move(this.getPos(), new Coordinate(col + 1, row + direction)));
+                moves.Add(new PieceMove(this.getPos(), new Coordinate(col + 1, row + direction)));
             }
             else
             {

@@ -32,7 +32,7 @@ public class Bishop : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row + i)))
                 {
                     moves.Add(
-                        new Move(this.getPos(), new Coordinate(col + i, row + i))
+                        new PieceMove(this.getPos(), new Coordinate(col + i, row + i))
                     );
                 }
                 if (bState.getPiece(col + i, row + i) != null)
@@ -48,7 +48,7 @@ public class Bishop : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row - i)))
                 {
                     moves.Add(
-                        new Move(this.getPos(), new Coordinate(col - i, row - i))
+                        new PieceMove(this.getPos(), new Coordinate(col - i, row - i))
                     );
                 }
                 if (bState.getPiece(col - i, row - i) != null)
@@ -64,7 +64,7 @@ public class Bishop : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col - i, row + i)))
                 {
                     moves.Add(
-                        new Move(this.getPos(), new Coordinate(col - i, row + i))
+                        new PieceMove(this.getPos(), new Coordinate(col - i, row + i))
                     );
                 }
                 if (bState.getPiece(col - i, row + i) != null)
@@ -80,7 +80,7 @@ public class Bishop : Piece
                 if (bState.spotNotAlly(this, new Coordinate(col + i, row - i)))
                 {
                     moves.Add(
-                        new Move(this.getPos(), new Coordinate(col + i, row - i))
+                        new PieceMove(this.getPos(), new Coordinate(col + i, row - i))
                     );
                 }
                 if (bState.getPiece(col + i, row - i) != null)

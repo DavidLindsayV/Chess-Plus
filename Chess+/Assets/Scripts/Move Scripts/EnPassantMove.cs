@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnPassantMove : Move
+public class EnPassantMove : PieceMove
 {
     public EnPassantMove(Coordinate from, Coordinate to): base(from, to)
     {

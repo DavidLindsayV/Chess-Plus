@@ -13,6 +13,7 @@ public static class Processing
     public static List<Move> allValidMoves(BoardState bState, Team team)
     {
         List<Move> moves = allMoves(bState, team);
+        moves.AddRange(bState.getHand(team).generalMoves(bState));
         removeCheckingMoves(bState, moves, team);
         return moves;
     }
@@ -38,10 +39,7 @@ public static class Processing
         List<Move> allEnemyMoves = allAttackingMoves(bState, team.nextTeam());
         foreach (Move move in allEnemyMoves)
         {
-            if (move.getTo() == pos)
-            {
-                return true;
-            }
+            if(move.inDanger(pos)){ return true; }
         }
         return false;
     }
@@ -83,7 +81,9 @@ A cloned boardState should be passed in */
                 Coordinate c = new Coordinate(col, row);
                 if (bState.getPiece(c) != null && bState.getPiece(c).getTeam() == team)
                 {
-                    allmoves.AddRange(bState.getPiece(c).getMoves(bState));
+                    Piece p = bState.getPiece(c);
+                    allmoves.AddRange(p.getMoves(bState));
+                    allmoves.AddRange(bState.getHand(team).pieceSpecificMoves(bState, p));
                 }
             }
         return allmoves;

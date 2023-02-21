@@ -35,6 +35,7 @@ public class Game : GameState
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
     //TODO make card-holding and card-playing mechanics
+    //TODO make the Hand part of the FEN string
     //also format the testing stuff better and tidy up that code
 
 
@@ -247,7 +248,7 @@ public class Game : GameState
     {
         GameObject newTile = Instantiate(
             Prefabs.tilePrefab,
-            new Vector3(move.getTo().getX(), 0.16F, move.getTo().getZ()),
+            new Vector3(move.moveTilePos().getX(), 0.16F, move.moveTilePos().getZ()),
             Quaternion.identity
         );
         tileList.Add(newTile);

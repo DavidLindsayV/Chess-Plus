@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CastlingMove : Move
+public class CastlingMove : PieceMove
 {
     public Move rookMove;
     public CastlingMove(Coordinate kingFrom, Coordinate rookFrom, Coordinate kingTo, Coordinate rookTo): base(kingFrom, kingTo) { 
-        rookMove = new Move(rookFrom, rookTo);
+        rookMove = new PieceMove(rookFrom, rookTo);
      }
 
     public override Piece doMoveState(BoardState bState){

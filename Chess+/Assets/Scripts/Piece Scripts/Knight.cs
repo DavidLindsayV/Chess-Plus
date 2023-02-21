@@ -31,13 +31,13 @@ public class Knight : Piece
                 if (Coordinate.inBounds(col + a, row + b, bState) && bState.spotNotAlly(this, new Coordinate(col + a, row + b)))
                 {
                     moves.Add(
-                        new Move(this.getPos(), new Coordinate(col + a, row + b))
+                        new PieceMove(this.getPos(), new Coordinate(col + a, row + b))
                     );
                 }
                 if (Coordinate.inBounds(col + b, row + a, bState) && bState.spotNotAlly(this, new Coordinate(col + b, row + a)))
                 {
                     moves.Add(
-                        new Move(this.getPos(), new Coordinate(col + b, row + a))
+                        new PieceMove(this.getPos(), new Coordinate(col + b, row + a))
                     );
                 }
             }

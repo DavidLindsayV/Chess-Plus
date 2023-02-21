@@ -37,6 +37,9 @@ public class BoardState
 
     private GameResult gameResult = GameResult.Ongoing;
 
+    private Hand whiteHand;
+    private Hand blackHand;
+
     //Optional fields, used for efficiency
     private King whiteKing;
     private King blackKing;
@@ -51,7 +54,9 @@ public class BoardState
         bool wKCastle,
         Coordinate enPassant,
         King whiteKing,
-        King blackKing
+        King blackKing,
+        Hand whiteHand,
+        Hand blackHand
     )
     {
         this.boardArray = boardArray;
@@ -63,6 +68,8 @@ public class BoardState
         this.enPassant = enPassant;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
+        this.whiteHand = whiteHand;
+        this.blackHand = blackHand;
     }
 
     /**Loads in the board state from a FEN string */
@@ -453,6 +460,14 @@ public class BoardState
         }
     }
 
+    public Hand getHand(Team team){
+        if(team == Team.White){
+            return whiteHand;
+        }else{
+            return blackHand;
+        }
+    }
+
     /**Returns the game result*/
     public GameResult getGameResult()
     {
@@ -492,7 +507,10 @@ public class BoardState
             this.wKCastle,
             this.enPassant,
             (King)newBoardArray[whiteKing.getPos().getCol() - 1, whiteKing.getPos().getRow() - 1],
-            (King)newBoardArray[blackKing.getPos().getCol() - 1, blackKing.getPos().getRow() - 1]
+            (King)newBoardArray[blackKing.getPos().getCol() - 1, blackKing.getPos().getRow() - 1], 
+            null,  //TODO fix this when you get making-of-hands working
+            null
+
         );
         return clone;
     }

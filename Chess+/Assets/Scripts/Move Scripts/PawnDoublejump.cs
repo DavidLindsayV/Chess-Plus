@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PawnDoublejump : Move
+public class PawnDoublejump : PieceMove
 {
     public PawnDoublejump(Coordinate from, Coordinate to) : base(from, to)
     {

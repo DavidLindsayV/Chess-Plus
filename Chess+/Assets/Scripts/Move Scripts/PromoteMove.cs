@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PromoteMove : Move
+public class PromoteMove : PieceMove
 {
     private static GameState promoteMenu;
 

@@ -78,7 +78,7 @@ public class King : Piece
                 Coordinate newCoord = this.getPos().move(a, b);
                 if ((a != 0 || b != 0) && newCoord.inBounds(bState) && bState.spotNotAlly(this, newCoord))
                 {
-                    moves.Add(new Move(this.getPos(), newCoord));
+                    moves.Add(new PieceMove(this.getPos(), newCoord));
                 }
             }
         return moves;

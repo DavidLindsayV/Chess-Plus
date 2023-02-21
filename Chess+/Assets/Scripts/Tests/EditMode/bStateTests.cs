@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using System.Text.RegularExpressions;  
+using System.Text.RegularExpressions;
 
 public class bStateTests
 {
 
     // A Test behaves as an ordinary method
     [Test]
-    public void BoardInitialises(){
-        string board = 
+    public void BoardInitialises()
+    {
+        string board =
 @"rnbqkbnr
 pppppppp
 ________
@@ -20,13 +21,14 @@ ________
 ________
 PPPPPPPP
 RNBQKBNR
- w KQkq - O";     
+ w KQkq - O";
         runMoves(new List<Coordinate>(), new List<Coordinate>(), board);
     }
 
     [Test]
-    public void WhiteMoves(){
-        string board = 
+    public void WhiteMoves()
+    {
+        string board =
 @"rnbqkbnr
 pppppppp
 ________
@@ -36,15 +38,16 @@ ______P_
 PPPPPP_P
 RNBQKBNR
  b KQkq - O";
- List<Coordinate> froms = new List<Coordinate>();
- List<Coordinate> tos = new List<Coordinate>();
-    froms.Add(new Coordinate(7, 2)); tos.Add(new Coordinate(7,3));
+        List<Coordinate> froms = new List<Coordinate>();
+        List<Coordinate> tos = new List<Coordinate>();
+        froms.Add(new Coordinate(7, 2)); tos.Add(new Coordinate(7, 3));
         runMoves(froms, tos, board);
     }
 
-        [Test]
-    public void Stalemate(){
-        string board = 
+    [Test]
+    public void Stalemate()
+    {
+        string board =
 @"_____bnr
 ____p_pq
 ____Qpkr
@@ -53,17 +56,18 @@ __P____P
 ________
 PP_PPPP_
 RNB_KBNR
- b KQ - S"; 
- List<Coordinate> froms = new List<Coordinate>{
+ b KQ - S";
+        List<Coordinate> froms = new List<Coordinate>{
     new Coordinate("c2"), new Coordinate("h7"), new Coordinate("h2"), new Coordinate("a7"), new Coordinate("d1"), new Coordinate("a8"), new Coordinate("a4"), new Coordinate("a6"), new Coordinate("a5"), new Coordinate("f7"), new Coordinate("c7"), new Coordinate("e8"), new Coordinate("d7"), new Coordinate("d8"), new Coordinate("b7"), new Coordinate("d3"), new Coordinate("b8"), new Coordinate("f7"), new Coordinate("c8")};
- List<Coordinate> tos = new List<Coordinate>{
+        List<Coordinate> tos = new List<Coordinate>{
     new Coordinate("c4"), new Coordinate("h5"), new Coordinate("h4"), new Coordinate("a5"), new Coordinate("a4"), new Coordinate("a6"), new Coordinate("a5"), new Coordinate("h6"), new Coordinate("c7"), new Coordinate("f6"), new Coordinate("d7"), new Coordinate("f7"), new Coordinate("b7"), new Coordinate("d3"), new Coordinate("b8"), new Coordinate("h7"), new Coordinate("c8"), new Coordinate("g6"), new Coordinate("e6")};
         runMoves(froms, tos, board);
     }
 
-            [Test]
-    public void Pawna2Toa3(){
-        string board = 
+    [Test]
+    public void Pawna2Toa3()
+    {
+        string board =
 @"rnbqkbnr
 pppppppp
 ________
@@ -72,41 +76,50 @@ ________
 P_______
 _PPPPPPP
 RNBQKBNR
- b KQkq - O"; 
- List<Coordinate> froms = new List<Coordinate>{
+ b KQkq - O";
+        List<Coordinate> froms = new List<Coordinate>{
     new Coordinate("a2")};
- List<Coordinate> tos = new List<Coordinate>{
+        List<Coordinate> tos = new List<Coordinate>{
     new Coordinate("a3") };
         runMoves(froms, tos, board);
     }
 
-//TODO take runMoves (both versions) and some other useful testing functions and put them in a separate file so they're 
-//better organised instead of higgledy piggledy across your tests
+    //TODO take runMoves (both versions) and some other useful testing functions and put them in a separate file so they're 
+    //better organised instead of higgledy piggledy across your tests
 
-/**Basic test checking that a series of moves, stored as from and to coordinates, result in a certain board state
+    /**Basic test checking that a series of moves, stored as from and to coordinates, result in a certain board state
 Cannot check for Checks at the correct times
 Cannot do Promotion, as several moves have the same from/to coordinates 
 It is kept because it is used in preexisting tests, but it is difficult to use as it requires
 lists of coordinates 
 Cannot do things such as check when the board is in Check, or do moves where there are multiple options
 with the same start & end coordinates (such as promotion)*/
-    public static void runMoves(List<Coordinate> froms, List<Coordinate> tos, string board){
+    public static void runMoves(List<Coordinate> froms, List<Coordinate> tos, string board)
+    {
         BoardState bState = makeBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - O");
-        for(int i = 0; i < froms.Count; i++){
+        for (int i = 0; i < froms.Count; i++)
+        {
             Coordinate from = froms[i];
-            Coordinate to = tos[i]; 
+            Coordinate to = tos[i];
             //Look through all the valid moves, find one which the From and To match.
             Move move = null;
             List<Move> allMoves = Processing.allValidMoves(bState, bState.currentTeam());
-            foreach(Move m in allMoves){
-                if(m.getFrom().Equals(from) && m.getTo().Equals(to)){
-                    move = m;
-                    break;
+            foreach (Move m in allMoves)
+            {
+                if (m is PieceMove)
+                {
+                    PieceMove piecemove = (PieceMove)m;
+                    if (piecemove.getFrom().Equals(from) && piecemove.getTo().Equals(to))
+                    {
+                        move = m;
+                        break;
+                    }
                 }
             }
-            if(move == null){ 
-                Assert.Fail("Move " + froms[i].ToString() + "-" + tos[i].ToString() + " not valid"); 
-                }
+            if (move == null)
+            {
+                Assert.Fail("Move " + froms[i].ToString() + "-" + tos[i].ToString() + " not valid");
+            }
             Assert.AreEqual(bState.getPiece(from).getTeam(), bState.currentTeam());
             move.doMoveState(bState);
             Processing.updateGameResult(bState, bState.currentTeam().nextTeam());
@@ -115,9 +128,10 @@ with the same start & end coordinates (such as promotion)*/
         Assert.AreEqual(board, bState.ToString());
     }
 
-/** The constructor for a board from a FEN string that doesn't create gameobjects
+    /** The constructor for a board from a FEN string that doesn't create gameobjects
 */
-    public static BoardState makeBoard(string FENstring){
+    public static BoardState makeBoard(string FENstring)
+    {
         string[] FENwords = FENstring.Split(' ');
         Piece[,] boardArray = new Piece[8, 8];
         King whiteKing = null;
@@ -145,10 +159,10 @@ with the same start & end coordinates (such as promotion)*/
             {
                 Piece piece;
                 Team team = Team.White;
-                if(char.IsLower(c)){ team = Team.Black; }
+                if (char.IsLower(c)) { team = Team.Black; }
                 switch (char.ToLower(c))
                 {
-                    case 'p': 
+                    case 'p':
                         piece = new Pawn(team, new Coordinate(col, row), null);
                         break;
                     case 'r':
@@ -225,15 +239,16 @@ with the same start & end coordinates (such as promotion)*/
             enPassant = new Coordinate(positionString);
         }
 
-        BoardState b =  new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing);
-        
-        BoardState.GameResult g = (BoardState.GameResult)(-1); 
-        switch(FENwords[4]){
+        BoardState b = new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing, null, null); //TODO fix this 2 nulls at the end
+
+        BoardState.GameResult g = (BoardState.GameResult)(-1);
+        switch (FENwords[4])
+        {
             case "B":
-                if(b.playersTeam() == Team.Black){ g = BoardState.GameResult.GameWon; }else{ g = BoardState.GameResult.GameLost; }
+                if (b.playersTeam() == Team.Black) { g = BoardState.GameResult.GameWon; } else { g = BoardState.GameResult.GameLost; }
                 break;
             case "W":
-                    if(b.playersTeam() == Team.White){ g = BoardState.GameResult.GameWon; }else{ g = BoardState.GameResult.GameLost; }
+                if (b.playersTeam() == Team.White) { g = BoardState.GameResult.GameWon; } else { g = BoardState.GameResult.GameLost; }
                 break;
             case "O":
                 g = BoardState.GameResult.Ongoing;
