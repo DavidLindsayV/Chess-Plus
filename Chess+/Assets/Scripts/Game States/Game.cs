@@ -126,7 +126,7 @@ public class Game : GameState
                     }
                 }
                 //Do the move associated with that moveTile
-                Move move = hit.collider.gameObject.GetComponent<tileScript>().getMove();
+                Move move = hit.collider.gameObject.GetComponent<TileScript>().getMove();
                 deselect();
                 selectedMove = move;
                 playerState = PlayerState.movePreparing;
@@ -252,7 +252,7 @@ public class Game : GameState
             Quaternion.identity
         );
         tileList.Add(newTile);
-        newTile.GetComponent<tileScript>().setMove(move);
+        newTile.GetComponent<TileScript>().setMove(move);
     }
 
     public override void runState()

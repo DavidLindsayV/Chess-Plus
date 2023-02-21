@@ -15,7 +15,8 @@ public class BoardState
     //Stores the Piece chess pieces. Goes from 0-7 for col and row.
     //It is stored [col, row].
     //0 on this is col 1. 7 on this is col 8. This is because arrays start from index 0. So to convert from col, row to this array, use col -1, row - 1
-    private Team currentPlayer;
+    private Team currentPlayer; //TODO see if currentPlayer field is reliable or should I put a warning
+    //about not using currentPlayer
 
     //Queenside is left from white's perspective, and kingside is right
     private bool bQCastle; //Stores whether you can castle in this direction (eg neither king nor rook has moved)

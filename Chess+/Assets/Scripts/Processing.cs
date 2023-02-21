@@ -83,7 +83,7 @@ A cloned boardState should be passed in */
                 {
                     Piece p = bState.getPiece(c);
                     allmoves.AddRange(p.getMoves(bState));
-                    allmoves.AddRange(bState.getHand(team).pieceSpecificMoves(bState, p));
+                    allmoves.AddRange(bState.getHand(team).pieceSpecificMoves(bState, team, p));
                 }
             }
         return allmoves;

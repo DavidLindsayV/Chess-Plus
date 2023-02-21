@@ -29,10 +29,10 @@ public class Hand
     }
 
     /**reutrns the moves that need a piece to do them */
-    public List<CardMove> pieceSpecificMoves(BoardState bState, Piece piece){
+    public List<CardMove> pieceSpecificMoves(BoardState bState, Team team, Piece piece){
         List<CardMove> moves = new List<CardMove>();
         foreach(Card c in cards){
-            moves.AddRange(c.getPieceSpecificMoves(bState, piece));
+            moves.AddRange(c.getPieceSpecificMoves(bState, team, piece));
         }
         return moves;
     }

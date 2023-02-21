@@ -37,7 +37,8 @@ public abstract class Piece
     }
 
     /**For creating pieces referencing already existing gameObjects
-    Currently used for modelling theoretical board states without creating extra gameObjects */
+    Currently used for modelling theoretical board states without creating extra gameObjects
+    Also used for creating Pieces which don't yet have GameObjects */
     public Piece(Team team, Coordinate pos, GameObject gameObj)
     {
         this.team = team;
@@ -101,6 +102,14 @@ public abstract class Piece
 
     public void setPos(Coordinate pos){
         this.position = pos;
+    }
+
+    public void moveGameObjTo(Coordinate pos){
+        this.getObject().transform.position = new Vector3( 
+            pos.getX(),
+            this.getObject().transform.position.y,
+            pos.getZ()
+        );
     }
 
     /**Returns all the moves a piece can make.
