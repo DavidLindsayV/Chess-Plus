@@ -16,7 +16,7 @@ public class King : Piece
     }
 
         public override Piece clonePiece(){
-        return new King(this.getTeam(), this.getPos(), this.getObject());
+        return new King(this.getTeam(), this.getPos(), null);
     }
 
     public override List<Move> getMoves(BoardState bState)

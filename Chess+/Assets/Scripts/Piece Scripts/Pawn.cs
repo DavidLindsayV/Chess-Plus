@@ -17,7 +17,7 @@ public class Pawn : Piece
 
     public override Piece clonePiece()
     {
-        return new Pawn(this.getTeam(), this.getPos(), this.getObject());
+        return new Pawn(this.getTeam(), this.getPos(), null);
     }
 
     //Returns the moves for a Pawn

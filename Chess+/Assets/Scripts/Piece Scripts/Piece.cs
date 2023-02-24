@@ -13,6 +13,10 @@ public abstract class Piece
 
     protected GameObject gameObj;
 
+    void Start(){
+        //TODO see how Start works on non monobehaviours - does it ever run? Does it run for every constructor? I'm so confused
+    }
+
     /** Constructs a Piece object */
     public Piece(Team team, Coordinate pos)
     {
@@ -44,6 +48,15 @@ public abstract class Piece
         this.team = team;
         this.position = pos;
         this.gameObj = gameObj;
+                if (gameObj != null)
+        {
+            throw new System.Exception("We haven't figured out how to get GetComponent to work here"); //TODO fix this error
+            //  if (gameObj.GetComponent<PieceHolder>() == null)
+            //  {
+            //      gameObj.AddComponent<PieceHolder>();
+            //  }
+            //  gameObj.GetComponent<PieceHolder>().setPiece(this);
+        }
     }
 
     /** Get the team */
@@ -83,6 +96,8 @@ public abstract class Piece
         }
         this.gameObj.name = this.team.ToString() + char.ToUpper(this.typeToChar());
         this.gameObj.transform.SetParent(GameObject.Find("Board").transform);
+        this.gameObj.AddComponent<PieceHolder>();
+        this.gameObj.GetComponent<PieceHolder>().setPiece(this);
     }
 
     public void destroy()
@@ -100,12 +115,14 @@ public abstract class Piece
         return this.position;
     }
 
-    public void setPos(Coordinate pos){
+    public void setPos(Coordinate pos)
+    {
         this.position = pos;
     }
 
-    public void moveGameObjTo(Coordinate pos){
-        this.getObject().transform.position = new Vector3( 
+    public void moveGameObjTo(Coordinate pos)
+    {
+        this.getObject().transform.position = new Vector3(
             pos.getX(),
             this.getObject().transform.position.y,
             pos.getZ()
@@ -126,5 +143,5 @@ public abstract class Piece
     /**Returns a clone of a piece BUT still refers to the same GameObject */
     public abstract Piece clonePiece();
 
-    
+
 }

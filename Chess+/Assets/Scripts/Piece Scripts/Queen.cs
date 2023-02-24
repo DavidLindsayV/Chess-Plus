@@ -15,7 +15,7 @@ public class Queen : Piece
     }
 
         public override Piece clonePiece(){
-        return new Queen(this.getTeam(), this.getPos(), this.getObject());
+        return new Queen(this.getTeam(), this.getPos(), null);
     }
 
 

@@ -26,6 +26,15 @@ public static class Processing
         return moves;
     }
 
+        /**This gets the valid + allowed moves (don't put you in check) for a single specified Card */
+    public static List<Move> validMoves(BoardState bState, Card card, Team team) //TODO see if you can not pass in team - store it within Card? is that better?
+    {
+        List<Move> moves = new List<Move>();
+        moves.AddRange(card.getGeneralMoves(bState, team));
+        removeCheckingMoves(bState, moves, team);
+        return moves;
+    }
+
     //Used to see if a move puts the king in check. If it does, it is not a valid move.
     //This is more efficient than using updateSafeSquares for checking for a particular spot
     public static bool inCheck(BoardState bState, Team team)

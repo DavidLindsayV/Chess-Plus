@@ -5,9 +5,14 @@ using UnityEngine;
 /**Turn a Piece into a Rook */
 public class Rookify: Card
 {
-    public Rookify():base(){
+    public Rookify(Team team):base(team){
         this.CardText = "ROOKIFY\nTurn one of your non-rook pieces into a Rook";
         makeCard();
+    }
+
+    public Rookify(Team team, GameObject g):base(team){
+        this.CardText = "ROOKIFY\nTurn one of your non-rook pieces into a Rook";
+        this.cardObj = g;
     }
 
     public override List<CardMove> getPieceSpecificMoves(BoardState bState, Team team, Piece piece){
@@ -18,6 +23,16 @@ public class Rookify: Card
     }
     public override List<CardMove> getGeneralMoves(BoardState bState, Team team){
         return new List<CardMove>();
+    }
+
+    public override int cardNum()
+    {
+        return 1;
+    }
+
+    public override Card clone(){
+        Rookify r = new Rookify(this.getTeam(), null);
+        return r;
     }
 }
 
@@ -33,6 +48,8 @@ public class RookifyMove: CardMove
 /**Updates the boardState as if the move had happened. Does not update the visuals/gameObjects 
     */
     public override Piece doMoveState(BoardState bState){ 
+        removeCardState(bState);
+                bState.setEnPassant(null);
         this.r = new Rook(piece.getTeam(), piece.getPos(), null);
         bState.setPiece(r.getPos(), r);
         return piece;
@@ -40,6 +57,7 @@ public class RookifyMove: CardMove
 
     /**Does the parts of a move that the user can see.*/
     public override void showMove(BoardState bState, Piece killedPiece){
+        removeCardShow();
         killedPiece.destroy(); //destroy the Piece you just turned into a Rook
         r.makePiece(); //make the gameObj for the new Rook piece
     }

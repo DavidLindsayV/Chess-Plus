@@ -239,7 +239,7 @@ with the same start & end coordinates (such as promotion)*/
             enPassant = new Coordinate(positionString);
         }
 
-        BoardState b = new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing, null, null); //TODO fix this 2 nulls at the end
+        BoardState b = new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing, null, null, null, null); //TODO fix this 2 nulls at the end
 
         BoardState.GameResult g = (BoardState.GameResult)(-1);
         switch (FENwords[4])

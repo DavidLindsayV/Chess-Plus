@@ -15,7 +15,8 @@ public class Game : GameState
 
     private PlayerState playerState = PlayerState.moveSelecting;
     private Move selectedMove; //the selected move
-    private Piece selected; //The current Piece (white chess piece) selected by the player
+    private GameObject selected; //The current Piece or Card selected by the player
+    //used for choosing what move tiles can be shown
 
     public BoardState state; //this boardState stores the current state of the board
 
@@ -34,9 +35,14 @@ public class Game : GameState
     private System.Random random = new System.Random();
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
-    //TODO make card-holding and card-playing mechanics
+    //TODO allow the player to physically play cards
+    //TODO make the enemy cards not show
+    //TODO make cards disappear when played by user
     //TODO make the Hand part of the FEN string
-    //also format the testing stuff better and tidy up that code
+    //TODO check you can en-passant and castle (manually test it)
+    //TODO also format the testing stuff better and tidy up that code
+    //TODO playing cards doesn't remove them from your hand
+    //TODO figure out how to do both Click_Piece -> Play_Card  moves  as well as Click_Piece -> Click_Card -> Choose_One_Of_Move_Options and Click_Piece -> Choose_Move_Option  and  Click_Card -> Click_Move_Option
 
 
 
@@ -76,71 +82,100 @@ public class Game : GameState
     //The user's turn.
     private void userTurn()
     {
-        if (playerState == PlayerState.moveSelecting)
+        switch (playerState)
         {
-            if (!Input.GetMouseButtonDown(0))
-            {
-                return;
-            }
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (!Physics.Raycast(ray, out hit, 1000))
-            {
-                //If nothing is hit, deselect
-                deselect();
-                return;
-            }
-            //Figure out what the user clicked on
-            if (hit.collider.gameObject.name.Contains(Team.White.ToString())) //If they clicked on a white piece, show the moves for that chess piece
-            {
-                deselect();
-                int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
-                int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
-                selected = state.getPiece(new Coordinate(col, row));
-                selected.getObject().GetComponent<Renderer>().material = Prefabs.highLight;
-                showValidMoveTiles(selected);
-            }
-            else if (
-                hit.collider.gameObject.name.Contains("moveTile")
-                || hit.collider.gameObject.name.Contains(Team.Black.ToString())
-            )
-            { //If you click on a black piece or a move tile
-              //If you click on the piece you want to kill instead of the move tile, find the move tile directly below it
-                if (hit.collider.gameObject.name.Contains(Team.Black.ToString()))
+            case PlayerState.moveSelecting:
+                if (!Input.GetMouseButtonDown(0))
                 {
-                    int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
-                    int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
-                    Coordinate blackPosCoord = new Coordinate(col, row);
-                    LayerMask mask = LayerMask.GetMask("Move tiles");
-                    Physics.Raycast(
-                        new Vector3(blackPosCoord.getX(), 0.2F, blackPosCoord.getZ()),
-                        Vector3.down,
-                        out hit,
-                        1000,
-                        mask
-                    );
-                    if (hit.collider == null)
-                    {
-                        deselect(); //If you clicked on a piece and there was no tile beneath it
-                        return;
-                    }
+                    return;
                 }
-                //Do the move associated with that moveTile
-                Move move = hit.collider.gameObject.GetComponent<TileScript>().getMove();
-                deselect();
-                selectedMove = move;
-                playerState = PlayerState.movePreparing;
-            }
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (!Physics.Raycast(ray, out hit, 1000))
+                {
+                    //If nothing is hit, deselect
+                    deselect();
+                    return;
+                }
+                userClicked(hit); //figure out what was clicked on and deal with it
+                break;
+            case PlayerState.movePreparing:
+                selectedMove.prepareMove(state);
+                playerState = PlayerState.moveDoing;
+                break;
+            case PlayerState.moveDoing:
+                doMove(selectedMove);
+                playerState = PlayerState.moveSelecting;
+                turnOver = true;
+                break;
         }
-        else if (playerState == PlayerState.movePreparing){
-            selectedMove.prepareMove(state);
-            playerState = PlayerState.moveDoing;
+    }
+
+    private void userClicked(RaycastHit hit)
+    {
+        //If you clicked on a move tile
+        if (hit.collider.gameObject.GetComponent<MoveHolder>() != null)
+        {
+            clickTile(hit.collider.gameObject);
+            return;
         }
-        else if (playerState == PlayerState.moveDoing){
-            doMove(selectedMove);
-            playerState = PlayerState.moveSelecting;
-            turnOver = true;
+        //if what you clicked on was above a move tile
+        int col = Coordinate.xToCol(hit.transform.gameObject.transform.position.x);
+        int row = Coordinate.xToCol(hit.transform.gameObject.transform.position.z);
+        Coordinate clickCoord = new Coordinate(col, row);
+        LayerMask mask = LayerMask.GetMask("Move tiles");
+        RaycastHit hit2;
+        if (Physics.Raycast(
+            new Vector3(clickCoord.getX(), 0.2F, clickCoord.getZ()),
+            Vector3.down,
+            out hit2,
+            1000,
+            mask
+        ))
+        {
+            clickTile(hit2.collider.gameObject);
+            return;
         }
+        //if you clicked on something not above a move tile, then deselect
+        deselect();
+        //If you clicked on a card
+        if (hit.collider.gameObject.GetComponent<CardHolder>() != null)
+        {
+            select(hit.collider.gameObject);
+            return;
+        }
+        //If you clicked on a piece not above a move tile
+        if (hit.collider.gameObject.GetComponent<PieceHolder>() != null)
+        { //TODO make all the piece gameobjects have a script referring to their Piece like Cards and moveTile
+            Piece p = hit.collider.gameObject.GetComponent<PieceHolder>().getPiece();
+            state.getHand(state.playersTeam()).showCardOptions(state, p); //show what cards are potentially valid for playing
+            select(hit.collider.gameObject);
+            return;
+        }
+        deselect();
+    }
+
+    private void clickTile(GameObject tile)
+    {
+        Move move = tile.GetComponent<MoveHolder>().getMove();
+        deselect();
+        selectedMove = move;
+        playerState = PlayerState.movePreparing;
+    }
+
+    private void select(GameObject obj)
+    {
+        selected = obj;
+        if (selected.GetComponent<CardHolder>() != null)
+        {
+            Card c = selected.GetComponent<CardHolder>().getCard();
+            state.getHand(state.playersTeam()).highlight(c);
+        }
+        else
+        {
+            selected.GetComponent<Renderer>().material = Prefabs.highLight;
+        }
+        showValidMoveTiles(selected); //TODO: fix the problem of playing cards that need to be played on pieces - currently you can't do it
     }
 
     //Ends a player or AI turn
@@ -149,6 +184,7 @@ public class Game : GameState
         Processing.updateGameResult(state, state.currentTeam().nextTeam());
         turnOver = false;
         state.setTeam(state.currentTeam().nextTeam());
+        state.Draw(state.currentTeam());
         Messages.Log(MessageType.BoardState, state.ToString());
     }
 
@@ -157,14 +193,19 @@ public class Game : GameState
     {
         if (selected != null)
         {
-            if (selected.getTeam() == Team.White)
+            if (selected.GetComponent<PieceHolder>() != null)
             {
-                selected.getObject().GetComponent<Renderer>().material = Prefabs.white;
+                Piece p = selected.GetComponent<PieceHolder>().getPiece();
+                if (p.getTeam() == Team.White)
+                {
+                    selected.GetComponent<Renderer>().material = Prefabs.white;
+                }
+                else if (p.getTeam() == Team.Black)
+                {
+                    selected.GetComponent<Renderer>().material = Prefabs.black;
+                }
             }
-            else
-            {
-                selected.getObject().GetComponent<Renderer>().material = Prefabs.black;
-            }
+            state.getHand(state.playersTeam()).dehighlight(); //dehighlight all cards in your hand
             selected = null;
         }
         foreach (GameObject tile in tileList)
@@ -230,12 +271,19 @@ public class Game : GameState
     }
 
     //Makes move tiles for all the valid moves of a certain piece
-    private void showValidMoveTiles(Piece piece)
+    private void showValidMoveTiles(GameObject selected)
     {
         //If you aren't in check, you can do any move (barring the ones that put you in check)
-        Team team = piece.getTeam();
-        List<Move> moves = Processing.validMoves(state, piece);
-
+        List<Move> moves = null;
+        if (selected.GetComponent<PieceHolder>() != null)
+        { //TODO dynamic dispatch this if statement???
+            moves = Processing.validMoves(state, selected.GetComponent<PieceHolder>().getPiece());
+        }
+        else if (selected.GetComponent<CardHolder>() != null)
+        {
+            Team team = state.playersTeam();
+            moves = Processing.validMoves(state, selected.GetComponent<CardHolder>().getCard(), team);
+        }
         //Make a tile for each move
         foreach (Move move in moves)
         {
@@ -252,7 +300,7 @@ public class Game : GameState
             Quaternion.identity
         );
         tileList.Add(newTile);
-        newTile.GetComponent<TileScript>().setMove(move);
+        newTile.GetComponent<MoveHolder>().setMove(move);
     }
 
     public override void runState()

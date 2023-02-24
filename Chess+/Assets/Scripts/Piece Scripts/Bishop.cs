@@ -16,7 +16,7 @@ public class Bishop : Piece
     }
 
     public override Piece clonePiece(){
-        return new Bishop(this.getTeam(), this.getPos(), this.getObject());
+        return new Bishop(this.getTeam(), this.getPos(), null);
     }
 
     //Returns the moves for a Bishop

@@ -17,7 +17,7 @@ public class Rook : Piece
 
     public override Piece clonePiece()
     {
-        return new Rook(this.getTeam(), this.getPos(), this.getObject());
+        return new Rook(this.getTeam(), this.getPos(), null);
     }
 
     //Returns the moves for a Rook

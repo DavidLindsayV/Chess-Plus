@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.01}
   m_SizeDelta: {x: 800, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &7739440330290990579
@@ -112,7 +112,7 @@ GameObject:
   - component: {fileID: 7563592714573600824}
   - component: {fileID: 5709568666266770459}
   - component: {fileID: 6850398817318545199}
-  - component: {fileID: 5259237793462644209}
+  - component: {fileID: 6258526458228634086}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -127,15 +127,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3134207857208629326}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 5.03, y: -0.18327296, z: 2.7232008}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.125, y: 1, z: 0.175}
   m_Children:
   - {fileID: 6793712875256117092}
   - {fileID: 5334972378869732286}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7563592714573600824
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -196,10 +196,10 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &5259237793462644209
+--- !u!114 &6258526458228634086
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -208,7 +208,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3134207857208629326}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3f917bb92093db4288f7674c509283e, type: 3}
+  m_Script: {fileID: 11500000, guid: ed72bae1f612dad4b93b9babe1f79c92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4001157124813935473
@@ -278,7 +278,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 12
+    m_FontSize: 8
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -289,9 +289,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Card
+  m_Text: 'CARD
 
-    Text'
+    TEXT'
 --- !u!1 &4657948185132658681
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +319,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4657948185132658681}
   m_LocalRotation: {x: -0, y: -0, z: 1, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8652754491799426314}

@@ -1,7 +1,7 @@
 using UnityEngine;
 
-/**The tileScript is a script attached to each moveTile. It basically stores which Move is associated with which tile. */
-public class TileScript : MonoBehaviour
+/**The MoveHolder is a script attached to each moveTile. It basically stores which Move is associated with which tile. */
+public class MoveHolder : MonoBehaviour
 {
     //Stores the Move the tile is associated with
     private Move move;
