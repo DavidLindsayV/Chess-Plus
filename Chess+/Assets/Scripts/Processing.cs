@@ -35,6 +35,14 @@ public static class Processing
         return moves;
     }
 
+/**This gets the valid + allowed moves (don't put you in check) from a piece and card used together*/
+    public static List<Move> validMoves(BoardState bState, Piece piece, Card card, Team team){
+        List<Move> moves = new List<Move>();
+        moves.AddRange(card.getPieceSpecificMoves(bState, team, piece));
+        removeCheckingMoves(bState, moves, team);
+        return moves;
+    }
+
     //Used to see if a move puts the king in check. If it does, it is not a valid move.
     //This is more efficient than using updateSafeSquares for checking for a particular spot
     public static bool inCheck(BoardState bState, Team team)

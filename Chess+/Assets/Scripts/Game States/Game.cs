@@ -15,7 +15,8 @@ public class Game : GameState
 
     private PlayerState playerState = PlayerState.moveSelecting;
     private Move selectedMove; //the selected move
-    private GameObject selected; //The current Piece or Card selected by the player
+    private GameObject selectedPiece; //The current Piece selected by the player
+    private GameObject selectedCard; //The current Card selected by the player
     //used for choosing what move tiles can be shown
 
     public BoardState state; //this boardState stores the current state of the board
@@ -44,7 +45,12 @@ public class Game : GameState
     //TODO playing cards doesn't remove them from your hand
     //TODO figure out how to do both Click_Piece -> Play_Card  moves  as well as Click_Piece -> Click_Card -> Choose_One_Of_Move_Options and Click_Piece -> Choose_Move_Option  and  Click_Card -> Click_Move_Option
 
-
+    //TODO specifics:
+    // - make selection when you click on Nothing deselects all, when you click on a 
+    //new Piece it changes selection to that new piece without affecting any selected cards
+    //You can change selection of Cards/Pieces without affecting the other
+    //And clicking on a selected thing deselects it
+    //And make sure makeMoveTiles updates properly when BOTH Piece and Card are specified
 
     // Start is called before the first frame update
     void Start()
@@ -136,8 +142,7 @@ public class Game : GameState
             clickTile(hit2.collider.gameObject);
             return;
         }
-        //if you clicked on something not above a move tile, then deselect
-        deselect();
+
         //If you clicked on a card
         if (hit.collider.gameObject.GetComponent<CardHolder>() != null)
         {
@@ -148,7 +153,6 @@ public class Game : GameState
         if (hit.collider.gameObject.GetComponent<PieceHolder>() != null)
         { //TODO make all the piece gameobjects have a script referring to their Piece like Cards and moveTile
             Piece p = hit.collider.gameObject.GetComponent<PieceHolder>().getPiece();
-            state.getHand(state.playersTeam()).showCardOptions(state, p); //show what cards are potentially valid for playing
             select(hit.collider.gameObject);
             return;
         }
@@ -165,20 +169,36 @@ public class Game : GameState
 
     private void select(GameObject obj)
     {
-        selected = obj;
-        if (selected.GetComponent<CardHolder>() != null)
+        if (obj.GetComponent<CardHolder>() != null)
         {
-            Card c = selected.GetComponent<CardHolder>().getCard();
+            deselectCard();
+            if (obj == selectedCard) { return; }
+            selectedCard = obj;
+            Card c = obj.GetComponent<CardHolder>().getCard();
             state.getHand(state.playersTeam()).highlight(c);
+            //If the Card has no moves to be played on your selected piece, then deselect the piece
+            if (selectedPiece != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, state.playersTeam(), selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
+            {
+                deselectPiece();
+            }
         }
         else
         {
-            selected.GetComponent<Renderer>().material = Prefabs.highLight;
+            deselectPiece();
+            if (obj == selectedPiece) { return; }
+            selectedPiece = obj;
+            if (selectedCard != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, state.playersTeam(), selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
+            {
+                deselectCard();
+            }
+            state.getHand(state.playersTeam()).showCardOptions(state, selectedPiece.GetComponent<PieceHolder>().getPiece()); //show what cards are potentially valid for playing
         }
-        showValidMoveTiles(selected); //TODO: fix the problem of playing cards that need to be played on pieces - currently you can't do it
+        obj.GetComponent<Renderer>().material = Prefabs.highlight2;
+        showValidMoveTiles(); //TODO: fix the problem of playing cards that need to be played on pieces - currently you can't do it
     }
 
     //Ends a player or AI turn
+
     private void endTurn()
     {
         Processing.updateGameResult(state, state.currentTeam().nextTeam());
@@ -191,22 +211,34 @@ public class Game : GameState
     //Deselects the selected chess piece, (changes material and removes the move tiles)
     private void deselect()
     {
-        if (selected != null)
+        deselectCard();
+        deselectPiece();
+    }
+
+    private void deselectCard()
+    {
+        state.getHand(state.playersTeam()).dehighlight(); //dehighlight all cards in your hand
+        selectedCard = null;
+        foreach (GameObject tile in tileList)
         {
-            if (selected.GetComponent<PieceHolder>() != null)
+            Destroy(tile);
+        }
+    }
+
+    private void deselectPiece()
+    {
+        if (selectedPiece != null)
+        {
+            Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
+            if (p.getTeam() == Team.White)
             {
-                Piece p = selected.GetComponent<PieceHolder>().getPiece();
-                if (p.getTeam() == Team.White)
-                {
-                    selected.GetComponent<Renderer>().material = Prefabs.white;
-                }
-                else if (p.getTeam() == Team.Black)
-                {
-                    selected.GetComponent<Renderer>().material = Prefabs.black;
-                }
+                selectedPiece.GetComponent<Renderer>().material = Prefabs.white;
             }
-            state.getHand(state.playersTeam()).dehighlight(); //dehighlight all cards in your hand
-            selected = null;
+            else if (p.getTeam() == Team.Black)
+            {
+                selectedPiece.GetComponent<Renderer>().material = Prefabs.black;
+            }
+            selectedPiece = null;
         }
         foreach (GameObject tile in tileList)
         {
@@ -271,18 +303,24 @@ public class Game : GameState
     }
 
     //Makes move tiles for all the valid moves of a certain piece
-    private void showValidMoveTiles(GameObject selected)
+    private void showValidMoveTiles()
     {
-        //If you aren't in check, you can do any move (barring the ones that put you in check)
         List<Move> moves = null;
-        if (selected.GetComponent<PieceHolder>() != null)
-        { //TODO dynamic dispatch this if statement???
-            moves = Processing.validMoves(state, selected.GetComponent<PieceHolder>().getPiece());
-        }
-        else if (selected.GetComponent<CardHolder>() != null)
+        Team team = state.playersTeam();
+        if (selectedPiece != null && selectedCard != null)
         {
-            Team team = state.playersTeam();
-            moves = Processing.validMoves(state, selected.GetComponent<CardHolder>().getCard(), team);
+            Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
+            Card c = selectedCard.GetComponent<CardHolder>().getCard();
+            moves = Processing.validMoves(state, p, c, team);
+        }
+        else if (selectedPiece != null)
+        {
+            Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
+            moves = Processing.validMoves(state, p);
+        }
+        else if (selectedCard != null)
+        {
+            moves = Processing.validMoves(state, selectedCard.GetComponent<CardHolder>().getCard(), team);
         }
         //Make a tile for each move
         foreach (Move move in moves)

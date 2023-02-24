@@ -19,6 +19,8 @@ public class Prefabs : MonoBehaviour
     public static Material white;
     public static Material black;
     public static Material highLight;
+
+    public static Material highlight2;
     
 
     //The prefab for cards
@@ -73,5 +75,6 @@ public class Prefabs : MonoBehaviour
         black = materialArray[1];
         highLight = materialArray[2];
         cardPrefab = prefabArray[7];
+        highlight2 = materialArray[3];
     }
 }
