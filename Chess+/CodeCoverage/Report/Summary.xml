@@ -1,48 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CoverageReport scope="Summary">
   <Summary>
-    <Generatedon>6/02/2023 - 4:36:11 p.m.</Generatedon>
+    <Generatedon>26/02/2023 - 9:07:32 a.m.</Generatedon>
     <Parser>MultiReportParser (3x OpenCoverParser)</Parser>
     <Assemblies>1</Assemblies>
-    <Classes>24</Classes>
-    <Files>24</Files>
-    <Coveredlines>831</Coveredlines>
-    <Uncoveredlines>1031</Uncoveredlines>
-    <Coverablelines>1862</Coverablelines>
-    <Totallines>2386</Totallines>
-    <Linecoverage>44.6</Linecoverage>
+    <Classes>39</Classes>
+    <Files>57</Files>
+    <Coveredlines>922</Coveredlines>
+    <Uncoveredlines>2380</Uncoveredlines>
+    <Coverablelines>3302</Coverablelines>
+    <Totallines>3223</Totallines>
+    <Linecoverage>27.9</Linecoverage>
     <Coveredbranches>0</Coveredbranches>
     <Totalbranches>0</Totalbranches>
-    <Coveredmethods>159</Coveredmethods>
-    <Totalmethods>269</Totalmethods>
-    <Methodcoverage>59.1</Methodcoverage>
+    <Coveredmethods>103</Coveredmethods>
+    <Totalmethods>388</Totalmethods>
+    <Methodcoverage>26.5</Methodcoverage>
   </Summary>
   <Coverage>
-    <Assembly name="Scripts" classes="24" coverage="44.6" coveredlines="831" coverablelines="1862" totallines="2386" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="159" totalmethods="269" methodcoverage="59.1">
-      <Class name="AI" coverage="0" coveredlines="0" coverablelines="47" totallines="68" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
-      <Class name="Bishop" coverage="70.1" coveredlines="68" coverablelines="97" totallines="106" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="9" totalmethods="14" methodcoverage="64.2" />
-      <Class name="boardScript" coverage="1.5" coveredlines="4" coverablelines="260" totallines="273" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="26" methodcoverage="7.6" />
-      <Class name="boardState" coverage="43.5" coveredlines="169" coverablelines="388" totallines="499" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="34" totalmethods="42" methodcoverage="80.9" />
-      <Class name="CastlingMove" coverage="90.9" coveredlines="10" coverablelines="11" totallines="21" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="4" methodcoverage="100" />
-      <Class name="CMFreeLookOnlyWhenRightMouseDown" coverage="0" coveredlines="0" coverablelines="20" totallines="38" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
-      <Class name="Coordinate" coverage="41.4" coveredlines="39" coverablelines="94" totallines="125" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="16" totalmethods="28" methodcoverage="57.1" />
-      <Class name="EnPassantMove" coverage="81.8" coveredlines="9" coverablelines="11" totallines="20" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="4" methodcoverage="100" />
-      <Class name="King" coverage="62.6" coveredlines="42" coverablelines="67" totallines="94" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="11" totalmethods="14" methodcoverage="78.5" />
-      <Class name="Knight" coverage="56" coveredlines="28" coverablelines="50" totallines="59" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="9" totalmethods="14" methodcoverage="64.2" />
-      <Class name="Messages" coverage="0" coveredlines="0" coverablelines="17" totallines="31" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
-      <Class name="Move" coverage="84.7" coveredlines="50" coverablelines="59" totallines="87" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="11" totalmethods="12" methodcoverage="91.6" />
-      <Class name="PauseMenu" coverage="0" coveredlines="0" coverablelines="33" totallines="58" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="5" methodcoverage="0" />
-      <Class name="Pawn" coverage="79.4" coveredlines="89" coverablelines="112" totallines="152" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="11" totalmethods="14" methodcoverage="78.5" />
-      <Class name="PawnDoublejump" coverage="100" coveredlines="16" coverablelines="16" totallines="28" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="4" methodcoverage="100" />
-      <Class name="Piece" coverage="40" coveredlines="26" coverablelines="65" totallines="121" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="8" totalmethods="13" methodcoverage="61.5" />
-      <Class name="Prefabs" coverage="0" coveredlines="0" coverablelines="36" totallines="72" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="3" methodcoverage="0" />
-      <Class name="Processing" coverage="47" coveredlines="73" coverablelines="155" totallines="123" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="10" totalmethods="14" methodcoverage="71.4" />
-      <Class name="PromoteMenu" coverage="0" coveredlines="0" coverablelines="36" totallines="64" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="12" methodcoverage="0" />
-      <Class name="PromoteMove" coverage="52.9" coveredlines="9" coverablelines="17" totallines="27" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="6" methodcoverage="66.6" />
-      <Class name="Queen" coverage="78.4" coveredlines="120" coverablelines="153" totallines="162" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="9" totalmethods="12" methodcoverage="75" />
-      <Class name="Rook" coverage="81.9" coveredlines="68" coverablelines="83" totallines="92" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="9" totalmethods="12" methodcoverage="75" />
-      <Class name="Team" coverage="37.9" coveredlines="11" coverablelines="29" totallines="46" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="8" methodcoverage="50" />
-      <Class name="tileScript" coverage="0" coveredlines="0" coverablelines="6" totallines="20" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
+    <Assembly name="Scripts" classes="39" coverage="27.9" coveredlines="922" coverablelines="3302" totallines="3381" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="103" totalmethods="388" methodcoverage="26.5">
+      <Class name="AI" coverage="0" coveredlines="0" coverablelines="47" totallines="70" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
+      <Class name="Bishop" coverage="45" coveredlines="68" coverablelines="151" totallines="106" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="15" methodcoverage="33.3" />
+      <Class name="boardScript" coverage="0" coveredlines="0" coverablelines="208" totallines="0" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="14" methodcoverage="0" />
+      <Class name="boardState" coverage="0" coveredlines="0" coverablelines="259" totallines="0" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="20" methodcoverage="0" />
+      <Class name="BoardState" coverage="50.5" coveredlines="183" coverablelines="362" totallines="583" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="20" totalmethods="26" methodcoverage="76.9" />
+      <Class name="Card" coverage="0" coveredlines="0" coverablelines="29" totallines="79" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="9" methodcoverage="0" />
+      <Class name="CardHolder" coverage="0" coveredlines="0" coverablelines="6" totallines="20" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
+      <Class name="CardMove" coverage="0" coveredlines="0" coverablelines="10" totallines="24" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="3" methodcoverage="0" />
+      <Class name="CastlingMove" coverage="50" coveredlines="10" coverablelines="20" totallines="27" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="5" methodcoverage="40" />
+      <Class name="CMFreeLookOnlyWhenRightMouseDown" coverage="0" coveredlines="0" coverablelines="40" totallines="38" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="4" methodcoverage="0" />
+      <Class name="Coordinate" coverage="30" coveredlines="39" coverablelines="130" totallines="125" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="11" totalmethods="28" methodcoverage="39.2" />
+      <Class name="Deck" coverage="52.5" coveredlines="21" coverablelines="40" totallines="66" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="5" methodcoverage="40" />
+      <Class name="EnPassantMove" coverage="60" coveredlines="9" coverablelines="15" totallines="20" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="4" methodcoverage="50" />
+      <Class name="Game" coverage="2.2" coveredlines="5" coverablelines="218" totallines="341" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="1" totalmethods="18" methodcoverage="5.5" />
+      <Class name="Hand" coverage="35.7" coveredlines="35" coverablelines="98" totallines="139" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="6" totalmethods="12" methodcoverage="50" />
+      <Class name="King" coverage="42.4" coveredlines="42" coverablelines="99" totallines="94" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="15" methodcoverage="33.3" />
+      <Class name="Knight" coverage="38.3" coveredlines="28" coverablelines="73" totallines="59" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="15" methodcoverage="33.3" />
+      <Class name="Messages" coverage="0" coveredlines="0" coverablelines="34" totallines="31" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="4" methodcoverage="0" />
+      <Class name="Move" coverage="71.4" coveredlines="45" coverablelines="63" totallines="86" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="10" methodcoverage="20" />
+      <Class name="MoveHolder" coverage="0" coveredlines="0" coverablelines="6" totallines="20" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
+      <Class name="PauseMenu" coverage="0" coveredlines="0" coverablelines="59" totallines="47" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="10" methodcoverage="0" />
+      <Class name="Pawn" coverage="46.1" coveredlines="89" coverablelines="193" totallines="152" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="6" totalmethods="17" methodcoverage="35.2" />
+      <Class name="PawnDoublejump" coverage="72.7" coveredlines="16" coverablelines="22" totallines="28" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="4" methodcoverage="50" />
+      <Class name="Piece" coverage="18.7" coveredlines="24" coverablelines="128" totallines="143" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="20" methodcoverage="25" />
+      <Class name="PieceHolder" coverage="0" coveredlines="0" coverablelines="6" totallines="20" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
+      <Class name="PieceMove" coverage="65.6" coveredlines="21" coverablelines="32" totallines="73" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="7" totalmethods="9" methodcoverage="77.7" />
+      <Class name="Prefabs" coverage="0" coveredlines="0" coverablelines="74" totallines="80" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="6" methodcoverage="0" />
+      <Class name="Processing" coverage="31.4" coveredlines="78" coverablelines="248" totallines="148" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="8" totalmethods="22" methodcoverage="36.3" />
+      <Class name="PromoteMenu" coverage="0" coveredlines="0" coverablelines="62" totallines="65" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="17" methodcoverage="0" />
+      <Class name="PromoteMove" coverage="27.7" coveredlines="10" coverablelines="36" totallines="48" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="8" methodcoverage="25" />
+      <Class name="Queen" coverage="49.3" coveredlines="120" coverablelines="243" totallines="162" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="13" methodcoverage="38.4" />
+      <Class name="Rook" coverage="48.9" coveredlines="68" coverablelines="139" totallines="92" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="13" methodcoverage="38.4" />
+      <Class name="Rookify" coverage="0" coveredlines="0" coverablelines="23" totallines="71" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="6" methodcoverage="0" />
+      <Class name="RookifyMove" coverage="0" coveredlines="0" coverablelines="17" totallines="71" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="5" methodcoverage="0" />
+      <Class name="StateManager" coverage="0" coveredlines="0" coverablelines="16" totallines="33" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
+      <Class name="SummonPawn" coverage="0" coveredlines="0" coverablelines="34" totallines="87" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="6" methodcoverage="0" />
+      <Class name="SummonPawnMove" coverage="0" coveredlines="0" coverablelines="18" totallines="87" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="5" methodcoverage="0" />
+      <Class name="Team" coverage="28.9" coveredlines="11" coverablelines="38" totallines="46" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="2" totalmethods="8" methodcoverage="25" />
+      <Class name="tileScript" coverage="0" coveredlines="0" coverablelines="6" totallines="0" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="0" totalmethods="2" methodcoverage="0" />
     </Assembly>
   </Coverage>
 </CoverageReport>
