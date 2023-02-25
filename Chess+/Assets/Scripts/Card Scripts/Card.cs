@@ -39,8 +39,8 @@ public abstract class Card
 
     /**getPieceSpecificMoves takes in the boardState, the Team that is playing the card, and the
 Piece it is being played on */
-    public abstract List<CardMove> getPieceSpecificMoves(BoardState bState, Team team, Piece piece);
-    public abstract List<CardMove> getGeneralMoves(BoardState bState, Team team);
+    public abstract List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece);
+    public abstract List<CardMove> getGeneralMoves(BoardState bState);
 
     /**Each card should have a unique string attached. I'm just gonna name them card1, card2, etc */
     public override string ToString() { return "card" + this.cardNum(); }

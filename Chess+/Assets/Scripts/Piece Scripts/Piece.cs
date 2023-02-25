@@ -13,10 +13,6 @@ public abstract class Piece
 
     protected GameObject gameObj;
 
-    void Start(){
-        //TODO see how Start works on non monobehaviours - does it ever run? Does it run for every constructor? I'm so confused
-    }
-
     /** Constructs a Piece object */
     public Piece(Team team, Coordinate pos)
     {

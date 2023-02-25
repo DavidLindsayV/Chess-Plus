@@ -17,11 +17,11 @@ public class SummonPawn : Card
         this.cardObj = g;
     }
 
-    public override List<CardMove> getPieceSpecificMoves(BoardState bState, Team team, Piece piece)
+    public override List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece)
     {
         return new List<CardMove>();
     }
-    public override List<CardMove> getGeneralMoves(BoardState bState, Team team)
+    public override List<CardMove> getGeneralMoves(BoardState bState)
     {
         List<CardMove> moves = new List<CardMove>();
         for (int row = 1; row <= bState.boardSize; row++)
@@ -30,7 +30,7 @@ public class SummonPawn : Card
             {
                 if (bState.getPiece(col, row) == null)
                 {
-                    moves.Add(new SummonPawnMove(this, new Coordinate(col, row), team));
+                    moves.Add(new SummonPawnMove(this, new Coordinate(col, row), this.getTeam()));
                 }
             }
         }

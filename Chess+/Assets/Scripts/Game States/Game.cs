@@ -36,21 +36,8 @@ public class Game : GameState
     private System.Random random = new System.Random();
     //TODO update comments/documentation in all files
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
-    //TODO allow the player to physically play cards
-    //TODO make the enemy cards not show
-    //TODO make cards disappear when played by user
-    //TODO make the Hand part of the FEN string
-    //TODO check you can en-passant and castle (manually test it)
-    //TODO also format the testing stuff better and tidy up that code
-    //TODO playing cards doesn't remove them from your hand
-    //TODO figure out how to do both Click_Piece -> Play_Card  moves  as well as Click_Piece -> Click_Card -> Choose_One_Of_Move_Options and Click_Piece -> Choose_Move_Option  and  Click_Card -> Click_Move_Option
-
-    //TODO specifics:
-    // - make selection when you click on Nothing deselects all, when you click on a 
-    //new Piece it changes selection to that new piece without affecting any selected cards
-    //You can change selection of Cards/Pieces without affecting the other
-    //And clicking on a selected thing deselects it
-    //And make sure makeMoveTiles updates properly when BOTH Piece and Card are specified
+    //TODO format the testing stuff better and tidy up that code
+    //TODO improve the user experience with selecting and deselecting cards and pieces - sometimes you get weird results
 
     // Start is called before the first frame update
     void Start()
@@ -151,7 +138,7 @@ public class Game : GameState
         }
         //If you clicked on a piece not above a move tile
         if (hit.collider.gameObject.GetComponent<PieceHolder>() != null)
-        { //TODO make all the piece gameobjects have a script referring to their Piece like Cards and moveTile
+        { 
             Piece p = hit.collider.gameObject.GetComponent<PieceHolder>().getPiece();
             select(hit.collider.gameObject);
             return;
@@ -171,30 +158,30 @@ public class Game : GameState
     {
         if (obj.GetComponent<CardHolder>() != null)
         {
+            if (obj == selectedCard) { deselectCard(); return; }
             deselectCard();
-            if (obj == selectedCard) { return; }
             selectedCard = obj;
             Card c = obj.GetComponent<CardHolder>().getCard();
             state.getHand(state.playersTeam()).highlight(c);
             //If the Card has no moves to be played on your selected piece, then deselect the piece
-            if (selectedPiece != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, state.playersTeam(), selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
+            if (selectedPiece != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
             {
                 deselectPiece();
             }
         }
         else
         {
+            if (obj == selectedPiece) { deselectPiece(); return; }
             deselectPiece();
-            if (obj == selectedPiece) { return; }
             selectedPiece = obj;
-            if (selectedCard != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, state.playersTeam(), selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
+            if (selectedCard != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
             {
                 deselectCard();
             }
             state.getHand(state.playersTeam()).showCardOptions(state, selectedPiece.GetComponent<PieceHolder>().getPiece()); //show what cards are potentially valid for playing
         }
         obj.GetComponent<Renderer>().material = Prefabs.highlight2;
-        showValidMoveTiles(); //TODO: fix the problem of playing cards that need to be played on pieces - currently you can't do it
+        showValidMoveTiles(); 
     }
 
     //Ends a player or AI turn

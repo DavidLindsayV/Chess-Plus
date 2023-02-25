@@ -13,7 +13,7 @@ public static class Processing
     public static List<Move> allValidMoves(BoardState bState, Team team)
     {
         List<Move> moves = allMoves(bState, team);
-        moves.AddRange(bState.getHand(team).generalMoves(bState, team));
+        moves.AddRange(bState.getHand(team).generalMoves(bState));
         removeCheckingMoves(bState, moves, team);
         return moves;
     }
@@ -27,10 +27,10 @@ public static class Processing
     }
 
         /**This gets the valid + allowed moves (don't put you in check) for a single specified Card */
-    public static List<Move> validMoves(BoardState bState, Card card, Team team) //TODO see if you can not pass in team - store it within Card? is that better?
+    public static List<Move> validMoves(BoardState bState, Card card, Team team) 
     {
         List<Move> moves = new List<Move>();
-        moves.AddRange(card.getGeneralMoves(bState, team));
+        moves.AddRange(card.getGeneralMoves(bState));
         removeCheckingMoves(bState, moves, team);
         return moves;
     }
@@ -38,7 +38,7 @@ public static class Processing
 /**This gets the valid + allowed moves (don't put you in check) from a piece and card used together*/
     public static List<Move> validMoves(BoardState bState, Piece piece, Card card, Team team){
         List<Move> moves = new List<Move>();
-        moves.AddRange(card.getPieceSpecificMoves(bState, team, piece));
+        moves.AddRange(card.getPieceSpecificMoves(bState, piece));
         removeCheckingMoves(bState, moves, team);
         return moves;
     }
@@ -100,7 +100,7 @@ A cloned boardState should be passed in */
                 {
                     Piece p = bState.getPiece(c);
                     allmoves.AddRange(p.getMoves(bState));
-                    allmoves.AddRange(bState.getHand(team).pieceSpecificMoves(bState, team, p));
+                    allmoves.AddRange(bState.getHand(team).pieceSpecificMoves(bState, p));
                 }
             }
         return allmoves;

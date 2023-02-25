@@ -15,13 +15,13 @@ public class Rookify: Card
         this.cardObj = g;
     }
 
-    public override List<CardMove> getPieceSpecificMoves(BoardState bState, Team team, Piece piece){
-        if(piece.getTeam() == team && !(piece is Rook)){
+    public override List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece){
+        if(piece.getTeam() == this.getTeam() && !(piece is Rook)){
             return new List<CardMove>{new RookifyMove(this, piece) };
         }
         return new List<CardMove>();
     }
-    public override List<CardMove> getGeneralMoves(BoardState bState, Team team){
+    public override List<CardMove> getGeneralMoves(BoardState bState){
         return new List<CardMove>();
     }
 
