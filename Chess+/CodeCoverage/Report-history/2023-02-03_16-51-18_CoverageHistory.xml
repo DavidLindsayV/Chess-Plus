@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2023-02-03_16-51-18" tag="">
+  <assembly name="Scripts">
+    <class name="AI" coveredlines="0" coverablelines="47" totallines="68" coveredbranches="0" totalbranches="0" />
+    <class name="Bishop" coveredlines="68" coverablelines="97" totallines="106" coveredbranches="0" totalbranches="0" />
+    <class name="boardScript" coveredlines="4" coverablelines="260" totallines="273" coveredbranches="0" totalbranches="0" />
+    <class name="boardState" coveredlines="164" coverablelines="388" totallines="499" coveredbranches="0" totalbranches="0" />
+    <class name="CastlingMove" coveredlines="0" coverablelines="11" totallines="21" coveredbranches="0" totalbranches="0" />
+    <class name="CMFreeLookOnlyWhenRightMouseDown" coveredlines="0" coverablelines="20" totallines="38" coveredbranches="0" totalbranches="0" />
+    <class name="Coordinate" coveredlines="39" coverablelines="94" totallines="125" coveredbranches="0" totalbranches="0" />
+    <class name="EnPassantMove" coveredlines="0" coverablelines="11" totallines="20" coveredbranches="0" totalbranches="0" />
+    <class name="King" coveredlines="34" coverablelines="67" totallines="94" coveredbranches="0" totalbranches="0" />
+    <class name="Knight" coveredlines="28" coverablelines="50" totallines="59" coveredbranches="0" totalbranches="0" />
+    <class name="Messages" coveredlines="0" coverablelines="17" totallines="31" coveredbranches="0" totalbranches="0" />
+    <class name="Move" coveredlines="40" coverablelines="59" totallines="87" coveredbranches="0" totalbranches="0" />
+    <class name="PauseMenu" coveredlines="0" coverablelines="33" totallines="58" coveredbranches="0" totalbranches="0" />
+    <class name="Pawn" coveredlines="59" coverablelines="130" totallines="149" coveredbranches="0" totalbranches="0" />
+    <class name="PawnDoublejump" coveredlines="16" coverablelines="16" totallines="28" coveredbranches="0" totalbranches="0" />
+    <class name="Piece" coveredlines="26" coverablelines="65" totallines="121" coveredbranches="0" totalbranches="0" />
+    <class name="Prefabs" coveredlines="0" coverablelines="36" totallines="72" coveredbranches="0" totalbranches="0" />
+    <class name="Processing" coveredlines="88" coverablelines="158" totallines="152" coveredbranches="0" totalbranches="0" />
+    <class name="PromoteMenu" coveredlines="0" coverablelines="36" totallines="64" coveredbranches="0" totalbranches="0" />
+    <class name="PromoteMove" coveredlines="0" coverablelines="17" totallines="27" coveredbranches="0" totalbranches="0" />
+    <class name="Queen" coveredlines="120" coverablelines="153" totallines="162" coveredbranches="0" totalbranches="0" />
+    <class name="Rook" coveredlines="68" coverablelines="83" totallines="92" coveredbranches="0" totalbranches="0" />
+    <class name="Team" coveredlines="11" coverablelines="29" totallines="46" coveredbranches="0" totalbranches="0" />
+    <class name="tileScript" coveredlines="0" coverablelines="6" totallines="20" coveredbranches="0" totalbranches="0" />
+  </assembly>
+</coverage>

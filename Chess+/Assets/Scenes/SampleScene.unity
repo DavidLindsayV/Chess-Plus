@@ -1139,7 +1139,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730442052}
-  m_LocalRotation: {x: 0.24858819, y: -0.20930581, z: 0.055110674, w: 0.9441175}
+  m_LocalRotation: {x: 0.24858819, y: -0.20930584, z: 0.055110686, w: 0.9441175}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1292,6 +1292,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1357,7 +1358,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.23137404, y: -0.21027358, z: 0.05129438, w: 0.948483}
+  m_LocalRotation: {x: 0.23137404, y: -0.21027365, z: 0.0512944, w: 0.948483}
   m_LocalPosition: {x: 3.883862, y: 5.2, z: -8.328968}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1398,6 +1399,32 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea72e9e71405bee4b97209565a4f6570, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabArray:
+  - {fileID: 4235577784679706776, guid: 8bf8209c0e82e4b4292d5b264b2580cc, type: 3}
+  - {fileID: 248531145738623065, guid: 6fc385ca09ee8fa47845c098c8f54c5d, type: 3}
+  - {fileID: 8271204388251674691, guid: 6be907e0e7ffaea479acbb6738d6c7ce, type: 3}
+  - {fileID: 8665158574203623187, guid: 1dd4df894dbe2aa43af72ec33e62a9c2, type: 3}
+  - {fileID: 90828564361192491, guid: 95e29338e9f487b4180d41b84d9b9e28, type: 3}
+  - {fileID: 614001120761919105, guid: 406b6f26a71019240890faaa9ba9b038, type: 3}
+  - {fileID: 6211899321823841510, guid: 6e0db0c540ce0e348a19a78edbf241e2, type: 3}
+  - {fileID: 3134207857208629326, guid: 96bd568576007614ca9631f4cd0b2ff5, type: 3}
+  materialArray:
+  - {fileID: 2100000, guid: 3cb70f197241b3f4289ceb898241df8c, type: 2}
+  - {fileID: 2100000, guid: 58fd325991f8ed646aaa1c05d4c5f5f4, type: 2}
+  - {fileID: 2100000, guid: 724b6fb16525a6d4b880e8f55f2cf51d, type: 2}
+  - {fileID: 2100000, guid: ccb4e93de8987e542986a524049ff7ed, type: 2}
 --- !u!1 &1249918579
 GameObject:
   m_ObjectHideFlags: 3
@@ -1464,7 +1491,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1249918579}
-  m_LocalRotation: {x: 0.23137404, y: -0.21027361, z: 0.051294386, w: 0.948483}
+  m_LocalRotation: {x: 0.23137404, y: -0.21027365, z: 0.051294394, w: 0.948483}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1804,24 +1831,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1529355245}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78c2256064d676e4b9f07c86e1afadce, type: 3}
+  m_Script: {fileID: 11500000, guid: 560057aa1a2af574d90b7c3f2b81abbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pawn: {fileID: 4235577784679706776, guid: 8bf8209c0e82e4b4292d5b264b2580cc, type: 3}
-  rook: {fileID: 248531145738623065, guid: 6fc385ca09ee8fa47845c098c8f54c5d, type: 3}
-  bishop: {fileID: 8665158574203623187, guid: 1dd4df894dbe2aa43af72ec33e62a9c2, type: 3}
-  knight: {fileID: 8271204388251674691, guid: 6be907e0e7ffaea479acbb6738d6c7ce, type: 3}
-  queen: {fileID: 90828564361192491, guid: 95e29338e9f487b4180d41b84d9b9e28, type: 3}
-  king: {fileID: 614001120761919105, guid: 406b6f26a71019240890faaa9ba9b038, type: 3}
-  tile: {fileID: 6211899321823841510, guid: 6e0db0c540ce0e348a19a78edbf241e2, type: 3}
-  white: {fileID: 2100000, guid: 3cb70f197241b3f4289ceb898241df8c, type: 2}
-  black: {fileID: 2100000, guid: 58fd325991f8ed646aaa1c05d4c5f5f4, type: 2}
-  highLight: {fileID: 2100000, guid: 724b6fb16525a6d4b880e8f55f2cf51d, type: 2}
   gameResultText: {fileID: 2109562988}
-  staleMate: 0
-  check: 0
-  checkMate: 0
-  easyMode: 1
+  AIdifficulty: 0
 --- !u!1 &1537686997
 GameObject:
   m_ObjectHideFlags: 3
@@ -2007,12 +2021,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1614359388}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -358.5, y: -174, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_Father: {fileID: 1828029805}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1741437087
 GameObject:
@@ -2186,6 +2200,7 @@ RectTransform:
   - {fileID: 2109562987}
   - {fileID: 1741437088}
   - {fileID: 328801309}
+  - {fileID: 1614359391}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2203,12 +2218,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1828029801}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2487b84ab2e87243af8bbbc82467d8d, type: 3}
+  m_Script: {fileID: 11500000, guid: 85521671faf5aea4ea8c14cb974bd3f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PauseMenuPanel: {fileID: 1741437087}
-  PromotionMenuPanel: {fileID: 0}
-  board: {fileID: 1529355245}
 --- !u!114 &1828029807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2218,11 +2230,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1828029801}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a398958fc648a643b039fe3088eece9, type: 3}
+  m_Script: {fileID: 11500000, guid: 7af448b643b54594b9ee39f1f658076b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PromotionPanel: {fileID: 328801308}
-  board: {fileID: 1529355245}
 --- !u!1 &1887644475
 GameObject:
   m_ObjectHideFlags: 3
@@ -2381,8 +2391,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1828029806}
-        m_TargetAssemblyTypeName: PauseMenu, Assembly-CSharp
-        m_MethodName: Resume
+        m_TargetAssemblyTypeName: PauseMenu, Scripts
+        m_MethodName: resume
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
