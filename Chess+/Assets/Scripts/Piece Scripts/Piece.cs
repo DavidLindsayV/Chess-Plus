@@ -46,12 +46,11 @@ public abstract class Piece
         this.gameObj = gameObj;
                 if (gameObj != null)
         {
-            throw new System.Exception("We haven't figured out how to get GetComponent to work here"); //TODO fix this error
-            //  if (gameObj.GetComponent<PieceHolder>() == null)
-            //  {
-            //      gameObj.AddComponent<PieceHolder>();
-            //  }
-            //  gameObj.GetComponent<PieceHolder>().setPiece(this);
+             if (gameObj.GetComponent<PieceHolder>() == null)
+             {
+                 gameObj.AddComponent<PieceHolder>();
+             }
+             gameObj.GetComponent<PieceHolder>().setPiece(this);
         }
     }
 

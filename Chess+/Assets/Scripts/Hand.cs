@@ -24,8 +24,8 @@ public class Hand
     //Positions all the cards correctly if none of them are being looked at individually
     public void positionCards()
     {
-        int cardNum = cards.Count;
-        int angleSpread = 20;
+        float cardNum = cards.Count;
+        float angleSpread = 20;
         float angle = 0;
         float step = 0;
         float zStep = 0.1f;

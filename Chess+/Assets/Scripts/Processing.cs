@@ -144,5 +144,11 @@ A cloned boardState should be passed in */
                 bState.setGameResult(BoardState.GameResult.Stalemate);
             }
         }
+
+        //TODO update updateGameResult so that it can cope with:
+        //- king being killed
+        //- ending a turn in check
+        //normal piece movements shouldn't allow this, but if cards get weird and funky enough these become possible
+        //so make sure these don't cause errors
     }
 }
