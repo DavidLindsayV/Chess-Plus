@@ -16,7 +16,7 @@ public class Rookify: Card
     }
 
     public override List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece){
-        if(piece.getTeam() == this.getTeam() && !(piece is Rook)){
+        if(piece.getTeam() == this.getTeam() && !(piece is King) && !(piece is Rook)){
             return new List<CardMove>{new RookifyMove(this, piece) };
         }
         return new List<CardMove>();

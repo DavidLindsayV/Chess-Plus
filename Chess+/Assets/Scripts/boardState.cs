@@ -522,12 +522,6 @@ public class BoardState
                 if (boardArray[col, row] != null)
                 {
                     newBoardArray[col, row] = boardArray[col, row].clonePiece();
-                    //TODO remove this error checking debugging once the bug is fixed
-                    if (boardArray[col, row].getPos() != new Coordinate(col + 1, row + 1))
-                    {
-                        Debug.Log("oh no this is worrying");
-                        Debug.Log(boardArray[col, row].getPos().ToString() + " " + new Coordinate(col + 1, row + 1).ToString());
-                    }
                 }
             }
         }
@@ -546,9 +540,7 @@ public class BoardState
             whiteHand.clone(),
             blackHand.clone()
 
-        ); //TODO fix occasional errors from the (King) cast above.
-        //I think its caused when the Piece's getPos isn't equal to it's actual position in the boardArray
-        //Can happen when you haven't even moved the king
+        ); 
         return clone;
     }
 

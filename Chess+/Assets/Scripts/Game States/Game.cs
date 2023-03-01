@@ -138,7 +138,7 @@ public class Game : GameState
         }
         //If you clicked on a piece not above a move tile
         if (hit.collider.gameObject.GetComponent<PieceHolder>() != null)
-        { 
+        {
             Piece p = hit.collider.gameObject.GetComponent<PieceHolder>().getPiece();
             select(hit.collider.gameObject);
             return;
@@ -181,7 +181,7 @@ public class Game : GameState
             state.getHand(state.playersTeam()).showCardOptions(state, selectedPiece.GetComponent<PieceHolder>().getPiece()); //show what cards are potentially valid for playing
         }
         obj.GetComponent<Renderer>().material = Prefabs.highlight2;
-        showValidMoveTiles(); 
+        showValidMoveTiles();
     }
 
     //Ends a player or AI turn
@@ -292,7 +292,7 @@ public class Game : GameState
     //Makes move tiles for all the valid moves of a certain piece
     private void showValidMoveTiles()
     {
-        List<Move> moves = null;
+        List<Move> moves = new List<Move>();
         Team team = state.playersTeam();
         if (selectedPiece != null && selectedCard != null)
         {
@@ -303,7 +303,10 @@ public class Game : GameState
         else if (selectedPiece != null)
         {
             Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
-            moves = Processing.validMoves(state, p);
+            if (p.getTeam() == state.playersTeam())
+            {
+                moves = Processing.validMoves(state, p);
+            }
         }
         else if (selectedCard != null)
         {

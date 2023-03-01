@@ -26,8 +26,8 @@ public static class Processing
         return moves;
     }
 
-        /**This gets the valid + allowed moves (don't put you in check) for a single specified Card */
-    public static List<Move> validMoves(BoardState bState, Card card, Team team) 
+    /**This gets the valid + allowed moves (don't put you in check) for a single specified Card */
+    public static List<Move> validMoves(BoardState bState, Card card, Team team)
     {
         List<Move> moves = new List<Move>();
         moves.AddRange(card.getGeneralMoves(bState));
@@ -35,8 +35,9 @@ public static class Processing
         return moves;
     }
 
-/**This gets the valid + allowed moves (don't put you in check) from a piece and card used together*/
-    public static List<Move> validMoves(BoardState bState, Piece piece, Card card, Team team){
+    /**This gets the valid + allowed moves (don't put you in check) from a piece and card used together*/
+    public static List<Move> validMoves(BoardState bState, Piece piece, Card card, Team team)
+    {
         List<Move> moves = new List<Move>();
         moves.AddRange(card.getPieceSpecificMoves(bState, piece));
         removeCheckingMoves(bState, moves, team);
@@ -56,7 +57,7 @@ public static class Processing
         List<Move> allEnemyMoves = allAttackingMoves(bState, team.nextTeam());
         foreach (Move move in allEnemyMoves)
         {
-            if(move.inDanger(pos)){ return true; }
+            if (move.inDanger(pos)) { return true; }
         }
         return false;
     }
@@ -70,7 +71,7 @@ public static class Processing
             Move move = moves[i];
             //Simulate doing the move
             BoardState cloneState = bState.clone();
-            simulateMove(cloneState, move); 
+            simulateMove(cloneState, move);
             if (inCheck(cloneState, team))
             {
                 moves.RemoveAt(i); //If the king is in check, remove that move
@@ -79,10 +80,11 @@ public static class Processing
         }
     }
 
-/**This method returns the killed piece
+    /**This method returns the killed piece
 This method is used if a move is to be done but the move might be used again later
 A cloned boardState should be passed in */
-    public static Piece simulateMove(BoardState bState, Move move){
+    public static Piece simulateMove(BoardState bState, Move move)
+    {
         Piece killedPiece = move.doMoveState(bState);
         move.resetMove();
         return killedPiece;
@@ -91,7 +93,7 @@ A cloned boardState should be passed in */
     /**Returns a list of all of the moves of a certain team*/
     private static List<Move> allMoves(BoardState bState, Team team)
     {
-        List<Move> allmoves = new List<Move>(); 
+        List<Move> allmoves = new List<Move>();
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
             { //Goes through each Piece in boardArray, and if its in the right team it adds all of its moves to the list its going to return
@@ -124,14 +126,15 @@ A cloned boardState should be passed in */
 
     //Checks for Stalemate and Checkmate and updates GameResult
     public static void updateGameResult(BoardState bState, Team team)
-    { 
+    {
         List<Move> moves = allMoves(bState, team);
         removeCheckingMoves(bState, moves, team);
         if (moves.Count == 0)
         {
             //If there are no moves that don't leave you in check, you're either in stalemate
             //or checkmate
-            if(inCheck(bState, team)){ //If you have no moves and you're in check, its checkmate
+            if (inCheck(bState, team))
+            { //If you have no moves and you're in check, its checkmate
                 if (team == bState.playersTeam())
                 {
                     bState.setGameResult(BoardState.GameResult.GameLost);
@@ -140,7 +143,9 @@ A cloned boardState should be passed in */
                 {
                     bState.setGameResult(BoardState.GameResult.GameWon);
                 }
-            }else{
+            }
+            else
+            {
                 bState.setGameResult(BoardState.GameResult.Stalemate);
             }
         }
