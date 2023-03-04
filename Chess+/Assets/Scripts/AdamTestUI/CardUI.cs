@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TestCardScript : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
+/**A script for handling the movement and dragging of Cards */
+public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
 {
     private RectTransform rectTransform;
     private Vector2 originalPosition;
@@ -11,8 +12,7 @@ public class TestCardScript : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        originalPosition = rectTransform.anchoredPosition;
-        if(canvas == null){ canvas = FindObjectOfType<Canvas>(); }
+        if (canvas == null) { canvas = FindObjectOfType<Canvas>(); }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -27,7 +27,7 @@ public class TestCardScript : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnDrag(PointerEventData eventData)
     {
-        Vector2 mouseScreenOffset = new Vector2((canvas.GetComponent<RectTransform>().rect.height - GetComponent<RectTransform>().rect.height),(canvas.GetComponent<RectTransform>().rect.width)/2.0f - (GetComponent<RectTransform>().rect.height*2.0f));
+        Vector2 mouseScreenOffset = new Vector2((canvas.GetComponent<RectTransform>().rect.height - GetComponent<RectTransform>().rect.height), (canvas.GetComponent<RectTransform>().rect.width) / 2.0f - (GetComponent<RectTransform>().rect.height * 2.0f));
         rectTransform.anchoredPosition = eventData.position - mouseScreenOffset + offset;
     }
 
@@ -40,4 +40,6 @@ public class TestCardScript : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         offset = eventData.position - rectTransform.anchoredPosition;
     }
+
+    public void setOriginalPosition(Vector2 position) { this.originalPosition = position; }
 }

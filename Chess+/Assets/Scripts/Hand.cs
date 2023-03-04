@@ -8,7 +8,7 @@ public class Hand
     //Fields for the spacing of cards
     private int numCards = 5;
     private float cardSpacing = 10f;
-    private float bottomPosition = -600;
+    private float bottomPosition = -400;
 
     private Deck deck;
 
@@ -33,7 +33,7 @@ public class Hand
         positionCards();
     }
 
-    //Positions all the cards correctly if none of them are being looked at individually
+    /**Positions all the cards correctly if none of them are being looked at individually*/
     public void positionCards()
     {
         float totalWidth = 0f; //TODO combine these 2 for loops into 1 for loop
@@ -53,6 +53,8 @@ public class Hand
             GameObject cardObj = card.getObj();
             RectTransform cardRect = cardObj.GetComponent<RectTransform>();
             cardRect.anchoredPosition = new Vector2((i * (cardRect.rect.width * 2f)) + (cardSpacing * i) - startX, bottomPosition);
+            CardUI cardscript = card.getObj().GetComponent<CardUI>();
+            cardscript.setOriginalPosition(cardRect.anchoredPosition);
         }
     }
 
@@ -95,7 +97,6 @@ public class Hand
         if (!c.isHighlighted())
         {
             c.highlight();
-            c.getObj().transform.localPosition += new Vector3(0, 1.5f, 0);
         }
     }
 

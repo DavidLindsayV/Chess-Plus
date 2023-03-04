@@ -2,18 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/**Turn a Piece into a Rook */
+/**"ROOKIFY
+Turn one of your non-rook non-king pieces into a Rook" */
 public class Rookify : Card
 {
     public Rookify(Team team) : base(team)
     {
-        this.CardText = "ROOKIFY\nTurn one of your non-rook pieces into a Rook";
+        this.cardSprite = Prefabs.rookifyPrefab;
         makeCard();
     }
 
     public Rookify(Team team, GameObject g) : base(team)
     {
-        this.CardText = "ROOKIFY\nTurn one of your non-rook pieces into a Rook";
+        this.cardSprite= Prefabs.rookifyPrefab;
         this.cardObj = g;
     }
 

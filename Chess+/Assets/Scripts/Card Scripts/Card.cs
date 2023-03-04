@@ -10,7 +10,7 @@ of those possible moves */
 public abstract class Card
 {
     protected GameObject cardObj;
-    protected string CardText = ""; //TODO replace this with cardImg
+    protected Sprite cardSprite;
 
     private Team team;
 
@@ -22,12 +22,10 @@ public abstract class Card
     public void makeCard()
     {
         this.cardObj = UnityEngine.Object.Instantiate(Prefabs.cardPrefab);
-        this.cardObj.transform.SetParent(TestCardScript.canvas.transform, false);
+        this.cardObj.transform.SetParent(CardUI.canvas.transform, false);
         RectTransform cardRect = this.cardObj.GetComponent<RectTransform>();
         this.cardObj.GetComponent<CardHolder>().setCard(this);
-        //TODO set the image of the card to the relevant image for this card
-        // Text text = this.cardObj.transform.Find("Canvas").transform.Find("Text").gameObject.GetComponent<Text>();
-        // text.text = this.CardText;
+        this.cardObj.GetComponent<Image>().sprite = this.cardSprite;
     }
 
     public GameObject getObj()
@@ -52,13 +50,13 @@ Piece it is being played on */
     public void highlight()
     {
         isHighlight = true;
-        this.cardObj.GetComponent<Renderer>().material = Prefabs.highLight;
+        //this.cardObj.GetComponent<Renderer>().material = Prefabs.highLight; TODO find some way to show highlighting
     }
     /**Returns card to looking normal non highlghted */
     public void dehighlight()
     {
         isHighlight = false;
-        this.cardObj.GetComponent<Renderer>().material = Prefabs.white;
+        //this.cardObj.GetComponent<Renderer>().material = Prefabs.white; TODO find some way to show highlighting
     }
 
     /**Returns a cloned card but with no gameObject */

@@ -1139,7 +1139,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730442052}
-  m_LocalRotation: {x: 0.24858817, y: -0.20930584, z: 0.05511068, w: 0.9441175}
+  m_LocalRotation: {x: 0.24858817, y: -0.20930581, z: 0.05511067, w: 0.9441175}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1425,6 +1425,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 58fd325991f8ed646aaa1c05d4c5f5f4, type: 2}
   - {fileID: 2100000, guid: 724b6fb16525a6d4b880e8f55f2cf51d, type: 2}
   - {fileID: 2100000, guid: ccb4e93de8987e542986a524049ff7ed, type: 2}
+  spriteArray:
+  - {fileID: 21300000, guid: 655399579a0857446b553aaec965493f, type: 3}
+  - {fileID: 21300000, guid: d9af66ab3d6f19d4f9d42404f31ea85e, type: 3}
 --- !u!1 &1249918579
 GameObject:
   m_ObjectHideFlags: 3

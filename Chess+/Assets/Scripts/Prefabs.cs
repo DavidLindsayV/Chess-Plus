@@ -7,6 +7,8 @@ public class Prefabs : MonoBehaviour
     //The public piece prefabs
     public GameObject[] prefabArray;
     public Material[] materialArray;
+
+    public Sprite[] spriteArray;
     public static GameObject pawnPrefab;
     public static GameObject rookPrefab;
     public static GameObject bishopPrefab;
@@ -25,6 +27,12 @@ public class Prefabs : MonoBehaviour
 
     //The prefab for cards
     public static GameObject cardPrefab;
+
+    //The prefabs for the images for each card
+
+    public static Sprite rookifyPrefab;
+
+    public static Sprite summonPawnPrefab; 
 
 
 
@@ -76,5 +84,7 @@ public class Prefabs : MonoBehaviour
         highLight = materialArray[2];
         cardPrefab = prefabArray[7];
         highlight2 = materialArray[3];
+        rookifyPrefab = spriteArray[0];
+        summonPawnPrefab = spriteArray[1];
     }
 }

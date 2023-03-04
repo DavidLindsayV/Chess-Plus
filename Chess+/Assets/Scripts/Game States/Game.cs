@@ -78,19 +78,7 @@ public class Game : GameState
         switch (playerState)
         {
             case PlayerState.moveSelecting:
-                if (!Input.GetMouseButtonDown(0))
-                {
-                    return;
-                }
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (!Physics.Raycast(ray, out hit, 1000))
-                {
-                    //If nothing is hit, deselect
-                    deselect();
-                    return;
-                }
-                userClicked(hit); //figure out what was clicked on and deal with it
+                userPlaying(); //figure out what was clicked on and deal with it
                 break;
             case PlayerState.movePreparing:
                 selectedMove.prepareMove(state);
@@ -104,8 +92,20 @@ public class Game : GameState
         }
     }
 
-    private void userClicked(RaycastHit hit)
+    private void userPlaying()
     {
+        if (!Input.GetMouseButtonDown(0))
+        {
+            return;
+        }
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (!Physics.Raycast(ray, out hit, 1000))
+        {
+            //If nothing is hit, deselect
+            deselect();
+            return;
+        }
         //If you clicked on a move tile
         if (hit.collider.gameObject.GetComponent<MoveHolder>() != null)
         {

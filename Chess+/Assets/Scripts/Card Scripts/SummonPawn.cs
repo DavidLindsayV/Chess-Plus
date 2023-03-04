@@ -2,18 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/**Summon a pawn */
+/**SUMMON PAWN
+Create a pawn of your team on any empty space */
 public class SummonPawn : Card
 {
     public SummonPawn(Team team) : base(team)
     {
-        this.CardText = "SUMMON PAWN\nCreate a pawn of your team on any empty space";
+        this.cardSprite = Prefabs.summonPawnPrefab;
         makeCard();
     }
 
     public SummonPawn(Team team, GameObject g) : base(team)
     {
-        this.CardText = "SUMMON PAWN\nCreate a pawn of your team on any empty space";
+        this.cardSprite = Prefabs.summonPawnPrefab;
         this.cardObj = g;
     }
 
