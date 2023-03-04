@@ -10,24 +10,24 @@ of those possible moves */
 public abstract class Card
 {
     protected GameObject cardObj;
-    protected string CardText = "";
+    protected string CardText = ""; //TODO replace this with cardImg
 
     private Team team;
 
     private bool isHighlight = false;
 
     public Card(Team team) { this.team = team; }
+
+    /**Makes the gameObject for the card. Does not Space it in the hand - merely creates it */
     public void makeCard()
     {
-        Quaternion rotation = Quaternion.Euler(-90, 0, 0);
-        this.cardObj = UnityEngine.Object.Instantiate(
-            Prefabs.cardPrefab,
-            new Vector3(0, 0, 0),
-            rotation
-        );
+        this.cardObj = UnityEngine.Object.Instantiate(Prefabs.cardPrefab);
+        this.cardObj.transform.SetParent(TestCardScript.canvas.transform, false);
+        RectTransform cardRect = this.cardObj.GetComponent<RectTransform>();
         this.cardObj.GetComponent<CardHolder>().setCard(this);
-        Text text = this.cardObj.transform.Find("Canvas").transform.Find("Text").gameObject.GetComponent<Text>();
-        text.text = this.CardText;
+        //TODO set the image of the card to the relevant image for this card
+        // Text text = this.cardObj.transform.Find("Canvas").transform.Find("Text").gameObject.GetComponent<Text>();
+        // text.text = this.CardText;
     }
 
     public GameObject getObj()

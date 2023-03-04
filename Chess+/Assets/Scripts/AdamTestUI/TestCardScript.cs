@@ -6,13 +6,13 @@ public class TestCardScript : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     private RectTransform rectTransform;
     private Vector2 originalPosition;
     private Vector2 offset;
-    public Canvas canvas;
+    public static Canvas canvas = null;
 
-    void Start()
+    void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         originalPosition = rectTransform.anchoredPosition;
-        canvas = FindObjectOfType<Canvas>();
+        if(canvas == null){ canvas = FindObjectOfType<Canvas>(); }
     }
 
     public void OnPointerEnter(PointerEventData eventData)

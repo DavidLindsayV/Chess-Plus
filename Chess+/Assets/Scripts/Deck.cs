@@ -5,6 +5,7 @@ using System.Linq;
 
 public class Deck
 {
+
     public static int[] DefaultCards = { 30, 30 };
 
     private Team team;
@@ -19,7 +20,7 @@ public class Deck
         for (int i = 0; i < deckCards.Length; i++)
         {
             sum += deckCards[i];
-            if (deckCards[i] > 0) { cardCount.Add(i+1, deckCards[i]); }
+            if (deckCards[i] > 0) { cardCount.Add(i + 1, deckCards[i]); }
             if (deckCards[i] < 0) { throw new System.Exception("Can't have negative numebrs of cards in a deck"); }
         }
         if (sum != 60) { throw new System.Exception("You need 60 cards in a deck"); }
@@ -28,7 +29,7 @@ public class Deck
     public Card draw()
     {
         float cardsSoFar = 0;
-        float f = Random.Range(0f,1f);
+        float f = Random.Range(0f, 1f);
         foreach (int cardNum in cardCount.Keys)
         {
             cardsSoFar += cardCount[cardNum];
@@ -53,11 +54,13 @@ public class Deck
         }
     }
 
-/**A cloning method for Decks */
-    public Deck clone(){
+    /**A cloning method for Decks */
+    public Deck clone()
+    {
         int maxValueKey = cardCount.Aggregate((x, y) => x.Key > y.Key ? x : y).Key;
         int[] deckCards = new int[maxValueKey];
-        foreach(int key in cardCount.Keys){
+        foreach (int key in cardCount.Keys)
+        {
             deckCards[key - 1] = cardCount[key];
         }
         return new Deck(this.team, deckCards);

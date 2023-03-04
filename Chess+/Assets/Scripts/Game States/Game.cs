@@ -191,7 +191,6 @@ public class Game : GameState
         Processing.updateGameResult(state, state.currentTeam().nextTeam());
         turnOver = false;
         state.setTeam(state.currentTeam().nextTeam());
-        state.Draw(state.currentTeam());
         Messages.Log(MessageType.BoardState, state.ToString());
     }
 

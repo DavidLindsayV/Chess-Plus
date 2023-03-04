@@ -240,7 +240,7 @@ with the same start & end coordinates (such as promotion)*/
         }
         Deck whiteDeck =  new Deck(Team.White, Deck.DefaultCards);
         Deck blackDeck = new Deck(Team.Black, Deck.DefaultCards);
-        BoardState b = new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing,  whiteDeck,  blackDeck, new Hand(whiteDeck, 0), new Hand(blackDeck, 0)); //TODO fix this 4 nulls at the end. Update this board construction to be the same as what you have under boardState
+        BoardState b = new BoardState(boardArray, currentPlayer, bQCastle, bKCastle, wQCastle, wKCastle, enPassant, whiteKing, blackKing, new Hand(whiteDeck), new Hand(blackDeck)); //TODO fix this 4 nulls at the end. Update this board construction to be the same as what you have under boardState
 
         BoardState.GameResult g = (BoardState.GameResult)(-1);
         switch (FENwords[4])

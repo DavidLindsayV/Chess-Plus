@@ -41,9 +41,6 @@ public class BoardState
     private Hand whiteHand;
     private Hand blackHand;
 
-    private Deck whiteDeck;
-    private Deck blackDeck;
-
     //Optional fields, used for efficiency
     private King whiteKing;
     private King blackKing;
@@ -59,8 +56,6 @@ public class BoardState
         Coordinate enPassant,
         King whiteKing,
         King blackKing,
-        Deck whiteDeck,
-        Deck blackDeck,
         Hand whiteHand,
         Hand blackHand
     )
@@ -74,8 +69,6 @@ public class BoardState
         this.enPassant = enPassant;
         this.whiteKing = whiteKing;
         this.blackKing = blackKing;
-        this.whiteDeck = whiteDeck;
-        this.blackDeck = blackDeck;
         this.whiteHand = whiteHand;
         this.blackHand = blackHand;
     }
@@ -202,10 +195,10 @@ public class BoardState
                 break;
         }
 
-        this.whiteDeck = new Deck(Team.White, Deck.DefaultCards);
-        this.blackDeck = new Deck(Team.Black, Deck.DefaultCards);
-        this.whiteHand = new Hand(whiteDeck, 3);
-        this.blackHand = new Hand(blackDeck, 3);
+        Deck whiteDeck = new Deck(Team.White, Deck.DefaultCards);
+        Deck blackDeck = new Deck(Team.Black, Deck.DefaultCards);
+        this.whiteHand = new Hand(whiteDeck);
+        this.blackHand = new Hand(blackDeck);
         if (playersTeam() == Team.White)
         {
             blackHand.destroyCardObjs();
@@ -373,11 +366,11 @@ public class BoardState
     {
         if (team == Team.White)
         {
-            return whiteDeck;
+            return whiteHand.getDeck();
         }
         else if (team == Team.Black)
         {
-            return blackDeck;
+            return blackHand.getDeck();
         }
         return null;
     }
@@ -394,13 +387,6 @@ public class BoardState
             return blackHand;
         }
         return null;
-    }
-
-    public void Draw(Team team)
-    {
-        Card c = this.getDeck(team).draw();
-        this.getHand(team).Pickup(c);
-        if (team != playersTeam()) { c.destroyObj(); }
     }
 
     /**Returns the en passant position */
@@ -535,8 +521,6 @@ public class BoardState
             this.enPassant,
             (King)newBoardArray[whiteKing.getPos().getCol() - 1, whiteKing.getPos().getRow() - 1],
             (King)newBoardArray[blackKing.getPos().getCol() - 1, blackKing.getPos().getRow() - 1],
-            whiteDeck.clone(),
-            blackDeck.clone(),
             whiteHand.clone(),
             blackHand.clone()
 

@@ -64,7 +64,7 @@ public class SummonPawnMove : CardMove
         */
     public override Piece doMoveState(BoardState bState)
     {
-        removeCardState(bState);
+        playCardState(bState);
         bState.setEnPassant(null);
         Pawn pawn = new Pawn(team, pos, null);
         bState.setPiece(pos, pawn);
@@ -74,7 +74,7 @@ public class SummonPawnMove : CardMove
     /**Does the parts of a move that the user can see.*/
     public override void showMove(BoardState bState, Piece killedPiece)
     {
-        removeCardShow();
+        playCardShow();
         bState.getPiece(pos).makePiece(); //make the gameObj for the pawn you just created
     }
 

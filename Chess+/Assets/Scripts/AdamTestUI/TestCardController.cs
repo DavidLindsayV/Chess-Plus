@@ -30,7 +30,6 @@ public class TestCardController : MonoBehaviour
             GameObject buttonPrefab = buttonPrefabs[i % buttonPrefabs.Length];
             GameObject buttonInstance = Instantiate(buttonPrefab);
             buttonInstance.transform.SetParent(canvas.transform, false);
-
             RectTransform buttonRect = buttonInstance.GetComponent<RectTransform>();
             buttonRect.anchoredPosition = new Vector2((i * (buttonRect.rect.width * 2f)) + (buttonSpacing*i) -  startX, bottomPosition);
         }

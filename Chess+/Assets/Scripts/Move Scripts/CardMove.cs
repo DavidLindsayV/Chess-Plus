@@ -11,14 +11,10 @@ public abstract class CardMove : Move
     }
 
     /**Removes card from the hand */
-    public void removeCardState(BoardState bState)
+    public void playCardState(BoardState bState)
     {
-        bState.getHand(this.card.getTeam()).removeCardState(this.card);
+        bState.getHand(this.card.getTeam()).playCardState(this.card);
     }
 
-    /**Deletes the gameobject of the card */
-    public void removeCardShow()
-    {
-        this.card.destroyObj();
-    }
+    public void playCardShow(){} //TODO
 }
