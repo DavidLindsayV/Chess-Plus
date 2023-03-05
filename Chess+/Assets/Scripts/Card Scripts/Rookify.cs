@@ -14,21 +14,27 @@ public class Rookify : Card
 
     public Rookify(Team team, GameObject g) : base(team)
     {
-        this.cardSprite= Prefabs.rookifyPrefab;
+        this.cardSprite = Prefabs.rookifyPrefab;
         this.cardObj = g;
     }
 
-    public override List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece)
+    public override List<CardMove> getCoordSpecificMoves(BoardState bState, Coordinate coor)
     {
-        if (piece.getTeam() == this.getTeam() && !(piece is King) && !(piece is Rook))
+        if (canPlayOnPos(bState,coor))
         {
-            return new List<CardMove> { new RookifyMove(this, piece) };
+            return new List<CardMove> { new RookifyMove(this, bState.getPiece(coor)) };
         }
         return new List<CardMove>();
     }
     public override List<CardMove> getGeneralMoves(BoardState bState)
     {
         return new List<CardMove>();
+    }
+
+    public override bool canPlayOnPos(BoardState bstate, Coordinate coor)
+    {
+        Piece p = bstate.getPiece(coor);
+        return p != null && p.getTeam() == this.getTeam() && !(p is King) && !(p is Rook);
     }
 
     public override int cardNum()
@@ -78,4 +84,5 @@ public class RookifyMove : CardMove
 
     /**Returns the Coordinate where the moveTile for this move should be created */
     public override Coordinate moveTilePos() { return piece.getPos(); }
+
 }

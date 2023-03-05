@@ -18,24 +18,22 @@ public class SummonPawn : Card
         this.cardObj = g;
     }
 
-    public override List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece)
+    public override List<CardMove> getCoordSpecificMoves(BoardState bState, Coordinate coor)
     {
+        if (canPlayOnPos(bState, coor))
+        {
+            return new List<CardMove>() { new SummonPawnMove(this, coor, this.getTeam()) };
+        }
         return new List<CardMove>();
     }
     public override List<CardMove> getGeneralMoves(BoardState bState)
     {
-        List<CardMove> moves = new List<CardMove>();
-        for (int row = 1; row <= bState.boardSize; row++)
-        {
-            for (int col = 1; col <= bState.boardSize; col++)
-            {
-                if (bState.getPiece(col, row) == null)
-                {
-                    moves.Add(new SummonPawnMove(this, new Coordinate(col, row), this.getTeam()));
-                }
-            }
-        }
-        return moves;
+        return new List<CardMove>();
+    }
+
+    public override bool canPlayOnPos(BoardState bstate, Coordinate coor)
+    {
+        return bstate.getPiece(coor) == null;
     }
 
     public override int cardNum()

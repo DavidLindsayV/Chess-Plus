@@ -59,12 +59,12 @@ public class Hand
     }
 
     /**reutrns the moves that need a piece to do them */
-    public List<CardMove> pieceSpecificMoves(BoardState bState, Piece piece)
+    public List<CardMove> coordSpecificMoves(BoardState bState, Coordinate coor)
     {
         List<CardMove> moves = new List<CardMove>();
         foreach (Card c in cards)
         {
-            moves.AddRange(c.getPieceSpecificMoves(bState, piece));
+            moves.AddRange(c.getCoordSpecificMoves(bState, coor));
         }
         return moves;
     }
@@ -83,30 +83,7 @@ public class Hand
     /**Highlight all the cards that might be options to play with the piece selected */
     public void showCardOptions(BoardState bState, Piece p)
     {
-        foreach (Card c in cards)
-        {
-            if (c.getPieceSpecificMoves(bState, p).Count != 0)
-            {
-                highlight(c);
-            }
-        }
-    }
-
-    public void highlight(Card c)
-    {
-        if (!c.isHighlighted())
-        {
-            c.highlight();
-        }
-    }
-
-    /**Un-highlights all cards */
-    public void dehighlight()
-    {
-        foreach (Card c in cards)
-        {
-            c.dehighlight();
-        }
+        //TODO
     }
 
     /**Creates a clone of this hand but the cards don't have gameObjects */

@@ -14,8 +14,6 @@ public abstract class Card
 
     private Team team;
 
-    private bool isHighlight = false;
-
     public Card(Team team) { this.team = team; }
 
     /**Makes the gameObject for the card. Does not Space it in the hand - merely creates it */
@@ -26,6 +24,7 @@ public abstract class Card
         RectTransform cardRect = this.cardObj.GetComponent<RectTransform>();
         this.cardObj.GetComponent<CardHolder>().setCard(this);
         this.cardObj.GetComponent<Image>().sprite = this.cardSprite;
+        this.cardObj.GetComponent<CardUI>().setCard(this);
     }
 
     public GameObject getObj()
@@ -35,10 +34,15 @@ public abstract class Card
 
     public Team getTeam() { return this.team; }
 
-    /**getPieceSpecificMoves takes in the boardState, the Team that is playing the card, and the
-Piece it is being played on */
-    public abstract List<CardMove> getPieceSpecificMoves(BoardState bState, Piece piece);
+    /**getCoordSpecificMoves takes in the boardState, the Team that is playing the card, and the
+coord it is being played on */
+    public abstract List<CardMove> getCoordSpecificMoves(BoardState bState, Coordinate coor);
+
+    /**Returns moves that don't need a specific position to be played on */
     public abstract List<CardMove> getGeneralMoves(BoardState bState);
+
+    //Returns whether or not this Card can be played on a certain coordinate
+    public abstract bool canPlayOnPos(BoardState bState, Coordinate coor);
 
     /**Each card should have a unique string attached. I'm just gonna name them card1, card2, etc */
     public override string ToString() { return "card" + this.cardNum(); }
@@ -47,17 +51,6 @@ Piece it is being played on */
     public abstract int cardNum();
 
 
-    public void highlight()
-    {
-        isHighlight = true;
-        //this.cardObj.GetComponent<Renderer>().material = Prefabs.highLight; TODO find some way to show highlighting
-    }
-    /**Returns card to looking normal non highlghted */
-    public void dehighlight()
-    {
-        isHighlight = false;
-        //this.cardObj.GetComponent<Renderer>().material = Prefabs.white; TODO find some way to show highlighting
-    }
 
     /**Returns a cloned card but with no gameObject */
     public abstract Card clone();
@@ -67,11 +60,5 @@ Piece it is being played on */
     public void destroyObj()
     {
         UnityEngine.Object.Destroy(cardObj);
-    }
-
-    /**Returns whether the card is highlighted or not */
-    public bool isHighlighted()
-    {
-        return isHighlight;
     }
 }

@@ -15,8 +15,8 @@ public class Game : GameState
 
     private PlayerState playerState = PlayerState.moveSelecting;
     private Move selectedMove; //the selected move
-    private GameObject selectedPiece; //The current Piece selected by the player
-    private GameObject selectedCard; //The current Card selected by the player
+    private Piece selectedPiece; //The current Piece selected by the player
+    private Card selectedCard; //The current Card selected by the player
     //used for choosing what move tiles can be shown
 
     public BoardState state; //this boardState stores the current state of the board
@@ -129,18 +129,11 @@ public class Game : GameState
             clickTile(hit2.collider.gameObject);
             return;
         }
-
-        //If you clicked on a card
-        if (hit.collider.gameObject.GetComponent<CardHolder>() != null)
-        {
-            select(hit.collider.gameObject);
-            return;
-        }
         //If you clicked on a piece not above a move tile
         if (hit.collider.gameObject.GetComponent<PieceHolder>() != null)
         {
             Piece p = hit.collider.gameObject.GetComponent<PieceHolder>().getPiece();
-            select(hit.collider.gameObject);
+            selectPiece(p);
             return;
         }
         deselect();
@@ -154,34 +147,13 @@ public class Game : GameState
         playerState = PlayerState.movePreparing;
     }
 
-    private void select(GameObject obj)
+    private void selectPiece(Piece p)
     {
-        if (obj.GetComponent<CardHolder>() != null)
-        {
-            if (obj == selectedCard) { deselectCard(); return; }
-            deselectCard();
-            selectedCard = obj;
-            Card c = obj.GetComponent<CardHolder>().getCard();
-            state.getHand(state.playersTeam()).highlight(c);
-            //If the Card has no moves to be played on your selected piece, then deselect the piece
-            if (selectedPiece != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
-            {
-                deselectPiece();
-            }
-        }
-        else
-        {
-            if (obj == selectedPiece) { deselectPiece(); return; }
-            deselectPiece();
-            selectedPiece = obj;
-            if (selectedCard != null && selectedCard.GetComponent<CardHolder>().getCard().getPieceSpecificMoves(state, selectedPiece.GetComponent<PieceHolder>().getPiece()).Count == 0)
-            {
-                deselectCard();
-            }
-            state.getHand(state.playersTeam()).showCardOptions(state, selectedPiece.GetComponent<PieceHolder>().getPiece()); //show what cards are potentially valid for playing
-        }
-        obj.GetComponent<Renderer>().material = Prefabs.highlight2;
-        showValidMoveTiles();
+        if (p == selectedPiece) { deselectPiece(); return; }
+        deselectPiece();
+        selectedPiece = p;
+        p.getObject().GetComponent<Renderer>().material = Prefabs.highlight2;
+        showValidMoveTiles(p);
     }
 
     //Ends a player or AI turn
@@ -201,10 +173,15 @@ public class Game : GameState
         deselectPiece();
     }
 
-    private void deselectCard()
+    public void deselectCard()
     {
-        state.getHand(state.playersTeam()).dehighlight(); //dehighlight all cards in your hand
         selectedCard = null;
+        DestroyMoveTiles();
+    }
+
+    /**Destroys all move tiles */
+    private void DestroyMoveTiles()
+    {
         foreach (GameObject tile in tileList)
         {
             Destroy(tile);
@@ -215,28 +192,24 @@ public class Game : GameState
     {
         if (selectedPiece != null)
         {
-            Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
-            if (p.getTeam() == Team.White)
+            if (selectedPiece.getTeam() == Team.White)
             {
-                selectedPiece.GetComponent<Renderer>().material = Prefabs.white;
+                selectedPiece.getObject().GetComponent<Renderer>().material = Prefabs.white;
             }
-            else if (p.getTeam() == Team.Black)
+            else if (selectedPiece.getTeam() == Team.Black)
             {
-                selectedPiece.GetComponent<Renderer>().material = Prefabs.black;
+                selectedPiece.getObject().GetComponent<Renderer>().material = Prefabs.black;
             }
             selectedPiece = null;
         }
-        foreach (GameObject tile in tileList)
-        {
-            Destroy(tile);
-        }
+        DestroyMoveTiles();
     }
 
     /**Executes a move. Updates the internal state as well as the external view*/
     private void doMove(Move move)
     {
         Piece killedPiece = move.doMoveState(state); //Updates the boardState.
-        //It is done separately to allow this function to be reused when testing/checking moves
+                                                     //It is done separately to allow this function to be reused when testing/checking moves
         move.showMove(state, killedPiece); //Does the rest of the move, updating the GameObject placements
     }
 
@@ -288,29 +261,37 @@ public class Game : GameState
         this.enabled = false; //disable the code
     }
 
-    //Makes move tiles for all the valid moves of a certain piece
-    private void showValidMoveTiles()
+    /**Makes move tiles for all the valid moves of a certain piece, ON ITS OWN with no cards*/
+    private void showValidMoveTiles(Piece p)
     {
         List<Move> moves = new List<Move>();
         Team team = state.playersTeam();
-        if (selectedPiece != null && selectedCard != null)
+        //Get the moves for a piece
+        if (selectedPiece.getTeam() == state.playersTeam())
         {
-            Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
-            Card c = selectedCard.GetComponent<CardHolder>().getCard();
-            moves = Processing.validMoves(state, p, c, team);
+            moves = Processing.validMoves(state, p);
         }
-        else if (selectedPiece != null)
+        //Make a tile for each move
+        foreach (Move move in moves)
         {
-            Piece p = selectedPiece.GetComponent<PieceHolder>().getPiece();
-            if (p.getTeam() == state.playersTeam())
+            makeMoveTile(move);
+        }
+    }
+
+    //Makes move tiles for all the valid moves of a certain Card
+    private void showValidMoveTiles(Card c)
+    {
+        List<Move> moves = new List<Move>();
+        //Get the moves from this card that are position-specific
+        for (int row = 1; row < state.boardSize; row++)
+        {
+            for (int col = 1; col < state.boardSize; col++)
             {
-                moves = Processing.validMoves(state, p);
+                moves.AddRange(c.getCoordSpecificMoves(state, new Coordinate(col, row)));
             }
         }
-        else if (selectedCard != null)
-        {
-            moves = Processing.validMoves(state, selectedCard.GetComponent<CardHolder>().getCard(), team);
-        }
+        moves.AddRange(c.getGeneralMoves(state));
+
         //Make a tile for each move
         foreach (Move move in moves)
         {
@@ -328,6 +309,14 @@ public class Game : GameState
         );
         tileList.Add(newTile);
         newTile.GetComponent<MoveHolder>().setMove(move);
+    }
+
+    public void selectCard(Card c)
+    {
+        if (selectedCard == c) { return; }
+        deselectPiece();
+        selectedCard = c;
+        showValidMoveTiles(c);
     }
 
     public override void runState()
