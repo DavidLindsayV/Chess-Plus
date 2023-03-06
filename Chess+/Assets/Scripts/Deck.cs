@@ -5,7 +5,7 @@ using System.Linq;
 
 public class Deck
 {
-
+    private static System.Random random = new System.Random();
     public static int[] DefaultCards = { 30, 30 };
 
     private Team team;
@@ -29,7 +29,7 @@ public class Deck
     public Card draw()
     {
         float cardsSoFar = 0;
-        float f = Random.Range(0f, 1f);
+        double f = random.NextDouble();
         foreach (int cardNum in cardCount.Keys)
         {
             cardsSoFar += cardCount[cardNum];

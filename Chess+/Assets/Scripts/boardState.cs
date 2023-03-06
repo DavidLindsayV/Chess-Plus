@@ -201,11 +201,11 @@ public class BoardState
         this.blackHand = new Hand(blackDeck);
         if (playersTeam() == Team.White)
         {
-            blackHand.destroyCardObjs();
+            whiteHand.makeCardObjs();
         }
         else if (playersTeam() == Team.Black)
         {
-            whiteHand.destroyCardObjs();
+            blackHand.makeCardObjs();
         }
     }
 
@@ -524,7 +524,7 @@ public class BoardState
             whiteHand.clone(),
             blackHand.clone()
 
-        ); 
+        );
         return clone;
     }
 

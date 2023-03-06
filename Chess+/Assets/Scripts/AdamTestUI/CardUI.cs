@@ -8,16 +8,20 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
     private Vector2 originalPosition;
     private Vector2 offset;
     public static Canvas canvas = null;
+    public static Camera cam = null;
 
     private static Game game;
 
     private Card card;
+
+    private GameObject moveTile;
 
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         if (canvas == null) { canvas = FindObjectOfType<Canvas>(); }
         if (game == null) { game = FindObjectOfType<Game>(); }
+        if (cam == null) { cam = FindObjectOfType<Camera>(); }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -35,11 +39,37 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         game.selectCard(this.getCard());
         Vector2 mouseScreenOffset = new Vector2((canvas.GetComponent<RectTransform>().rect.height - GetComponent<RectTransform>().rect.height), (canvas.GetComponent<RectTransform>().rect.width) / 2.0f - (GetComponent<RectTransform>().rect.height * 2.0f));
         rectTransform.anchoredPosition = eventData.position - mouseScreenOffset + offset;
+        //If the card is being dragged above a move tile
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        LayerMask mask = LayerMask.GetMask("Move tiles");
+        if (Physics.Raycast(
+            ray,
+            out hit,
+            1000,
+            mask
+        ))
+        {
+            if (moveTile != null) { dehighlightTile(); }
+            moveTile = hit.collider.gameObject;
+            highlightTile();
+        }
+        else
+        {
+            if (moveTile != null) { dehighlightTile(); moveTile = null; }
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        game.deselectCard();
+        if (moveTile != null)
+        {
+            game.selectTile(moveTile.GetComponent<MoveHolder>());
+        }
+        else
+        {
+            game.deselectCard();
+        }
         rectTransform.anchoredPosition = originalPosition;
     }
 
@@ -53,4 +83,14 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
     public void setCard(Card c) { this.card = c; }
 
     public Card getCard() { return this.card; }
+
+    private void highlightTile()
+    {
+        this.moveTile.GetComponent<Renderer>().material = Prefabs.highlight2;
+    }
+
+    private void dehighlightTile()
+    {
+        this.moveTile.GetComponent<Renderer>().material = Prefabs.highLight;
+    }
 }

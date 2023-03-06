@@ -9,7 +9,6 @@ public class Rookify : Card
     public Rookify(Team team) : base(team)
     {
         this.cardSprite = Prefabs.rookifyPrefab;
-        makeCard();
     }
 
     public Rookify(Team team, GameObject g) : base(team)
@@ -73,7 +72,7 @@ public class RookifyMove : CardMove
     /**Does the parts of a move that the user can see.*/
     public override void showMove(BoardState bState, Piece killedPiece)
     {
-        playCardShow();
+        playCardShow(bState);
         killedPiece.destroy(); //destroy the Piece you just turned into a Rook
         r.makePiece(); //make the gameObj for the new Rook piece
     }

@@ -38,6 +38,8 @@ public class Game : GameState
     //TODO make more tests using runMoves under swen221 (as it is the better runner of tests)
     //TODO format the testing stuff better and tidy up that code
     //TODO improve the user experience with selecting and deselecting cards and pieces - sometimes you get weird results
+    //TODO make functionality for if Move Tiles contain multiple moves (eg the Teleport move - you drag card onto a piece, and then more move tiles appear)
+    //TODO make functionality for card moves that DONT have positions (eg "gain $5 monopolos") which wouldn't require a position to play
 
     // Start is called before the first frame update
     void Start()
@@ -109,7 +111,7 @@ public class Game : GameState
         //If you clicked on a move tile
         if (hit.collider.gameObject.GetComponent<MoveHolder>() != null)
         {
-            clickTile(hit.collider.gameObject);
+            selectTile(hit.collider.gameObject.GetComponent<MoveHolder>());
             return;
         }
         //if what you clicked on was above a move tile
@@ -126,7 +128,7 @@ public class Game : GameState
             mask
         ))
         {
-            clickTile(hit2.collider.gameObject);
+            selectTile(hit2.collider.gameObject.GetComponent<MoveHolder>());
             return;
         }
         //If you clicked on a piece not above a move tile
@@ -139,14 +141,6 @@ public class Game : GameState
         deselect();
     }
 
-    private void clickTile(GameObject tile)
-    {
-        Move move = tile.GetComponent<MoveHolder>().getMove();
-        deselect();
-        selectedMove = move;
-        playerState = PlayerState.movePreparing;
-    }
-
     private void selectPiece(Piece p)
     {
         if (p == selectedPiece) { deselectPiece(); return; }
@@ -154,6 +148,22 @@ public class Game : GameState
         selectedPiece = p;
         p.getObject().GetComponent<Renderer>().material = Prefabs.highlight2;
         showValidMoveTiles(p);
+    }
+
+    /**Selects a tile. Does different things depending if the movetile stores 1 or multiple moves */
+    public void selectTile(MoveHolder tile)
+    {
+        if (tile.getMoveCount() == 1)
+        {
+            Move move = tile.GetComponent<MoveHolder>().getMove();
+            deselect();
+            selectedMove = move;
+            playerState = PlayerState.movePreparing;
+        }
+        else
+        {
+            //TODO
+        }
     }
 
     //Ends a player or AI turn
@@ -283,9 +293,9 @@ public class Game : GameState
     {
         List<Move> moves = new List<Move>();
         //Get the moves from this card that are position-specific
-        for (int row = 1; row < state.boardSize; row++)
+        for (int row = 1; row <= state.boardSize; row++)
         {
-            for (int col = 1; col < state.boardSize; col++)
+            for (int col = 1; col <= state.boardSize; col++)
             {
                 moves.AddRange(c.getCoordSpecificMoves(state, new Coordinate(col, row)));
             }

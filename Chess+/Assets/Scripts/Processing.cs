@@ -66,7 +66,7 @@ public static class Processing
         for (int col = 1; col <= bState.boardSize; col++)
             for (int row = 1; row <= bState.boardSize; row++)
             {
-                foreach (Move move in bState.getHand(enemyTeam).coordSpecificMoves(bState, new Coordinate(col,row)))
+                foreach (Move move in bState.getHand(enemyTeam).coordSpecificMoves(bState, new Coordinate(col, row)))
                 {
                     if (move.inDanger(pos)) { return true; }
                 }

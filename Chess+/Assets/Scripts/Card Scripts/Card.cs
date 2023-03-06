@@ -12,6 +12,8 @@ public abstract class Card
     protected GameObject cardObj;
     protected Sprite cardSprite;
 
+    public int handIndex;
+
     private Team team;
 
     public Card(Team team) { this.team = team; }

@@ -14,14 +14,16 @@ public class Hand
 
     //All the cards in a hand
     Card[] cards;
+
+    /**A constructor that does NOT create gameObjects */
     public Hand(Card[] cards, Deck deck)
     {
         this.deck = deck;
         if (cards.Length != numCards) { throw new Exception("wrong number of cards in hand"); }
         this.cards = cards;
-        positionCards();
     }
 
+    /**A constructor that DOES create gameObjects */
     public Hand(Deck deck)
     {
         this.deck = deck;
@@ -29,8 +31,8 @@ public class Hand
         for (int i = 0; i < numCards; i++)
         {
             cards[i] = deck.draw();
+            cards[i].handIndex = i;
         }
-        positionCards();
     }
 
     /**Positions all the cards correctly if none of them are being looked at individually*/
@@ -39,6 +41,7 @@ public class Hand
         float totalWidth = 0f; //TODO combine these 2 for loops into 1 for loop
         foreach (Card card in cards)
         {
+            if (card.getObj() == null) { return; } //If this hand has no gameObjects for its cards (is the enemy hand), return
             GameObject cardObj = card.getObj();
             RectTransform buttonRect = cardObj.GetComponent<RectTransform>();
             totalWidth += buttonRect.rect.width * 2 + cardSpacing;
@@ -99,33 +102,33 @@ public class Hand
         return new Hand(cardsClone, cloneDeck);
     }
 
-    /**Destroys all gameobjects of the cards in this hand */
-    public void destroyCardObjs()
+    /**Makes all gameobjects for the cards in this hand */
+    public void makeCardObjs()
     {
         foreach (Card c in cards)
         {
-            c.destroyObj();
+            c.makeCard();
         }
-    }
-
-    /**Plays a card. Affects the code and the gameObjects*/
-    public void playCard(Card c)
-    {
-        for (int i = 0; i < numCards; i++)
-        {
-            if (c == cards[i])
-            {
-                UnityEngine.Object.Destroy(c.getObj());
-                cards[i] = deck.draw();
-                return;
-            }
-        }
-        throw new Exception("a card was played that's not in the players hand");
+        positionCards();
     }
 
     public Deck getDeck() { return this.deck; }
 
-    public void playCardState(Card card) { } //TODO
+    /**Updates the Hand's state. Does not affect gameObjects */
+    public void playCardState(Card card)
+    {
+        int handIndex = card.handIndex;
+        cards[handIndex] = deck.draw();
+        cards[handIndex].handIndex = handIndex;
+    }
 
-    public void playCardShow() { } //TODO
+    /**Updates the visuals of the Hand after a card has been played*/
+    public void playCardShow()
+    {
+        foreach (Card c in cards)
+        {
+            if (c.getObj() == null) { c.makeCard(); }
+        }
+        positionCards();
+    }
 }

@@ -9,7 +9,6 @@ public class SummonPawn : Card
     public SummonPawn(Team team) : base(team)
     {
         this.cardSprite = Prefabs.summonPawnPrefab;
-        makeCard();
     }
 
     public SummonPawn(Team team, GameObject g) : base(team)
@@ -73,7 +72,7 @@ public class SummonPawnMove : CardMove
     /**Does the parts of a move that the user can see.*/
     public override void showMove(BoardState bState, Piece killedPiece)
     {
-        playCardShow();
+        playCardShow(bState);
         bState.getPiece(pos).makePiece(); //make the gameObj for the pawn you just created
     }
 

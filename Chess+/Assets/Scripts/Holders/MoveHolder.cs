@@ -17,4 +17,9 @@ public class MoveHolder : MonoBehaviour
     {
         return move;
     }
+
+/**Returns how many moves this move tile is storing  TODO upgrade movetiles to store multiple moves*/
+    public int getMoveCount(){
+        return 1;
+    }
 }
